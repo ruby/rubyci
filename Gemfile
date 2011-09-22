@@ -15,6 +15,7 @@ end
 
 gem 'jquery-rails'
 gem 'execjs'
+gem 'thin'
 
 # Use unicorn as the web server
 # gem 'unicorn'
