@@ -1,0 +1,25 @@
+<h1>Listing servers</h1>
+
+<table>
+  <tr>
+    <th>Name</th>
+    <th>Uri</th>
+    <th></th>
+    <th></th>
+    <th></th>
+  </tr>
+
+<% @servers.each do |server| %>
+  <tr>
+    <td><%= server.name %></td>
+    <td><%= server.uri %></td>
+    <td><%= link_to 'Show', server %></td>
+    <td><%= link_to 'Edit', edit_server_path(server) %></td>
+    <td><%= link_to 'Destroy', server, confirm: 'Are you sure?', method: :delete %></td>
+  </tr>
+<% end %>
+</table>
+
+<br />
+
+<%= link_to 'New Server', new_server_path %>
