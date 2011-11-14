@@ -1,6 +1,6 @@
 source 'http://rubygems.org'
 
-gem 'rails', '3.1.0'
+gem 'rails', '3.1.1'
 
 # Bundle edge Rails instead:
 # gem 'rails',     :git => 'git://github.com/rails/rails.git'
@@ -33,7 +33,8 @@ end
 
 group :development do
   gem 'sqlite3'
-  gem 'mustang'
+#  gem "mustang"
+  gem "therubyracer"
 end
 
 group :production do

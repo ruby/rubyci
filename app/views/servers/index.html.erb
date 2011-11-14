@@ -3,6 +3,9 @@
 <table>
   <tr>
     <th>Name</th>
+    <th>Arch</th>
+    <th>OS</th>
+    <th>Version</th>
     <th>Uri</th>
     <th></th>
     <th></th>
@@ -12,6 +15,9 @@
 <% @servers.each do |server| %>
   <tr>
     <td><%= server.name %></td>
+    <td><%= server.arch %></td>
+    <td><%= server.os %></td>
+    <td><%= server.version %></td>
     <td><%= server.uri %></td>
     <td><%= link_to 'Show', server %></td>
     <td><%= link_to 'Edit', edit_server_path(server) %></td>
