@@ -11,16 +11,16 @@ class Report < ActiveRecord::Base
         begin
           Net::HTTP.start(uri.host, uri.port) do |h|
             basepath = uri.path
-            puts "getting #{basepath}..."
-            h.get(basepath).body.scan(/href="([^"\/]+)/) do |branch|
+            puts "getting #{uri.host}#{basepath}..."
+            h.get(basepath).body.scan(/href="ruby-([^"\/]+)/) do |branch|
               path = File.join(basepath, branch, 'recent.html')
-              puts "getting #{path}..."
+              puts "getting #{uri.host}#{path}..."
               h.get(path).body.scan(REG_RCNT) do |datetime, summary|
                 dt = Time.utc(*datetime.unpack("A4A2A2xA2A2A2"))
                 if Report.find_by_datetime(dt)
                   break
                 end
-                puts "reporting #{path} #{datetime}..."
+                puts "reporting #{uri.host}#{path} #{datetime}..."
                 Report.create!(
                   server_id: server.id,
                   datetime: dt,
