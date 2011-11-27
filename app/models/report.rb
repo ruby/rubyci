@@ -8,28 +8,34 @@ class Report < ActiveRecord::Base
     ss = Server.all.map do |server|
       Thread.new do
         uri = URI(server.uri)
-        Net::HTTP.start(uri.host, uri.port) do |h|
-          basepath = uri.path
-          puts "getting #{basepath}..."
-          h.get(basepath).body.scan(/href="([^"\/]*)/) do |branch|
-            path = File.join(basepath, branch, 'recent.html')
-            puts "getting #{path}..."
-            h.get(path).body.scan(REG_RCNT) do |datetime, summary|
-              dt = Time.utc(*datetime.unpack("A4A2A2xA2A2A2"))
-              if Report.find_by_datetime(dt)
-                break
+        begin
+          Net::HTTP.start(uri.host, uri.port) do |h|
+            basepath = uri.path
+            puts "getting #{basepath}..."
+            h.get(basepath).body.scan(/href="([^"\/]*)/) do |branch|
+              path = File.join(basepath, branch, 'recent.html')
+              puts "getting #{path}..."
+              h.get(path).body.scan(REG_RCNT) do |datetime, summary|
+                dt = Time.utc(*datetime.unpack("A4A2A2xA2A2A2"))
+                if Report.find_by_datetime(dt)
+                  break
+                end
+                puts "reporting #{path} #{datetime}..."
+                Report.create!(
+                  server_id: server.id,
+                  datetime: dt,
+                  branch: branch,
+                  revision: summary[/\d+(?=\x29)/],
+                  uri: uri + File.join(path, "../log/#{datetime}.log.html.gz"),
+                  summary: summary
+                )
               end
-              puts "reporting #{path} #{datetime}..."
-              Report.create!(
-                server_id: server.id,
-                datetime: dt,
-                branch: branch,
-                revision: summary[/\d+(?=\x29)/],
-                uri: uri + File.join(path, "../log/#{datetime}.log.html.gz"),
-                summary: summary
-              )
             end
           end
+        rescue StandardError, EOFError, Timeout::Error => e
+          p e
+          puts e.message
+          puts e.backtrace
         end
       end
     end.map(&:join)
