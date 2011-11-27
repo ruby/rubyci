@@ -26,7 +26,7 @@ class Report < ActiveRecord::Base
                   datetime: dt,
                   branch: branch,
                   revision: summary[/\d+(?=\x29)/],
-                  uri: uri + File.join(path, "../log/#{datetime}.log.html.gz"),
+                  uri: (uri + File.join(path, "../log/#{datetime}.log.html.gz")).to_s,
                   summary: summary
                 )
               end
