@@ -12,7 +12,7 @@ class Report < ActiveRecord::Base
           Net::HTTP.start(uri.host, uri.port) do |h|
             basepath = uri.path
             puts "getting #{basepath}..."
-            h.get(basepath).body.scan(/href="([^"\/]*)/) do |branch|
+            h.get(basepath).body.scan(/href="([^"\/]+)/) do |branch|
               path = File.join(basepath, branch, 'recent.html')
               puts "getting #{path}..."
               h.get(path).body.scan(REG_RCNT) do |datetime, summary|
