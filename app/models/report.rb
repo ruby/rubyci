@@ -8,7 +8,7 @@ class Report < ActiveRecord::Base
     ss = Server.all.map do |server|
       Thread.new do
         uri = URI(server.uri)
-        Net::HTTP.start(uri.hostname, uri.port) do |h|
+        Net::HTTP.start(uri.host, uri.port) do |h|
           basepath = uri.path
           puts "getting #{basepath}..."
           h.get(basepath).body.scan(/href="([^"\/]*)/) do |branch|
