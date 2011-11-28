@@ -55,38 +55,36 @@ class Report < ActiveRecord::Base
 
   def self.update
     ss = Server.all.map do |server|
-      Thread.new do
-        uri = URI(server.uri)
-        begin
-          Net::HTTP.start(uri.host, uri.port) do |h|
-            basepath = uri.path
-            puts "getting #{uri.host}#{basepath}..."
-            h.get(basepath).body.scan(/href="ruby-([^"\/]+)/) do |branch,_|
-              path = File.join(basepath, 'ruby-' + branch, 'recent.html')
-              puts "getting #{uri.host}#{path}..."
-              h.get(path).body.scan(REG_RCNT) do |dt, summary,|
-                datetime = Time.utc(*dt.unpack("A4A2A2xA2A2A2"))
-                if Report.find_by_datetime(dt)
-                  puts "finish"
-                  break
-                end
-                puts "reporting #{uri.host}#{path} #{dt}..."
-                Report.create!(
-                  server_id: server.id,
-                  datetime: datetime,
-                  branch: branch,
-                  revision: summary[/(?:trunk|revision) (\d+)\x29/, 1],
-                  summary: summary
-                )
-              end
+      uri = URI(server.uri)
+      begin
+        Net::HTTP.start(uri.host, uri.port, open_timeout: 10, read_timeout: 10) do |h|
+          basepath = uri.path
+          puts "getting #{uri.host}#{basepath}..."
+          h.get(basepath).body.scan(/href="ruby-([^"\/]+)/) do |branch,_|
+            path = File.join(basepath, 'ruby-' + branch, 'recent.html')
+            puts "getting #{uri.host}#{path}..."
+            h.get(path).body.scan(REG_RCNT) do |dt, summary,|
+              datetime = Time.utc(*dt.unpack("A4A2A2xA2A2A2"))
+            if Report.find_by_datetime(datetime)
+              puts "finish"
+              break
+            end
+            puts "reporting #{uri.host}#{path} #{dt}..."
+            Report.create!(
+              server_id: server.id,
+              datetime: datetime,
+              branch: branch,
+              revision: summary[/(?:trunk|revision) (\d+)\x29/, 1],
+              summary: summary
+            )
             end
           end
-        rescue StandardError, EOFError, Timeout::Error, Errno::ECONNREFUSED => e
-          p e
-          puts e.message
-          puts e.backtrace
         end
+      rescue StandardError, EOFError, Timeout::Error, Errno::ECONNREFUSED => e
+        p e
+        puts e.message
+        puts e.backtrace
       end
-    end.map(&:join)
+    end
   end
 end
