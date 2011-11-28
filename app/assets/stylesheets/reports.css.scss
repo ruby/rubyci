@@ -1,9 +1,9 @@
 // Place all the styles related to the Reports controller here.
 // They will automatically be included in application.css.
 // You can use Sass (SCSS) here: http://sass-lang.com/
-table {
+table.reports {
 	tr :nth-child(1) {
-		width: 12em;
+		width: 60px;
 	}
 	tr :nth-child(2) {
 		width: 15em;

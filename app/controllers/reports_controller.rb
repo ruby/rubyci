@@ -2,7 +2,7 @@ class ReportsController < ApplicationController
   # GET /reports
   # GET /reports.json
   def index
-    @reports = Report.order('datetime desc').all
+    @reports = Report.order('datetime desc').includes(:server).all
 
     respond_to do |format|
       format.html # index.html.erb
