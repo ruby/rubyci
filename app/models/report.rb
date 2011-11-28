@@ -49,7 +49,7 @@ class Report < ActiveRecord::Base
               end
             end
           end
-        rescue StandardError, EOFError, Timeout::Error => e
+        rescue StandardError, EOFError, Timeout::Error, Errno::ECONNREFUSED => e
           p e
           puts e.message
           puts e.backtrace
