@@ -30,7 +30,7 @@
       <td class="testall"><%= report.testall %></td>
       <td class="rubyspecc"><%= report.rubyspec %></td>
     <% end %>
-    <% if /success\z/ =~ report.summary %>
+    <% if /success / =~ report.summary %>
       <td class="summary"><div><%= link_to report.shortsummary, report.loguri, title: report.shortsummary %></div></td>
     <% else %>
       <td class="summary failure"><div><%= link_to report.shortsummary, report.loguri, title: report.shortsummary %></div></td>

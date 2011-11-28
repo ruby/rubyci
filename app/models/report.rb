@@ -75,7 +75,7 @@ class Report < ActiveRecord::Base
                   server_id: server.id,
                   datetime: datetime,
                   branch: branch,
-                  revision: summary[/#{branch} (\d+)\x29/],
+                  revision: summary[/(?:trunk|revision) (\d+)\x29/, 1],
                   summary: summary
                 )
               end
