@@ -70,6 +70,8 @@ class Report < ActiveRecord::Base
               break
             end
             puts "reporting #{uri.host}#{path} #{dt}..."
+            p summary.gsub(/<[^>]*>/, '')
+            p summary.gsub(/<[^>]*>/, '').size
             Report.create!(
               server_id: server.id,
               datetime: datetime,
