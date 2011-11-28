@@ -21,6 +21,7 @@ class ReportsController < ApplicationController
     end
   end
 
+=begin
   # GET /reports/new
   # GET /reports/new.json
   def new
@@ -80,4 +81,5 @@ class ReportsController < ApplicationController
       format.json { head :ok }
     end
   end
+=end
 end
