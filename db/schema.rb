@@ -11,14 +11,14 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20111128021323) do
+ActiveRecord::Schema.define(:version => 20111128213750) do
 
   create_table "reports", :force => true do |t|
     t.integer  "server_id"
     t.datetime "datetime"
     t.string   "branch"
     t.integer  "revision"
-    t.string   "summary"
+    t.text     "summary"
     t.datetime "created_at"
     t.datetime "updated_at"
   end

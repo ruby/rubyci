@@ -65,20 +65,20 @@ class Report < ActiveRecord::Base
             puts "getting #{uri.host}#{path}..."
             h.get(path).body.scan(REG_RCNT) do |dt, summary,|
               datetime = Time.utc(*dt.unpack("A4A2A2xA2A2A2"))
-            if Report.find_by_datetime(datetime)
-              puts "finish"
-              break
-            end
-            puts "reporting #{uri.host}#{path} #{dt}..."
-            p summary.gsub(/<[^>]*>/, '')
-            p summary.gsub(/<[^>]*>/, '').size
-            Report.create!(
-              server_id: server.id,
-              datetime: datetime,
-              branch: branch,
-              revision: summary[/(?:trunk|revision) (\d+)\x29/, 1],
-              summary: summary.gsub(/<[^>]*>/, '')
-            )
+              if Report.find_by_datetime(datetime)
+                puts "finish"
+                break
+              end
+              puts "reporting #{uri.host}#{path} #{dt}..."
+              p summary.gsub(/<[^>]*>/, '')
+              p summary.gsub(/<[^>]*>/, '').size
+              Report.create!(
+                server_id: server.id,
+                datetime: datetime,
+                branch: branch,
+                revision: summary[/(?:trunk|revision) (\d+)\x29/, 1],
+                summary: summary.gsub(/<[^>]*>/, '')
+              )
             end
           end
         end
