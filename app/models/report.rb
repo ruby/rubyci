@@ -36,11 +36,11 @@ class Report < ActiveRecord::Base
   end
 
   def shortsummary
-    summary[/^[^\x28]+(?:\s*\([^\x29]*\)|\s*\[[^\x5D]*\])*\s*(\S.*?) \(</, 1]
+    summary[/^[^\x28]+(?:\s*\([^\x29]*\)|\s*\[[^\x5D]*\])*\s*(\S.*?) \(/, 1]
   end
 
   def diffstat
-    summary[/>([^<]*)</, 1]
+    summary[/((?:no )?diff[^)>]*)/, 1]
   end
 
   def loguri
@@ -75,15 +75,14 @@ class Report < ActiveRecord::Base
               datetime: datetime,
               branch: branch,
               revision: summary[/(?:trunk|revision) (\d+)\x29/, 1],
-              summary: summary
+              summary: summary.gsub(/<[^>]*>/, '')
             )
             end
           end
         end
       rescue StandardError, EOFError, Timeout::Error, Errno::ECONNREFUSED => e
         p e
-        puts e.message
-        puts e.backtrace
+        p uri
       end
     end
   end
