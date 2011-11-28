@@ -65,7 +65,7 @@ class Report < ActiveRecord::Base
             puts "getting #{uri.host}#{path} ..."
             h.get(path).body.scan(REG_RCNT) do |dt, summary,|
               datetime = Time.utc(*dt.unpack("A4A2A2xA2A2A2"))
-              if Report.first(conditions: {server_id: server.id, branch: branch, datetime: datetime})
+              if Report.where(server_id: server.id, branch: branch, datetime: datetime).exists?
                 next
               end
               puts "reporting #{server.name} #{branch} #{dt} ..."
