@@ -3,6 +3,38 @@ class Report < ActiveRecord::Base
   require 'uri'
   belongs_to :server
 
+  def dt
+    datetime.strftime("%Y%m%dT%H%M%SZ")
+  end
+
+  def jstdt
+    (datetime + 32400).strftime("%Y-%m-%d %H:%M:%S +0900")
+  end
+
+  def build
+    summary[/(\d*failed)\((?:svn|make)[^)]*\)/]
+  end
+
+  def btest
+    summary[/ (\d+)BFail /, 1] ? $1+'F': nil
+  end
+
+  def testknownbug
+    summary[/ KB(\d+F\d+E) /, 1]
+  end
+
+  def test
+    summary[/ (\d+)NotOK /, 1] ? $1+'F' : nil
+  end
+
+  def testall
+    summary[/ (\d+F\d+E(?:\d+S)) /, 1] || summary[/(\d*failed)\(test\/\)/, 1]
+  end
+
+  def rubyspec
+    summary[/ rubyspec:(\d+F\d+E) /, 1] || summary[/(failed)\(git-rubyspec/, 1] || summary[/(\d*failed)\(rubyspec\/\)/, 1]
+  end
+
   def shortsummary
     summary[/^[^\x28]+(?:\s*\([^\x29]*\)|\s*\[[^\x5D]*\])*\s*(\S.*?) \(</, 1]
   end
@@ -29,7 +61,7 @@ class Report < ActiveRecord::Base
           Net::HTTP.start(uri.host, uri.port) do |h|
             basepath = uri.path
             puts "getting #{uri.host}#{basepath}..."
-            h.get(basepath).body.scan(/href="ruby-([^"\/]+)/) do |branch,|
+            h.get(basepath).body.scan(/href="ruby-([^"\/]+)/) do |branch,_|
               path = File.join(basepath, 'ruby-' + branch, 'recent.html')
               puts "getting #{uri.host}#{path}..."
               h.get(path).body.scan(REG_RCNT) do |dt, summary,|
@@ -43,7 +75,7 @@ class Report < ActiveRecord::Base
                   server_id: server.id,
                   datetime: datetime,
                   branch: branch,
-                  revision: summary[/\d+(?=\x29)/],
+                  revision: summary[/#{branch} (\d+)\x29/],
                   summary: summary
                 )
               end
