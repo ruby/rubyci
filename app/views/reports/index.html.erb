@@ -1,13 +1,13 @@
 <h1>Listing reports</h1>
 
-<table>
+<table id="reports">
   <tr>
     <th>Server</th>
     <th>Datetime</th>
     <th>Branch</th>
     <th>Revision</th>
-    <th>Uri</th>
     <th>Summary</th>
+    <th>Uri</th>
     <th></th>
     <th></th>
     <th></th>
@@ -15,12 +15,12 @@
 
 <% @reports.each do |report| %>
   <tr>
-    <td><%= report.server_id %></td>
+    <td><%= report.server.name %></td>
     <td><%= report.datetime %></td>
-    <td><%= report.branch %></td>
+    <td><%= report.branch.sub(/ruby-/, '') %></td>
     <td><%= report.revision %></td>
-    <td><%= report.uri %></td>
-    <td><%= report.summary %></td>
+    <td><%= report.summary.sub(/^[^\x28]+(?:\s*\([^\x29]*\)|\s*\[[^\x5D]*\])*\s*/, '') %></td>
+    <td><%= link_to "log", report.uri %></td>
     <td><%= link_to 'Show', report %></td>
     <td><%= link_to 'Edit', edit_report_path(report) %></td>
     <td><%= link_to 'Destroy', report, confirm: 'Are you sure?', method: :delete %></td>
