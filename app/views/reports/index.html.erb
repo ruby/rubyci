@@ -15,7 +15,6 @@
     <th>Diff</th>
   </tr>
 
-<% ENV['TZ'] = 'JST-9' %>
 <% @reports.each do |report| %>
   <tr>
     <td class="server"><%= report.server.name %></td>
@@ -31,7 +30,7 @@
       <td class="testall"><%= report.testall %></td>
       <td class="rubyspecc"><%= report.rubyspec %></td>
     <% end %>
-    <% if /success/ =~ report.summary %>
+    <% if /success\z/ =~ report.summary %>
       <td class="summary"><div><%= link_to report.shortsummary, report.loguri, title: report.shortsummary %></div></td>
     <% else %>
       <td class="summary failure"><div><%= link_to report.shortsummary, report.loguri, title: report.shortsummary %></div></td>
