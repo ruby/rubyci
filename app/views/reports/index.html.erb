@@ -7,27 +7,18 @@
     <th>Branch</th>
     <th>Revision</th>
     <th>Summary</th>
-    <th>Uri</th>
-    <th></th>
-    <th></th>
-    <th></th>
+    <th>Diff</th>
   </tr>
 
+<% ENV['TZ'] = 'JST-9' %>
 <% @reports.each do |report| %>
   <tr>
     <td><%= report.server.name %></td>
-    <td><%= report.datetime %></td>
-    <td><%= report.branch.sub(/ruby-/, '') %></td>
+    <td><%= link_to report.datetime.localtime, report.loguri %></td>
+    <td><%= report.branch %></td>
     <td><%= report.revision %></td>
-    <td><%= report.summary.sub(/^[^\x28]+(?:\s*\([^\x29]*\)|\s*\[[^\x5D]*\])*\s*/, '') %></td>
-    <td><%= link_to "log", report.uri %></td>
-    <td><%= link_to 'Show', report %></td>
-    <td><%= link_to 'Edit', edit_report_path(report) %></td>
-    <td><%= link_to 'Destroy', report, confirm: 'Are you sure?', method: :delete %></td>
+    <td><%= report.shortsummary %></td>
+    <td><%= link_to report.diffstat, report.diffuri %></td>
   </tr>
 <% end %>
 </table>
-
-<br />
-
-<%= link_to 'New Report', new_report_path %>

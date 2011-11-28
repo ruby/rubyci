@@ -3,7 +3,23 @@ class Report < ActiveRecord::Base
   require 'uri'
   belongs_to :server
 
-  REG_RCNT = /name="(\d+T\d{6}Z).*?a>\s*(\S.*?\S)\s+\(<a/
+  def shortsummary
+    summary[/^[^\x28]+(?:\s*\([^\x29]*\)|\s*\[[^\x5D]*\])*\s*(\S.*?) \(</, 1]
+  end
+
+  def diffstat
+    summary[/>([^<]*)</, 1]
+  end
+
+  def loguri
+    server.uri + datetime.strftime("ruby-#{branch}/log/%Y%m%dT%H%M%SZ.log.html.gz")
+  end
+
+  def diffuri
+    server.uri + datetime.strftime("ruby-#{branch}/log/%Y%m%dT%H%M%SZ.diff.html.gz")
+  end
+
+  REG_RCNT = /name="(\d+T\d{6}Z).*?a>\s*(\S.*)<br/
 
   def self.update
     ss = Server.all.map do |server|
@@ -16,19 +32,18 @@ class Report < ActiveRecord::Base
             h.get(basepath).body.scan(/href="ruby-([^"\/]+)/) do |branch,|
               path = File.join(basepath, 'ruby-' + branch, 'recent.html')
               puts "getting #{uri.host}#{path}..."
-              h.get(path).body.scan(REG_RCNT) do |datetime, summary,|
-                dt = Time.utc(*datetime.unpack("A4A2A2xA2A2A2"))
+              h.get(path).body.scan(REG_RCNT) do |dt, summary,|
+                datetime = Time.utc(*dt.unpack("A4A2A2xA2A2A2"))
                 if Report.find_by_datetime(dt)
                   puts "finish"
                   break
                 end
-                puts "reporting #{uri.host}#{path} #{datetime}..."
+                puts "reporting #{uri.host}#{path} #{dt}..."
                 Report.create!(
                   server_id: server.id,
-                  datetime: dt,
+                  datetime: datetime,
                   branch: branch,
                   revision: summary[/\d+(?=\x29)/],
-                  uri: (uri + File.join(path, "../log/#{datetime}.log.html.gz")).to_s,
                   summary: summary
                 )
               end

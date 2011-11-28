@@ -9,13 +9,16 @@ table {
 		width: 15em;
 	}
 	tr :nth-child(3) {
-		width: 5em;
+		width: 4em;
 	}
 	tr :nth-child(4) {
 		text-align: right;
 		width: 5em;
 	}
 	tr :nth-child(5) {
+		width: 30em;
+	}
+	tr :nth-child(6) {
 		width: 30em;
 	}
 }
