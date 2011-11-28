@@ -1,8 +1,9 @@
 class Report < ActiveRecord::Base
   require 'net/http'
   require 'uri'
+  belongs_to :server
 
-  REG_RCNT = /name="(\d+T\d{6}Z).*?a>\s*(\S.*?\S)\s+\(/
+  REG_RCNT = /name="(\d+T\d{6}Z).*?a>\s*(\S.*?\S)\s+\(<a/
 
   def self.update
     ss = Server.all.map do |server|
@@ -12,12 +13,13 @@ class Report < ActiveRecord::Base
           Net::HTTP.start(uri.host, uri.port) do |h|
             basepath = uri.path
             puts "getting #{uri.host}#{basepath}..."
-            h.get(basepath).body.scan(/href="ruby-([^"\/]+)/) do |branch|
-              path = File.join(basepath, branch, 'recent.html')
+            h.get(basepath).body.scan(/href="ruby-([^"\/]+)/) do |branch,|
+              path = File.join(basepath, 'ruby-' + branch, 'recent.html')
               puts "getting #{uri.host}#{path}..."
-              h.get(path).body.scan(REG_RCNT) do |datetime, summary|
+              h.get(path).body.scan(REG_RCNT) do |datetime, summary,|
                 dt = Time.utc(*datetime.unpack("A4A2A2xA2A2A2"))
                 if Report.find_by_datetime(dt)
+                  puts "finish"
                   break
                 end
                 puts "reporting #{uri.host}#{path} #{datetime}..."
