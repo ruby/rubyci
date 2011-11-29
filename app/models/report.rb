@@ -12,7 +12,7 @@ class Report < ActiveRecord::Base
   end
 
   def build
-    summary[/(\d*failed)\((?:svn|make)[^)]*\)/]
+    summary[/(\d*failed)\((?:svn|make|miniruby)[^)]*\)/]
   end
 
   def btest
