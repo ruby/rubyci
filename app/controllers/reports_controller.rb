@@ -19,7 +19,7 @@ SELECT *
            FROM reports
           WHERE server_id = R.server_id
             AND branch = R.branch
-            AND datetime > R.datetime) = 1
+            AND datetime > R.datetime) = 0
  ORDER BY R.branch DESC, S.name
 __sql
     render 'index'
