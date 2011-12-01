@@ -38,8 +38,9 @@ group :development do
 end
 
 group :production do
-#  gem 'pg'
   gem "therubyracer"
+  gem 'ruby-mysql'
+#  gem 'pg'
 #  gem 'therubyracer-heroku'
 #  gem 'newrelic_rpm'
 end
