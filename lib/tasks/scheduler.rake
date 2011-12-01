@@ -4,3 +4,16 @@ task :update_reports => :environment do
     Report.update
     puts "done."
 end
+
+desc "mogok test"
+task :mogok_test => :environment do
+  require 'rbconfig'
+  puts "mogok test"
+  p `hostname`
+  p ENV['HOSTNAME']
+  p `uname -a`
+  p File.join(
+    RbConfig::CONFIG['bindir'],
+    RbConfig::CONFIG['ruby_install_name'] + RbConfig::CONFIG['EXEEXT']).
+    sub(/.*\s.*/m, '"\&"')
+end
