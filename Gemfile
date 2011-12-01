@@ -32,22 +32,19 @@ group :test do
 end
 
 group :development do
-#  gem 'sqlite3'
+  gem 'sqlite3' unless /mgk-/ =~ ENV["HOSTNAME"].to_s
 #  gem "mustang"
   gem "therubyracer"
 end
 
-p [:hostname, `hostname`] rescue nil
-p [:HOST, ENV["HOSTNAME"]] rescue nil
-
 group :production do
-  case :mogok
-  when :heroku
+  case ENV["HOSTNAME"].to_s
+  when /mgk-/ # mogok
+    gem "therubyracer"
+    gem 'mysql2'
+  else # :heroku
     gem 'therubyracer-heroku'
     gem 'pg'
     gem 'newrelic_rpm'
-  when :mogok
-    gem "therubyracer"
-    gem 'mysql2'
   end
 end
