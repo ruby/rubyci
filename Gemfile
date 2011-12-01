@@ -37,10 +37,17 @@ group :development do
   gem "therubyracer"
 end
 
+p [:hostname, `hostname`] rescue nil
+p [:HOST, ENV["HOSTNAME"]] rescue nil
+
 group :production do
-  gem "therubyracer"
-  gem 'mysql2'
-#  gem 'pg'
-#  gem 'therubyracer-heroku'
-#  gem 'newrelic_rpm'
+  case :mogok
+  when :heroku
+    gem 'therubyracer-heroku'
+    gem 'pg'
+    gem 'newrelic_rpm'
+  when : mogok
+    gem "therubyracer"
+    gem 'mysql2'
+  end
 end
