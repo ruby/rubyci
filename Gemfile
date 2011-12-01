@@ -43,7 +43,7 @@ group :production do
     gem "therubyracer"
     gem 'mysql2'
   else # :heroku
-    p [;hostname, ENV["HOSTNAME"], `hostname`]
+    p [:hostname, ENV["HOSTNAME"], `hostname`]
     gem 'therubyracer-heroku'
     gem 'pg'
     gem 'newrelic_rpm'
