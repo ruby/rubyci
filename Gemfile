@@ -32,7 +32,7 @@ group :test do
 end
 
 group :development do
-  gem 'sqlite3'
+#  gem 'sqlite3'
 #  gem "mustang"
   gem "therubyracer"
 end
