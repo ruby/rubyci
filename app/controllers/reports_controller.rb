@@ -10,6 +10,21 @@ class ReportsController < ApplicationController
     end
   end
 
+  def latest
+    @reports = Report.find_by_sql(<<'__sql')
+SELECT *
+  FROM reports R
+ INNER JOIN servers S ON R.server_id = S.id
+ WHERE ( SELECT count(*)
+           FROM reports
+          WHERE server_id = R.server_id
+            AND branch = R.branch
+            AND datetime > R.datetime) = 1
+ ORDER BY R.branch DESC, S.name
+__sql
+    render 'index'
+  end
+
   # GET /reports/1
   # GET /reports/1.json
   def show

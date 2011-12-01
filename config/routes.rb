@@ -1,4 +1,7 @@
 Rubyci::Application.routes.draw do
+  root :to => 'reports#latest'
+  get "reports/latest"
+
   resources :reports
 
   resources :servers
