@@ -46,7 +46,7 @@ group :production do
     gem 'therubyracer-heroku'
     gem 'pg'
     gem 'newrelic_rpm'
-  when : mogok
+  when :mogok
     gem "therubyracer"
     gem 'mysql2'
   end
