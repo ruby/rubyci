@@ -26,24 +26,26 @@ gem 'thin'
 # To use debugger
 # gem 'ruby-debug19', :require => 'ruby-debug'
 
+hostname = `hostname`
+
 group :test do
   # Pretty printed test output
   gem 'turn', :require => false
 end
 
 group :development do
-  gem 'sqlite3' unless /mgk-/ =~ ENV["HOSTNAME"].to_s
+  gem 'sqlite3' unless /mgk-/ =~ hostname
 #  gem "mustang"
   gem "therubyracer"
 end
 
 group :production do
-  case ENV["HOSTNAME"].to_s
+  case hostname
   when /mgk-/ # mogok
     gem "therubyracer"
     gem 'mysql2'
   else # :heroku
-    p [:hostname, ENV["HOSTNAME"], `hostname`]
+    p [:hostname, `hostname`]
     gem 'therubyracer-heroku'
     gem 'pg'
     gem 'newrelic_rpm'
