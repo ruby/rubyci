@@ -39,7 +39,7 @@ end
 
 group :production do
   gem "therubyracer"
-  gem 'ruby-mysql'
+  gem 'mysql2'
 #  gem 'pg'
 #  gem 'therubyracer-heroku'
 #  gem 'newrelic_rpm'
