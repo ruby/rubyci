@@ -7,7 +7,7 @@ table.reports {
 			width: 150px;
 		}
 		td.datetime {
-			width: 130px;
+			width: 90px;
 		}
 		td.branch {
 			text-align: center;
@@ -17,10 +17,10 @@ table.reports {
 			text-align: right;
 			width: 30px;
 		}
-		@for $i from 5 through 9 {
+		@for $i from 5 through 8 {
 			td:nth-child(#{$i}) {
 				background-color: #f77;
-				width: 40px;
+				width: 50px;
 			}
 			td:nth-child(#{$i}):empty {
 				background-color: #7f7;

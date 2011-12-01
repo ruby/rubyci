@@ -11,12 +11,16 @@ class Report < ActiveRecord::Base
     (datetime + 32400).strftime("%Y-%m-%d %H:%M:%S +0900")
   end
 
+  def sjstdt
+    (datetime + 32400).strftime("%m-%d %H:%M")
+  end
+
   def build
     summary[/(\d*failed)\((?:svn|make|miniruby)[^)]*\)/]
   end
 
   def btest
-    summary[/ (\d+)BFail /, 1] ? $1+'F': nil
+    summary[/ (\d+)BFail /, 1] ? $1+'BF': nil
   end
 
   def testknownbug
@@ -24,7 +28,10 @@ class Report < ActiveRecord::Base
   end
 
   def test
-    summary[/ (\d+)NotOK /, 1] ? $1+'F' : nil
+    t = summary[/ (\d+)NotOK /, 1] ? $1+'F' : nil
+    a = [btest, testknownbug, t]
+    a.compact!
+    a.empty? ? nil : a.join(' ')
   end
 
   def testall
