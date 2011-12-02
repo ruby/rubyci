@@ -11,7 +11,7 @@ task :mogok_test => :environment do
   require 'open-uri'
   puts "mogok test"
   p `uname -a`
-  p URI("http://210.138.109.139").read
+  p URI("http://210.138.109.139").read rescue nil
   puts `/opt/ruby-1.9.2-p180/bin/ruby /app/.bundle/ruby/1.9.1/bin/rake assets:precompile RAILS_ENV=production RAILS_GROUPS=assets --trace`
   p `#{r} -v`
   p system(r, '/app/.bundle/ruby/1.9.1/bin/rake', 'assets:precompile')

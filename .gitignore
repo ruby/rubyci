@@ -10,4 +10,4 @@ tmp/
 .#*
 *.swp
 *.swo
-public/assets/
+#public/assets/
