@@ -19,4 +19,5 @@ task :mogok_test => :environment do
     p r
   puts `/opt/ruby-1.9.2-p180/bin/ruby /app/.bundle/ruby/1.9.1/bin/rake assets:precompile RAILS_ENV=production RAILS_GROUPS=assets`
   p `#{r} -v`
+  p system(r, '/app/.bundle/ruby/1.9.1/bin/rake', 'assets:precompile')
 end
