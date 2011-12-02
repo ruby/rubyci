@@ -17,6 +17,6 @@ task :mogok_test => :environment do
     RbConfig::CONFIG['ruby_install_name'] + RbConfig::CONFIG['EXEEXT']).
     sub(/.*\s.*/m, '"\&"')
     p r
-  puts `opt/ruby-1.9.2-p180/bin/ruby /app/.bundle/ruby/1.9.1/bin/rake assets:precompile RAILS_ENV=production RAILS_GROUPS=assets`
+  puts `/opt/ruby-1.9.2-p180/bin/ruby /app/.bundle/ruby/1.9.1/bin/rake assets:precompile RAILS_ENV=production RAILS_GROUPS=assets`
   p `#{r} -v`
 end
