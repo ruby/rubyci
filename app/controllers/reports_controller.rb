@@ -11,17 +11,10 @@ class ReportsController < ApplicationController
   end
 
   def latest
-    @reports = Report.find_by_sql(<<'__sql')
-SELECT *
-  FROM reports R
- INNER JOIN servers S ON R.server_id = S.id
- WHERE ( SELECT count(*)
-           FROM reports
-          WHERE server_id = R.server_id
-            AND branch = R.branch
-            AND datetime > R.datetime) = 0
- ORDER BY R.branch DESC, S.name
-__sql
+    @reports = Report.includes(:server).order('reports.branch DESC, servers.name').
+      where('( SELECT MAX(datetime) FROM reports R
+              WHERE reports.server_id = R.server_id
+                          AND reports.branch = R.branch) = reports.datetime').all
     render 'index'
   end
 
