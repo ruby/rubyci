@@ -6,7 +6,7 @@ task :update_reports => :environment do
 end
 
 desc "inspect the environment"
-task :inspect => :environment do
+task :inspect_env => :environment do
   require 'rbconfig'
   require 'open-uri'
   require 'pp'
