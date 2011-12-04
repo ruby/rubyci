@@ -5,4 +5,8 @@ class Server < ActiveRecord::Base
   validates :os, :length => { :in => 3..20 }
   validates :version, :length => { :in => 3..20 }
   validates :uri, :length => { :in => 20..200 }
+
+  def recent_uri(branch)
+    [uri.sub(/\/$/, ''), 'ruby-' + branch, 'recent.html'].join('/')
+  end
 end
