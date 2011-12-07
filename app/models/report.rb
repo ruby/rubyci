@@ -61,45 +61,51 @@ class Report < ActiveRecord::Base
   REG_RCNT = /name="(\d+T\d{6}Z).*?a>\s*(\S.*)<br/
 
   def self.get_reports(server)
+    ary = []
     uri = URI(server.uri)
-    begin
-      Net::HTTP.start(uri.host, uri.port, open_timeout: 10, read_timeout: 10) do |h|
-        basepath = uri.path
-        puts "getting #{uri.host}#{basepath} ..."
-        h.get(basepath).body.scan(/href="ruby-([^"\/]+)/) do |branch,_|
-          path = File.join(basepath, 'ruby-' + branch, 'recent.html')
-          puts "getting #{uri.host}#{path} ..."
-          h.get(path).body.scan(REG_RCNT) do |dt, summary,|
-            datetime = Time.utc(*dt.unpack("A4A2A2xA2A2A2"))
-          if Report.where(server_id: server.id, branch: branch, datetime: datetime).exists?
-            next
-          end
-          puts "reporting #{server.name} #{branch} #{dt} ..."
-          Report.create!(
-            server_id: server.id,
-            datetime: datetime,
-            branch: branch,
-            revision: summary[/(?:trunk|revision) (\d+)\x29/, 1],
-            summary: summary.gsub(/<[^>]*>/, '')
-          )
-          end
+    Net::HTTP.start(uri.host, uri.port, open_timeout: 10, read_timeout: 10) do |h|
+      basepath = uri.path
+      puts "getting #{uri.host}#{basepath} ..."
+      h.get(basepath).body.scan(/href="ruby-([^"\/]+)/) do |branch,_|
+        path = File.join(basepath, 'ruby-' + branch, 'recent.html')
+        puts "getting #{uri.host}#{path} ..."
+        h.get(path).body.scan(REG_RCNT) do |dt, summary,|
+          datetime = Time.utc(*dt.unpack("A4A2A2xA2A2A2"))
+        if Report.where(server_id: server.id, branch: branch, datetime: datetime).exists?
+          next
+        end
+        puts "reporting #{server.name} #{branch} #{dt} ..."
+        ary.push(
+          server_id: server.id,
+          datetime: datetime,
+          branch: branch,
+          revision: summary[/(?:trunk|revision) (\d+)\x29/, 1],
+          summary: summary.gsub(/<[^>]*>/, '')
+        )
         end
       end
-    rescue StandardError, EOFError, Timeout::Error, Errno::ECONNREFUSED => e
-      p e
-      p uri
     end
+    return ary
+  rescue StandardError, EOFError, Timeout::Error, Errno::ECONNREFUSED => e
+    p e
+    p uri
+    return []
   end
 
   def self.update
-    if defined?(SQLite3)
-      Server.all.each do |server|
-        self.get_reports(server)
+    ary = []
+    threads = Server.all.map{|server| Thread.new{ ary.concat self.get_reports(server) } }
+    Report.transaction do
+      5.times do
+        while item = ary.pop
+          Report.create! item
+        end
+        sleep 1
       end
-    else
-      Server.all.map do |server|
-        Thread.new{ self.get_reports(server) }
-      end.map(&:join)
+      threads.each(&:join)
+      while item = ary.pop
+        Report.create! item
+      end
     end
   end
 end
