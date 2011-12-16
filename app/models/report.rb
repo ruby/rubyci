@@ -96,6 +96,7 @@ class Report < ActiveRecord::Base
   def self.update
     ary = []
     threads = Server.all.map{|server| Thread.new{ ary.concat self.get_reports(server) } }
+    sleep 2
     threads.each do |th|
       th.join
       Report.transaction do
