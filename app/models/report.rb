@@ -89,22 +89,19 @@ class Report < ActiveRecord::Base
   rescue StandardError, EOFError, Timeout::Error, Errno::ECONNREFUSED => e
     p e
     p uri
+    puts e.backtrace
     return []
   end
 
   def self.update
     ary = []
     threads = Server.all.map{|server| Thread.new{ ary.concat self.get_reports(server) } }
-    Report.transaction do
-      5.times do
+    threads.each do |th|
+      th.join
+      Report.transaction do
         while item = ary.pop
           Report.create! item
         end
-        sleep 1
-      end
-      threads.each(&:join)
-      while item = ary.pop
-        Report.create! item
       end
     end
   end
