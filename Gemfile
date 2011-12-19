@@ -2,10 +2,6 @@ source 'http://rubygems.org'
 
 gem 'rails', '3.1.1'
 
-if /\Amgk-/ =~ `hostname`
-  Bundler.settings.without = %w/development test heroku/
-end
-
 # Bundle edge Rails instead:
 # gem 'rails',     :git => 'git://github.com/rails/rails.git'
 
@@ -41,12 +37,6 @@ group :development do
 end
 
 group :production do
-end
-group :mogok do
-  gem "therubyracer"
-  gem 'mysql2'
-end
-group :heroku do
   gem 'therubyracer-heroku'
   gem 'pg'
   gem 'newrelic_rpm'
