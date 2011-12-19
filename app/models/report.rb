@@ -85,7 +85,7 @@ class Report < ActiveRecord::Base
         end
       end
     end
-    ary.sort_by!(&:datetime)
+    ary.sort_by!{|h|h[:datetime]}
     return ary
   rescue StandardError, EOFError, Timeout::Error, Errno::ECONNREFUSED => e
     p e
