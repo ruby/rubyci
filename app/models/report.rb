@@ -35,7 +35,7 @@ class Report < ActiveRecord::Base
   end
 
   def testall
-    summary[/ (\d+F\d+E(?:\d+S)) /, 1] || summary[/(\d*failed)\(test\/\)/, 1]
+    summary[/ (\d+F\d+E(?:\d+S)?) /, 1] || summary[/(\d*failed)\(test\/\)/, 1]
   end
 
   def rubyspec
@@ -64,47 +64,49 @@ class Report < ActiveRecord::Base
     ary = []
     uri = URI(server.uri)
     Net::HTTP.start(uri.host, uri.port, open_timeout: 10, read_timeout: 10) do |h|
-      basepath = uri.path
+      path = basepath = uri.path
       puts "getting #{uri.host}#{basepath} ..."
       h.get(basepath).body.scan(/href="ruby-([^"\/]+)/) do |branch,_|
+        latest = Report.where(server_id: server.id, branch: branch).last
         path = File.join(basepath, 'ruby-' + branch, 'recent.html')
         puts "getting #{uri.host}#{path} ..."
-        h.get(path).body.scan(REG_RCNT) do |dt, summary,|
+        h.get(path).body.scan(REG_RCNT) do |dt, summary|
           datetime = Time.utc(*dt.unpack("A4A2A2xA2A2A2"))
-        if Report.where(server_id: server.id, branch: branch, datetime: datetime).exists?
-          next
-        end
-        puts "reporting #{server.name} #{branch} #{dt} ..."
-        ary.push(
-          server_id: server.id,
-          datetime: datetime,
-          branch: branch,
-          revision: summary[/(?:trunk|revision) (\d+)\x29/, 1],
-          summary: summary.gsub(/<[^>]*>/, '')
-        )
+          break if datetime <= latest.datetime
+          puts "reporting #{server.name} #{branch} #{dt} ..."
+          ary.push(
+            server_id: server.id,
+            datetime: datetime,
+            branch: branch,
+            revision: summary[/(?:trunk|revision) (\d+)\x29/, 1],
+            summary: summary.gsub(/<[^>]*>/, '')
+          )
         end
       end
     end
     ary.sort_by!{|h|h[:datetime]}
     return ary
   rescue StandardError, EOFError, Timeout::Error, Errno::ECONNREFUSED => e
-    p e
-    p uri
+    p [e, uri, path]
     puts e.backtrace
     return []
   end
 
   def self.update
     ary = []
-    threads = Server.all.map{|server| Thread.new{ ary.concat self.get_reports(server) } }
-    sleep 2
-    threads.each do |th|
-      th.join
-      Report.transaction do
-        while item = ary.pop
-          Report.create! item
+    servers = Server.all
+    threads = []
+    until servers.empty? and threads.empty? and ary.empty?
+      threads.reject!{|t|!t.alive?}
+      while !servers.empty? and threads.size < 3
+        threads << Thread.new{ ary.concat self.get_reports(servers.shift) }
+      end
+      unless ary.empty?
+        Report.transaction do
+          Report.create! ary.shift until ary.empty?
         end
       end
+      Thread.pass
     end
   end
 end
