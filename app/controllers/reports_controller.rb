@@ -14,9 +14,9 @@ class ReportsController < ApplicationController
 
   def latest
     @reports = Report.includes(:server).order('reports.branch DESC, servers.name').
-      where('( SELECT MAX(id) FROM reports R
+      where('( SELECT MAX(datetime) FROM reports R
               WHERE reports.server_id = R.server_id
-                          AND reports.branch = R.branch) = reports.id').all
+                          AND reports.branch = R.branch) = reports.datetime').all
     render 'index'
   end
 

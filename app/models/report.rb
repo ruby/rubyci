@@ -72,7 +72,7 @@ class Report < ActiveRecord::Base
         puts "getting #{uri.host}#{path} ..."
         h.get(path).body.scan(REG_RCNT) do |dt, summary|
           datetime = Time.utc(*dt.unpack("A4A2A2xA2A2A2"))
-          break if datetime <= latest.datetime
+          break if latest and datetime <= latest.datetime
           puts "reporting #{server.name} #{branch} #{dt} ..."
           ary.push(
             server_id: server.id,
@@ -86,7 +86,7 @@ class Report < ActiveRecord::Base
     end
     ary.sort_by!{|h|h[:datetime]}
     return ary
-  rescue StandardError, EOFError, Timeout::Error, Errno::ECONNREFUSED => e
+  rescue Exception => e
     p [e, uri, path]
     puts e.backtrace
     return []
@@ -108,6 +108,8 @@ class Report < ActiveRecord::Base
       end
       Thread.pass
     end
-    File.unlink File.join(ActionController::Base.page_cache_directory, 'index.html')
+    p ActionController::Base.page_cache_directory
+    p Dir[ActionController::Base.page_cache_directory + '/*']
+    File.unlink File.join(ActionController::Base.page_cache_directory, 'index.html') rescue nil
   end
 end
