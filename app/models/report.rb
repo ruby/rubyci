@@ -98,7 +98,7 @@ class Report < ActiveRecord::Base
     threads = []
     until servers.empty? and threads.empty? and ary.empty?
       threads.reject!{|t|!t.alive?}
-      while !servers.empty? and threads.size < 3
+      while !servers.empty? and threads.size < 1
         threads << Thread.new{ ary.concat self.get_reports(servers.shift) }
       end
       unless ary.empty?
@@ -108,5 +108,6 @@ class Report < ActiveRecord::Base
       end
       Thread.pass
     end
+    File.unlink File.join(ActionController::Base.page_cache_directory, 'index.html')
   end
 end
