@@ -1,5 +1,5 @@
 class ReportsController < ApplicationController
-  caches_page :latest
+  caches_page :latest, :index
 
   # GET /reports
   # GET /reports.json
