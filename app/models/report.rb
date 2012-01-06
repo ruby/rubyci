@@ -109,6 +109,6 @@ class Report < ActiveRecord::Base
       end
       Thread.pass
     end
-    URI('http://rubyci.org/').read
+    URI('http://rubyci.org/').read('Cache-Control' => 'no-cache')
   end
 end

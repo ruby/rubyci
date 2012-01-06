@@ -1,6 +1,4 @@
 class ServersController < ApplicationController
-  caches_page :index
-
   # GET /servers
   # GET /servers.json
   def index

@@ -11,14 +11,15 @@ class ReportsController < ApplicationController
   end
 
   def latest
-    date = Report.last.updated_at.utc
-     if stale?(:last_modified => date, :etag => date, :public => true)
-       @reports = Report.includes(:server).order('reports.branch DESC, servers.name').
-         where('( SELECT MAX(datetime) FROM reports R
-              WHERE reports.server_id = R.server_id
-                          AND reports.branch = R.branch) = reports.datetime').all
-       render 'index'
-     end
+    interval = 3600
+    last = Report.last.updated_at.utc
+    expires_in (last.to_i - Time.now.to_i + interval) % interval
+    if stale?(:last_modified => last, :etag => last.to_s, :public => true)
+      @reports = Report.includes(:server).order('reports.branch DESC, servers.name').
+        where('reports.id = (SELECT MAX(id) FROM reports R
+         WHERE reports.server_id = R.server_id AND reports.branch = R.branch)').all
+      render 'index'
+    end
   end
 
   # GET /reports/1
