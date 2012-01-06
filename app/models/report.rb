@@ -109,8 +109,6 @@ class Report < ActiveRecord::Base
       end
       Thread.pass
     end
-    Rails.cache.clear
     URI('http://rubyci.org/').read
-    nil
   end
 end

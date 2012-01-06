@@ -1,6 +1,4 @@
 class ReportsController < ApplicationController
-  caches_action :latest
-
   # GET /reports
   # GET /reports.json
   def index
@@ -13,11 +11,14 @@ class ReportsController < ApplicationController
   end
 
   def latest
-    @reports = Report.includes(:server).order('reports.branch DESC, servers.name').
-      where('( SELECT MAX(datetime) FROM reports R
+    date = Report.last.updated_at.utc
+     if stale?(:last_modified => date, :etag => date, :public => true)
+       @reports = Report.includes(:server).order('reports.branch DESC, servers.name').
+         where('( SELECT MAX(datetime) FROM reports R
               WHERE reports.server_id = R.server_id
                           AND reports.branch = R.branch) = reports.datetime').all
-    render 'index'
+       render 'index'
+     end
   end
 
   # GET /reports/1
