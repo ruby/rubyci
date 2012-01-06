@@ -1,6 +1,7 @@
 class Report < ActiveRecord::Base
   require 'net/http'
   require 'uri'
+  require 'open-uri'
   belongs_to :server
 
   def dt
@@ -108,8 +109,8 @@ class Report < ActiveRecord::Base
       end
       Thread.pass
     end
-    p ActionController::Base.page_cache_directory
-    p Dir[ActionController::Base.page_cache_directory + '/*']
-    File.unlink File.join(ActionController::Base.page_cache_directory, 'index.html') rescue nil
+    Rails.cache.clear
+    URI('http://rubyci.org/').read
+    nil
   end
 end
