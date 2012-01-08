@@ -11,9 +11,10 @@ class ReportsController < ApplicationController
   end
 
   def latest
-    interval = 3600
     last = Report.last.updated_at.utc
-    expires_in (last.to_i - Time.now.to_i + interval) % interval
+    interval = 3600 # cron interval
+    margin = 180 # margin for cron's processing
+    expires_in (last.to_i - Time.now.to_i + interval - margin) % interval
     if stale?(:last_modified => last, :etag => last.to_s, :public => true)
       @reports = Report.includes(:server).order('reports.branch DESC, servers.name').
         where('reports.id = (SELECT MAX(id) FROM reports R
