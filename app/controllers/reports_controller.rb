@@ -34,7 +34,6 @@ class ReportsController < ApplicationController
     end
   end
 
-=begin
   # GET /reports/new
   # GET /reports/new.json
   def new
@@ -67,6 +66,7 @@ class ReportsController < ApplicationController
     end
   end
 
+=begin
   # PUT /reports/1
   # PUT /reports/1.json
   def update
