@@ -120,6 +120,8 @@ class Report < ActiveRecord::Base
   end
 
   def self.post_recent
+    uri = nil
+    path = nil
     Server.all.each do |server|
       uri = URI(server.uri)
       ary = []
@@ -137,6 +139,7 @@ class Report < ActiveRecord::Base
           )
         end
       end
+      next if ary.empty?
 
       Net::HTTP.start('rubyci.herokuapp.com', 80, open_timeout: 10, read_timeout: 10) do |h|
         ary.each do |report|
