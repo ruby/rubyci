@@ -3,6 +3,13 @@ class Report < ActiveRecord::Base
   require 'uri'
   require 'open-uri'
   belongs_to :server
+  validates_associated :server
+  validates :server_id, :numericality => { :only_integer => true }
+  validates :revision, :numericality => { :only_integer => true }
+  validates :datetime, :presence => true
+  validates :datetime, :uniqueness => { :scope => [:server_id, :branch] }
+  validates :branch, :presence => true
+  validates :summary, :presence => true
 
   def dt
     datetime.strftime("%Y%m%dT%H%M%SZ")
