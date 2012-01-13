@@ -5,6 +5,13 @@ task :update_reports => :environment do
     puts "done."
 end
 
+desc "This task is called by the Heroku scheduler add-on"
+task :post_recent => :environment do
+    puts "Posting recent results..."
+    Report.post_recent
+    puts "done."
+end
+
 desc "inspect the environment"
 task :inspect_env => :environment do
   require 'rbconfig'

@@ -118,4 +118,36 @@ class Report < ActiveRecord::Base
     end
     URI('http://rubyci.org/').read('Cache-Control' => 'no-cache')
   end
+
+  def self.post_recent
+    Server.all.each do |server|
+      uri = URI(server.uri)
+      ary = []
+      Net::HTTP.start(uri.host, uri.port, open_timeout: 10, read_timeout: 10) do |h|
+        path = basepath = uri.path
+        puts "getting #{uri.host}#{basepath} ..."
+        h.get(basepath).body.scan(/href="ruby-([^"\/]+)/) do |branch,_|
+          latest = Report.where(server_id: server.id, branch: branch).last
+          path = File.join(basepath, 'ruby-' + branch, 'recent.html')
+          puts "getting #{uri.host}#{path} ..."
+          ary.push(
+            server_id: server.id,
+            branch: branch,
+            body: h.get(path).body,
+          )
+        end
+      end
+
+      Net::HTTP.start('rubyci.herokuapp.com', 80, open_timeout: 10, read_timeout: 10) do |h|
+        ary.each do |report|
+          data = JSON(report)
+          h.post('/reports/receive_recent.json', data)
+        end
+      end
+    end
+  rescue Exception => e
+    p [e, uri, path]
+    puts e.backtrace
+    return []
+  end
 end

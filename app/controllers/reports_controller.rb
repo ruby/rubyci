@@ -34,6 +34,41 @@ class ReportsController < ApplicationController
     end
   end
 
+  REG_RCNT = /name="(\d+T\d{6}Z).*?a>\s*(\S.*)<br/
+  # POST /reports/receive_recent
+  def receive_recent
+    server_id = request.params['server_id'].to_i
+    branch = request.params['branch'].to_s
+    body = request.params['body'].to_s
+
+    unless server_id > 0 && branch.size > 0 && body.size > 0
+      head :bad_request
+      return
+    end
+
+    latest = Report.where(server_id: server_id, branch: branch).last
+    body.scan(REG_RCNT) do |dt, summary|
+      datetime = Time.utc(*dt.unpack("A4A2A2xA2A2A2"))
+      break if latest and datetime <= latest.datetime
+      ary.push(
+        server_id: server.id,
+        datetime: datetime,
+        branch: branch,
+        revision: summary[/(?:trunk|revision) (\d+)\x29/, 1],
+        summary: summary.gsub(/<[^>]*>/, '')
+      )
+    end
+    ary.sort_by!{|h|h[:datetime]}
+    results = []
+    Report.transaction do
+      ary.each do |x|
+        results << Report.create!(x)
+      end
+    end
+    render :json => results
+  end
+
+=begin
   # GET /reports/new
   # GET /reports/new.json
   def new
@@ -66,7 +101,6 @@ class ReportsController < ApplicationController
     end
   end
 
-=begin
   # PUT /reports/1
   # PUT /reports/1.json
   def update
