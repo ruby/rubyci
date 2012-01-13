@@ -141,7 +141,7 @@ class Report < ActiveRecord::Base
       Net::HTTP.start('rubyci.herokuapp.com', 80, open_timeout: 10, read_timeout: 10) do |h|
         ary.each do |report|
           data = JSON(report)
-          h.post('/reports/receive_recent.json', data)
+          p h.post('/reports/receive_recent.json', data)
         end
       end
     end

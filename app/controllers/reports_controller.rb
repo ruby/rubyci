@@ -12,8 +12,8 @@ class ReportsController < ApplicationController
 
   def latest
     last = Report.last.updated_at.utc
-    interval = 3600 # cron interval
-    margin = 180 # margin for cron's processing
+    interval = 600 # cron interval
+    margin = 60 # margin for cron's processing
     expires_in (last.to_i - Time.now.to_i + interval - margin) % interval
     if stale?(:last_modified => last, :etag => last.to_s, :public => true)
       @reports = Report.includes(:server).order('reports.branch DESC, servers.name').
@@ -42,7 +42,7 @@ class ReportsController < ApplicationController
     body = request.params['body'].to_s
 
     unless server_id > 0 && branch.size > 0 && body.size > 0
-      head :bad_request
+      render :status => 400, :text => request.POST
       return
     end
 
