@@ -1,6 +1,7 @@
 Rubyci::Application.routes.draw do
   root :to => 'reports#latest'
   get "reports/latest"
+  post "reports/receive_recent"
 
   resources :reports
 
