@@ -131,9 +131,9 @@ class Report < ActiveRecord::Base
           path = File.join(basepath, 'ruby-' + branch, 'recent.html')
           puts "getting #{uri.host}#{path} ..."
           ary.push(
-            server_id: server.id,
-            branch: branch,
-            body: h.get(path).body,
+            'server_id' => server.id,
+            'branch' => branch,
+            'body' => h.get(path).body,
           )
         end
       end
@@ -141,7 +141,9 @@ class Report < ActiveRecord::Base
       Net::HTTP.start('rubyci.herokuapp.com', 80, open_timeout: 10, read_timeout: 10) do |h|
         ary.each do |report|
           data = JSON(report)
-          p h.post('/reports/receive_recent.json', data)
+          res = h.post('/reports/receive_recent.json', data, 'Content-Type' => 'application/json')
+          p res
+          puts res.body
         end
       end
     end

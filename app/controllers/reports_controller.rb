@@ -47,11 +47,12 @@ class ReportsController < ApplicationController
     end
 
     latest = Report.where(server_id: server_id, branch: branch).last
+    ary = []
     body.scan(REG_RCNT) do |dt, summary|
       datetime = Time.utc(*dt.unpack("A4A2A2xA2A2A2"))
       break if latest and datetime <= latest.datetime
       ary.push(
-        server_id: server.id,
+        server_id: server_id,
         datetime: datetime,
         branch: branch,
         revision: summary[/(?:trunk|revision) (\d+)\x29/, 1],
