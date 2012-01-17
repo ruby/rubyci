@@ -120,7 +120,8 @@ class Report < ActiveRecord::Base
   def self.post_recent
     uri = nil
     path = nil
-    Server.all.each do |server|
+    
+    ServerResource.all.each do |server|
       uri = URI(server.uri)
       ary = []
       Net::HTTP.start(uri.host, uri.port, open_timeout: 10, read_timeout: 10) do |h|
@@ -153,4 +154,9 @@ class Report < ActiveRecord::Base
     puts e.backtrace
     return []
   end
+end
+
+class ServerResource < ActiveResource::Base
+  self.site="http://rubyci.org"
+  self.element_name = "server"
 end
