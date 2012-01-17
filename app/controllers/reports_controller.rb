@@ -46,7 +46,7 @@ class ReportsController < ApplicationController
       return
     end
     if branch !~ /\A(?:trunk|[2-9]|1\.9\.[2-9])\z/
-      render :status => 200
+      render :status => 200, :json => '[]'
       return
     end
 
