@@ -51,7 +51,7 @@ class ReportsController < ApplicationController
     end
 
     latest = Report.where(server_id: server_id, branch: branch).last
-    latest = Time.now if latest < Time.now - 7*24*3600
+    latest = Time.now if latest.nil? || latest < Time.now - 7*24*3600
     ary = []
     body.scan(REG_RCNT) do |dt, summary|
       datetime = Time.utc(*dt.unpack("A4A2A2xA2A2A2"))
