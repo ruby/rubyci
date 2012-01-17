@@ -45,8 +45,13 @@ class ReportsController < ApplicationController
       render :status => 400, :text => request.POST
       return
     end
+    if branch !~ /\A(?:trunk|[2-9]|1\.9\.[2-9])\z/
+      render :status => 200
+      return
+    end
 
     latest = Report.where(server_id: server_id, branch: branch).last
+    latest = Time.now if latest < Time.now - 7*24*3600
     ary = []
     body.scan(REG_RCNT) do |dt, summary|
       datetime = Time.utc(*dt.unpack("A4A2A2xA2A2A2"))
