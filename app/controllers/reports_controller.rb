@@ -66,7 +66,7 @@ class ReportsController < ApplicationController
         server_id: server_id,
         datetime: datetime,
         branch: branch,
-        revision: summary[/(?:trunk|revision) (\d+)\x29/, 1],
+        revision: summary[/(?:trunk|revision) (\d+)\x29/, 1].to_i,
         summary: summary.gsub(/<[^>]*>/, '')
       )
     end
