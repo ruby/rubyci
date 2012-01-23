@@ -34,6 +34,7 @@ class ReportsController < ApplicationController
     end
   end
 
+=begin
   REG_RCNT = /name="(\d+T\d{6}Z).*?a>\s*(\S.*)<br/
   # POST /reports/receive_recent
   def receive_recent
@@ -59,17 +60,7 @@ class ReportsController < ApplicationController
     end
 
     ary = []
-    body.scan(REG_RCNT) do |dt, summary|
-      datetime = Time.utc(*dt.unpack("A4A2A2xA2A2A2"))
-      break if datetime <= threshold
-      ary.push(
-        server_id: server_id,
-        datetime: datetime,
-        branch: branch,
-        revision: summary[/(?:trunk|revision) (\d+)\x29/, 1].to_i,
-        summary: summary.gsub(/<[^>]*>/, '')
-      )
-    end
+    Report.scan_recent(server, branch, body, ary)
     ary.sort_by!{|h|h[:datetime]}
     results = []
     Report.transaction do
@@ -80,7 +71,6 @@ class ReportsController < ApplicationController
     render :json => results
   end
 
-=begin
   # GET /reports/new
   # GET /reports/new.json
   def new

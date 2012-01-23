@@ -1,7 +1,7 @@
 desc "This task is called by the Heroku scheduler add-on"
-task :update_reports => :environment do
-    puts "Updating reports..."
-    Report.update
+task :fetch_recent => :environment do
+    puts "Fetching recent results..."
+    Report.fetch_recent
     puts "done."
 end
 
@@ -25,5 +25,5 @@ task :inspect_env => :environment do
     puts IO.read(path)
   end
   pp ENV
-  p URI("http://210.138.109.139").read(100) rescue nil
+  p URI("http://www.yahoo.co.jp").read(100) rescue nil
 end

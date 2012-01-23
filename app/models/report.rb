@@ -66,28 +66,35 @@ class Report < ActiveRecord::Base
 
   REG_RCNT = /name="(\d+T\d{6}Z).*?a>\s*(\S.*)<br/
 
+  def self.scan_recent(server, branch, body, results)
+    latest = Report.where(server_id: server.id, branch: branch).last
+    body.scan(REG_RCNT) do |dt, summary|
+      datetime = Time.utc(*dt.unpack("A4A2A2xA2A2A2"))
+      break if latest and datetime <= latest.datetime
+      puts "reporting #{server.name} #{branch} #{dt} ..."
+      results.push(
+        server_id: server.id,
+        datetime: datetime,
+        branch: branch,
+        revision: summary[/(?:trunk|revision)\S+ (\d+)\x29/, 1].to_i,
+        summary: summary.gsub(/<[^>]*>/, '')
+      )
+    end
+    results
+  end
+
   def self.get_reports(server)
     ary = []
     uri = URI(server.uri)
+    path = nil
     Net::HTTP.start(uri.host, uri.port, open_timeout: 10, read_timeout: 10) do |h|
       path = basepath = uri.path
       puts "getting #{uri.host}#{basepath} ..."
       h.get(basepath).body.scan(/href="ruby-([^"\/]+)/) do |branch,_|
-        latest = Report.where(server_id: server.id, branch: branch).last
+        next if branch !~ /\A(?:trunk|[2-9]|1\.9\.[2-9])\z/
         path = File.join(basepath, 'ruby-' + branch, 'recent.html')
         puts "getting #{uri.host}#{path} ..."
-        h.get(path).body.scan(REG_RCNT) do |dt, summary|
-          datetime = Time.utc(*dt.unpack("A4A2A2xA2A2A2"))
-          break if latest and datetime <= latest.datetime
-          puts "reporting #{server.name} #{branch} #{dt} ..."
-          ary.push(
-            server_id: server.id,
-            datetime: datetime,
-            branch: branch,
-            revision: summary[/(?:trunk|revision) (\d+)\x29/, 1],
-            summary: summary.gsub(/<[^>]*>/, '')
-          )
-        end
+        self.scan_recent(server, branch, h.get(path).body, ary)
       end
     end
     ary.sort_by!{|h|h[:datetime]}
@@ -98,21 +105,15 @@ class Report < ActiveRecord::Base
     return []
   end
 
-  def self.update
+  def self.fetch_recent
     ary = []
-    servers = Server.all
-    threads = []
-    until servers.empty? and threads.empty? and ary.empty?
-      threads.reject!{|t|!t.alive?}
-      while !servers.empty? and threads.size < 1
-        threads << Thread.new{ ary.concat self.get_reports(servers.shift) }
+    Server.all.each do |server|
+      ary.concat self.get_reports(server)
+    end
+    Report.transaction do
+      ary.each do |item|
+        Report.create! item
       end
-      unless ary.empty?
-        Report.transaction do
-          Report.create! ary.shift until ary.empty?
-        end
-      end
-      Thread.pass
     end
     URI('http://rubyci.org/').read('Cache-Control' => 'no-cache')
   end

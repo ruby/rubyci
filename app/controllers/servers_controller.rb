@@ -21,6 +21,7 @@ class ServersController < ApplicationController
     end
   end
 
+=begin
   # GET /servers/new
   # GET /servers/new.json
   def new
@@ -80,4 +81,5 @@ class ServersController < ApplicationController
       format.json { head :ok }
     end
   end
+=end
 end
