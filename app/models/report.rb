@@ -76,7 +76,7 @@ class Report < ActiveRecord::Base
         server_id: server.id,
         datetime: datetime,
         branch: branch,
-        revision: summary[/(?:trunk|revision)\S+ (\d+)\x29/, 1].to_i,
+        revision: summary[/(?:trunk|revision)\S* (\d+)\x29/, 1].to_i,
         summary: summary.gsub(/<[^>]*>/, '')
       )
     end
