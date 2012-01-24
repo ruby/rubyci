@@ -1,6 +1,14 @@
-<h1>Listing reports</h1>
+<h1>Ruby CI</h1>
 
-<p><a href="/">latest</a> <a href="/reports">reports</a></p>
+<p>
+<% if action_name == 'current' %>
+current
+<a href="/reports">reports</a>
+<% else %>
+<a href="/">latest</a>
+reports
+<% end %>
+</p>
 
 <table class="reports">
   <tr>
@@ -44,3 +52,5 @@
   <li>S: skip</li>
   <li>failed: critical failure</li>
 </ul>
+
+<p>Powered by <a href="http://dream.jp/vps/perfect/">DTI</a>, <a href="http://www.netlab.jp/">NaCl</a>, and <a href="http://www.heroku.com/">heroku</a>.

@@ -1,4 +1,6 @@
 class ReportsController < ApplicationController
+  caches_page :current
+
   # GET /reports
   # GET /reports.json
   def index
@@ -10,10 +12,10 @@ class ReportsController < ApplicationController
     end
   end
 
-  def latest
+  def current
     last = Report.last.updated_at.utc
     interval = 600 # cron interval
-    margin = 60 # margin for cron's processing
+    margin = 30 # margin for cron's processing
     expires_in (last.to_i - Time.now.to_i + interval - margin) % interval
     if stale?(:last_modified => last, :etag => last.to_s, :public => true)
       @reports = Report.includes(:server).order('reports.branch DESC, servers.name').

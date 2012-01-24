@@ -115,6 +115,7 @@ class Report < ActiveRecord::Base
         Report.create! item
       end
     end
+    Rails.cache.clear
     URI('http://rubyci.herokuapp.com/').read('Cache-Control' => 'no-cache')
     URI('http://rubyci.org/').read('Cache-Control' => 'no-cache')
   end
