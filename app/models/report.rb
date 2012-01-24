@@ -115,6 +115,7 @@ class Report < ActiveRecord::Base
         Report.create! item
       end
     end
+    URI('http://rubyci.herokuapp.com/').read('Cache-Control' => 'no-cache')
     URI('http://rubyci.org/').read('Cache-Control' => 'no-cache')
   end
 
@@ -158,6 +159,6 @@ class Report < ActiveRecord::Base
 end
 
 class ServerResource < ActiveResource::Base
-  self.site="http://rubyci.org"
+  self.site="http://rubyci.herokuapp.com"
   self.element_name = "server"
 end
