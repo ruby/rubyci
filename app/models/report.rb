@@ -115,7 +115,7 @@ class Report < ActiveRecord::Base
         Report.create! item
       end
     end
-    ReportsController.expire_page action: :current
+    ReportsController.expire_page '/'
     URI('http://rubyci.herokuapp.com/').read('Cache-Control' => 'no-cache')
     URI('http://rubyci.org/').read('Cache-Control' => 'no-cache')
   end
@@ -131,7 +131,6 @@ class Report < ActiveRecord::Base
         path = basepath = uri.path
         puts "getting #{uri.host}#{basepath} ..."
         h.get(basepath).body.scan(/href="ruby-([^"\/]+)/) do |branch,_|
-          latest = Report.where(server_id: server.id, branch: branch).last
           path = File.join(basepath, 'ruby-' + branch, 'recent.html')
           puts "getting #{uri.host}#{path} ..."
           ary.push(
