@@ -1,6 +1,4 @@
 class ReportsController < ApplicationController
-  caches_page :current
-
   # GET /reports
   # GET /reports.json
   def index
