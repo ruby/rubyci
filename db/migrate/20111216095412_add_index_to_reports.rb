@@ -1,7 +1,5 @@
 class AddIndexToReports < ActiveRecord::Migration
   def change
-    add_index :reports, :branch
-    add_index :reports, :datetime
-    add_index :servers, :name
+    add_index :reports, :server_id, :branch
   end
 end
