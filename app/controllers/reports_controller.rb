@@ -17,8 +17,7 @@ class ReportsController < ApplicationController
     expires_in (last.to_i - Time.now.to_i + interval - margin) % interval
     if stale?(:last_modified => last, :etag => last.to_s, :public => true)
       @reports = Report.includes(:server).order('reports.branch DESC, servers.name').
-        where('reports.id = (SELECT MAX(id) FROM reports R
-         WHERE reports.server_id = R.server_id AND reports.branch = R.branch)').all
+        where('reports.id IN (SELECT MAX(R.id) FROM reports R GROUP BY R.server_id, R.branch)').all
       render 'index'
     end
   end
