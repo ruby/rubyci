@@ -1,6 +1,6 @@
 source 'https://rubygems.org'
 
-gem 'rails', '3.2.1'
+gem 'rails', '3.2.2'
 
 # Bundle edge Rails instead:
 # gem 'rails', :git => 'git://github.com/rails/rails.git'
@@ -35,11 +35,12 @@ gem 'thin'
 
 group :development do
   gem 'sqlite3'
-  gem 'therubyracer'
+  gem 'libv8'
+  gem 'therubyracer', '~> 0.9.10', :require => 'v8'
 end
 
 group :production do
-  gem 'therubyracer-heroku'
+#  gem 'therubyracer-heroku'
   gem 'pg'
   gem 'newrelic_rpm'
 end
