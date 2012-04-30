@@ -3,11 +3,11 @@ class ReportsController < ApplicationController
   # GET /reports.json
   def index
     @reports = Report.order('datetime desc').limit(100).includes(:server).all
-
-    respond_to do |format|
-      format.html # index.html.erb
-      format.json { render json: @reports }
-    end
+    # 
+    # respond_to do |format|
+    #   format.html # index.html.erb
+    #   format.json { render json: @reports }
+    # end
   end
 
   def current
