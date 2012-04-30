@@ -34,6 +34,8 @@ gem 'execjs'
 gem 'thin'
 
 group :development do
+  gem 'heroku'
+  gem 'foreman'
   gem 'sqlite3'
   gem 'libv8'
   gem 'therubyracer', '~> 0.9.10', :require => 'v8'
