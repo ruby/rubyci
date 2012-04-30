@@ -11,7 +11,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20111216095412) do
+ActiveRecord::Schema.define(:version => 20111216095413) do
 
   create_table "reports", :force => true do |t|
     t.integer  "server_id"
@@ -25,6 +25,7 @@ ActiveRecord::Schema.define(:version => 20111216095412) do
 
   add_index "reports", ["branch"], :name => "index_reports_on_branch"
   add_index "reports", ["datetime"], :name => "index_reports_on_datetime"
+  add_index "reports", ["server_id", "branch"], :name => "index_reports_on_server_id_and_branch"
 
   create_table "servers", :force => true do |t|
     t.string   "name"
