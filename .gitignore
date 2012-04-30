@@ -11,3 +11,4 @@ tmp/
 *.swp
 *.swo
 public/assets/
+config/database.yml
