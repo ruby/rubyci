@@ -26,7 +26,7 @@ class Report < ActiveRecord::Base
   end
 
   def btest
-    summary[/ (\d+)BFail /, 1] ? $1+'BF': nil
+    /failed\(btest/ =~ summary ? 'BF' : summary[/ (\d+)BFail /, 1] ? $1+'BF' : nil
   end
 
   def testknownbug
@@ -34,7 +34,7 @@ class Report < ActiveRecord::Base
   end
 
   def test
-    t = summary[/ (\d+)NotOK /, 1] ? $1+'F' : nil
+    t = /failed\(test\./ =~ summary ? 'F' : summary[/ (\d+)NotOK /, 1] ? $1+'F' : nil
     a = [btest, testknownbug, t]
     a.compact!
     a.empty? ? nil : a.join(' ')
