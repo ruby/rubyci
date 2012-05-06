@@ -13,11 +13,11 @@
 
   <div class="field">
     <%= f.label :server_id %><br />
-    <%= f.number_field :server_id %>
+    <%= f.select :server_id, Server.all.map{|x|[x.name, x.id]} %>
   </div>
   <div class="field">
     <%= f.label :datetime %><br />
-    <%= f.datetime_select :datetime %>
+    <%= f.datetime_select :datetime, include_seconds: true %>
   </div>
   <div class="field">
     <%= f.label :branch %><br />
@@ -26,10 +26,6 @@
   <div class="field">
     <%= f.label :revision %><br />
     <%= f.number_field :revision %>
-  </div>
-  <div class="field">
-    <%= f.label :uri %><br />
-    <%= f.text_field :uri %>
   </div>
   <div class="field">
     <%= f.label :summary %><br />
