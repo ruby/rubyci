@@ -3,26 +3,24 @@ class ReportsController < ApplicationController
   # GET /reports.json
   def index
     @reports = Report.order('datetime desc').limit(100).includes(:server).all
-    # 
-    # respond_to do |format|
-    #   format.html # index.html.erb
-    #   format.json { render json: @reports }
-    # end
+
+    respond_to do |format|
+      format.html # index.html.erb
+      format.json { render json: @reports }
+    end
   end
 
   def current
-    @reports = []
-    if Report.count > 0
-      last = Report.last.updated_at.utc
-      interval = 600 # cron interval
-      margin = 30 # margin for cron's processing
-      expires_in (last.to_i - Time.now.to_i + interval - margin) % interval
-      if stale?(:last_modified => last, :etag => last.to_s, :public => true)
-        @reports = Report.includes(:server).order('reports.branch DESC, servers.name').
-          where('reports.id IN (SELECT MAX(R.id) FROM reports R GROUP BY R.server_id, R.branch)').all
-      end
+    last = Report.last
+    last_modified = last ? last.updated_at.utc : Time.at(0)
+    interval = 600 # cron interval
+    margin = 30 # margin for cron's processing
+    expires_in (last_modified.to_i - Time.now.to_i + interval - margin) % interval
+    if stale?(:last_modified => last_modified, :etag => last_modified.to_s, :public => true)
+      @reports = Report.includes(:server).order('reports.branch DESC, servers.name').
+        where('reports.id IN (SELECT MAX(R.id) FROM reports R GROUP BY R.server_id, R.branch)').all
+      render 'index'
     end
-    render 'index'
   end
 
   # GET /reports/1
