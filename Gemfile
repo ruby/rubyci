@@ -1,5 +1,6 @@
 source 'https://rubygems.org'
 
+ruby '1.9.3'
 gem 'rails', '3.2.3'
 
 # Bundle edge Rails instead:
@@ -38,7 +39,8 @@ group :development do
   gem 'foreman'
   gem 'sqlite3'
   gem 'libv8'
-  gem 'therubyracer', '~> 0.9.10', :require => 'v8'
+
+  gem 'therubyracer', '> 0.9', :require => 'v8'
 end
 
 group :production do
