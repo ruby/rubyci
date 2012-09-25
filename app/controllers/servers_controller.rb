@@ -1,4 +1,6 @@
 class ServersController < ApplicationController
+  before_filter :auth, except: [:index, :show]
+
   # GET /servers
   # GET /servers.json
   def index
@@ -21,7 +23,6 @@ class ServersController < ApplicationController
     end
   end
 
-=begin
   # GET /servers/new
   # GET /servers/new.json
   def new
@@ -81,5 +82,10 @@ class ServersController < ApplicationController
       format.json { head :ok }
     end
   end
-=end
+
+  def auth
+    authenticate_or_request_with_http_basic do |user, pass|
+      ROOT_PASSWORD && user == 'root' && pass == ROOT_PASSWORD
+    end
+  end
 end
