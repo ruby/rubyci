@@ -17,7 +17,7 @@ table.reports {
 			text-align: right;
 			// width: 30px;
 		}
-		@for $i from 6 through 8 {
+		@for $i from 6 through 9 {
 			td:nth-child(#{$i}) {
 				background-color: #FF9090;
 				// width: 50px;

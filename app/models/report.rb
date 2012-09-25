@@ -3,6 +3,7 @@ class Report < ActiveRecord::Base
   require 'uri'
   require 'open-uri'
   belongs_to :server
+  attr_accessible :server_id, :datetime, :branch, :option, :revision, :summary
   validates :server_id, :presence => true
   validates :revision, :numericality => { :only_integer => true }
   validates :datetime, :uniqueness => { :scope => [:server_id, :branch] }
@@ -56,26 +57,38 @@ class Report < ActiveRecord::Base
     summary[/((?:no )?diff[^)>]*)/, 1]
   end
 
+  def branch_opts
+    option ? "#{branch}-#{option}" : branch
+  end
+
   def loguri
-    server.uri + datetime.strftime("ruby-#{branch}/log/%Y%m%dT%H%M%SZ.log.html.gz")
+    server.uri + datetime.strftime("ruby-#{branch_opts}/log/%Y%m%dT%H%M%SZ.log.html.gz")
   end
 
   def diffuri
-    server.uri + datetime.strftime("ruby-#{branch}/log/%Y%m%dT%H%M%SZ.diff.html.gz")
+    server.uri + datetime.strftime("ruby-#{branch_opts}/log/%Y%m%dT%H%M%SZ.diff.html.gz")
+  end
+
+  def recenturi
+    server.recent_uri(branch_opts)
   end
 
   REG_RCNT = /name="(\d+T\d{6}Z).*?a>\s*(\S.*)<br/
 
-  def self.scan_recent(server, branch, body, results)
-    latest = Report.where(server_id: server.id, branch: branch).last
+  def self.scan_recent(server, branch_opts, body, results)
+    return unless /\A([0-9a-z\.]+)(?:-(.*))?\z/ =~ branch_opts
+    branch = $1
+    option = $2
+    latest = Report.where(server_id: server.id, branch: branch, option: option).last
     body.scan(REG_RCNT) do |dt, summary|
       datetime = Time.utc(*dt.unpack("A4A2A2xA2A2A2"))
       break if latest and datetime <= latest.datetime
-      puts "reporting #{server.name} #{branch} #{dt} ..."
+      puts "reporting #{server.name} #{branch_opts} #{dt} ..."
       results.push(
         server_id: server.id,
         datetime: datetime,
         branch: branch,
+        option: option,
         revision: summary[/(?:trunk|revision)\S* (\d+)\x29/, 1].to_i,
         summary: summary.gsub(/<[^>]*>/, '')
       )
@@ -90,11 +103,11 @@ class Report < ActiveRecord::Base
     Net::HTTP.start(uri.host, uri.port, open_timeout: 10, read_timeout: 10) do |h|
       path = basepath = uri.path
       puts "getting #{uri.host}#{basepath} ..."
-      h.get(basepath).body.scan(/href="ruby-([^"\/]+)/) do |branch,_|
-        next if branch !~ /\A(?:trunk|[2-9]|1\.9\.[2-9])/
-        path = File.join(basepath, 'ruby-' + branch, 'recent.html')
+      h.get(basepath).body.scan(/href="ruby-([^"\/]+)/) do |branch_opts,_|
+        next if branch_opts !~ /\A(?:trunk|[1-9])/
+        path = File.join(basepath, 'ruby-' + branch_opts, 'recent.html')
         puts "getting #{uri.host}#{path} ..."
-        self.scan_recent(server, branch, h.get(path).body, ary)
+        self.scan_recent(server, branch_opts, h.get(path).body, ary)
       end
     end
     ary.sort_by!{|h|h[:datetime]}
