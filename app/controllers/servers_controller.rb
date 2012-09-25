@@ -85,7 +85,7 @@ class ServersController < ApplicationController
 
   def auth
     authenticate_or_request_with_http_basic do |user, pass|
-      ROOT_PASSWORD && user == 'root' && pass == ROOT_PASSWORD
+      ENV['ROOT_PASSWORD'] && user == 'root' && pass == ENV['ROOT_PASSWORD']
     end
   end
 end
