@@ -91,7 +91,7 @@ class Report < ActiveRecord::Base
       path = basepath = uri.path
       puts "getting #{uri.host}#{basepath} ..."
       h.get(basepath).body.scan(/href="ruby-([^"\/]+)/) do |branch,_|
-        next if branch !~ /\A(?:trunk|[2-9]|1\.9\.[2-9])\z/
+        next if branch !~ /\A(?:trunk|[2-9]|1\.9\.[2-9])/
         path = File.join(basepath, 'ruby-' + branch, 'recent.html')
         puts "getting #{uri.host}#{path} ..."
         self.scan_recent(server, branch, h.get(path).body, ary)
