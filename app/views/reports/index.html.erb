@@ -1,16 +1,4 @@
-<h1>Ruby CI</h1>
-
-<p>
-<% if action_name == 'current' %>
-current
-<a href="/reports">reports</a>
-<% else %>
-<a href="/">latest</a>
-reports
-<% end %>
-</p>
-
-<table class="reports">
+<table class="reports table table-striped table-bordered">
   <tr>
     <th>Server</th>
     <th>Datetime</th>
@@ -46,12 +34,13 @@ reports
 <% end %>
 </table>
 
-<ul>
-  <li>F: failure</li>
-  <li>E: error</li>
-  <li>S: skip</li>
-  <li>failed: critical failure</li>
-</ul>
+<dl class="dl-horizontal">
+  <dt>F</dt>      <dd><span class="label label-important">failure</span></dd>
+  <dt>E</dt>      <dd><span class="label label-important">error</span></dd>
+  <dt>S</dt>      <dd><span class="label label-info">skip</span></dd>
+  <dt>failed</dt> <dd><span class="label label-important">critical failurea</span></dd>
+</dl>
 
-<p>see also <a href="http://ci.rubyinstaller.org/">CI@RubyInstaller</a> <a href="http://blade.nagaokaut.ac.jp/cgi-bin/scat.rb/ruby/ruby-core/46564">[ruby-core:46564]</a>.
-<p>Powered by <a href="http://cvs.m17n.org/viewcvs/ruby/chkbuild/">chkbuild</a>, <a href="http://dream.jp/vps/perfect/">DTI</a>, <a href="http://www.netlab.jp/">NaCl</a>, and <a href="http://www.heroku.com/">heroku</a>.
+<div class="alert alert-info">
+  see also <a href="http://ci.rubyinstaller.org/">CI@RubyInstaller</a> <a href="http://blade.nagaokaut.ac.jp/cgi-bin/scat.rb/ruby/ruby-core/46564">[ruby-core:46564]</a>.
+</div>
