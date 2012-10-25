@@ -12,7 +12,6 @@ group :assets do
   gem 'sass-rails',   '~> 3.2.3'
   gem 'coffee-rails', '~> 3.2.1'
   gem 'uglifier',     '~> 1.0.3'
-  gem 'twitter-bootstrap-rails'
 end
 
 gem 'jquery-rails'
@@ -34,13 +33,13 @@ gem 'jquery-rails'
 
 gem 'execjs'
 gem 'thin'
+gem 'twitter-bootstrap-rails'
 
 group :development do
   gem 'heroku'
   gem 'foreman'
   gem 'sqlite3'
   gem 'libv8'
-
   gem 'therubyracer', '~> 0.11.0beta5', :require => 'v8'
 end
 
