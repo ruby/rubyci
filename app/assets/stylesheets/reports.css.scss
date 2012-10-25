@@ -4,30 +4,30 @@
 table.reports {
 	tr {
 		td.server {
-			width: 150px;
+			// width: 150px;
 		}
 		td.datetime {
-			width: 90px;
+			// width: 90px;
 		}
 		td.branch {
 			text-align: center;
-			width: 70px;
+			// width: 70px;
 		}
 		td.revision {
 			text-align: right;
-			width: 30px;
+			// width: 30px;
 		}
-		@for $i from 5 through 8 {
+		@for $i from 6 through 8 {
 			td:nth-child(#{$i}) {
-				background-color: #f77;
-				width: 50px;
+				background-color: #FF9090;
+				// width: 50px;
 			}
 			td:nth-child(#{$i}):empty {
-				background-color: #7f7;
+				background-color: #90FF90;
 			}
 		}
 		td.summary {
-			background-color: #7f7;
+			background-color: #90FF90;
 			div {
 				overflow: hidden;
 				white-space: nowrap;
@@ -36,10 +36,9 @@ table.reports {
 			}
 		}
 		td.summary.failure {
-			background-color: #f77;
+			background-color: #FF9090;
 		}
 		td.diff {
-			background-color: #fff;
 			div {
 				overflow: hidden;
 				white-space: nowrap;
