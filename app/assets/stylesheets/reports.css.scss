@@ -2,6 +2,9 @@
 // They will automatically be included in application.css.
 // You can use Sass (SCSS) here: http://sass-lang.com/
 table.reports {
+	th, td {
+		padding: 1px;
+	}
 	tr {
 		td.server {
 			// width: 150px;
