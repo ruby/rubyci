@@ -1,46 +1,50 @@
 <table class="reports table table-striped table-bordered">
-  <tr>
-    <th>Server</th>
-    <th>Datetime</th>
-    <th>Branch</th>
-    <th>Option</th>
-    <th>Revision</th>
-    <th>test</th>
-    <th>test-all</th>
-    <th>rubyspec</th>
-    <th>Summary</th>
-    <th>Diff</th>
-  </tr>
+  <thead>
+    <tr>
+      <th>Server</th>
+      <th>Datetime</th>
+      <th>Branch</th>
+      <th>Option</th>
+      <th>Revision</th>
+      <th>test</th>
+      <th>test-all</th>
+      <th>rubyspec</th>
+      <th>Summary</th>
+      <th>Diff</th>
+    </tr>
+  </thead>
 
-<% @reports.each do |report| %>
-  <tr>
-    <td class="server"><%= report.server.name %></td>
-    <td class="datetime"><%= link_to report.sjstdt, report.loguri, title: report.jstdt %></td>
-    <td class="branch"><%= link_to report.branch, report.recenturi %></td>
-    <td class="option"><%= report.option %></td>
-    <td class="revision"><%= report.revision %></td>
-    <% if report.build %>
-      <td  class="build" colspan="3"><%= report.build %></td>
-    <% else %>
-      <td class="test"><%= report.test %></td>
-      <td class="testall"><%= report.testall %></td>
-      <td class="rubyspecc"><%= report.rubyspec %></td>
+  <tbody>
+    <% @reports.each do |report| %>
+      <tr>
+        <td class="server"><%= report.server.name %></td>
+        <td class="datetime"><%= link_to report.sjstdt, report.loguri, title: report.jstdt %></td>
+        <td class="branch"><%= link_to report.branch, report.recenturi %></td>
+        <td class="option"><%= report.option %></td>
+        <td class="revision"><%= report.revision %></td>
+        <% if report.build %>
+          <td  class="build" colspan="3"><%= report.build %></td>
+        <% else %>
+          <td class="test"><%= report.test %></td>
+          <td class="testall"><%= report.testall %></td>
+          <td class="rubyspecc"><%= report.rubyspec %></td>
+        <% end %>
+        <% if /success / =~ report.summary %>
+          <td class="summary"><div><%= link_to report.shortsummary, report.loguri, title: report.shortsummary %></div></td>
+        <% else %>
+          <td class="summary failure"><div><%= link_to report.shortsummary, report.loguri, title: report.shortsummary %></div></td>
+        <% end %>
+        <td class="diff"><div><%= link_to report.diffstat, report.diffuri, title: report.diffstat %></div></td>
+      </tr>
     <% end %>
-    <% if /success / =~ report.summary %>
-      <td class="summary"><div><%= link_to report.shortsummary, report.loguri, title: report.shortsummary %></div></td>
-    <% else %>
-      <td class="summary failure"><div><%= link_to report.shortsummary, report.loguri, title: report.shortsummary %></div></td>
-    <% end %>
-    <td class="diff"><div><%= link_to report.diffstat, report.diffuri, title: report.diffstat %></div></td>
-  </tr>
-<% end %>
+  </tbody>
 </table>
 
 <dl class="dl-horizontal">
   <dt>F</dt>      <dd><span class="label label-important">failure</span></dd>
   <dt>E</dt>      <dd><span class="label label-important">error</span></dd>
   <dt>S</dt>      <dd><span class="label label-info">skip</span></dd>
-  <dt>failed</dt> <dd><span class="label label-important">critical failurea</span></dd>
+  <dt>failed</dt> <dd><span class="label label-important">critical failures</span></dd>
 </dl>
 
 <div class="alert alert-info">
