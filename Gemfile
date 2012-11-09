@@ -1,8 +1,7 @@
 source 'https://rubygems.org'
 
-ruby '2.0.0'
+ruby '1.9.3'
 gem 'rails', '3.2.8'
-gem 'unicorn'
 
 # Bundle edge Rails instead:
 # gem 'rails', :git => 'git://github.com/rails/rails.git'
@@ -33,14 +32,15 @@ gem 'jquery-rails'
 # gem 'ruby-debug19', :require => 'ruby-debug'
 
 gem 'execjs'
-gem 'less-rails'
-gem 'therubyracer'
+gem 'thin'
 gem 'twitter-bootstrap-rails'
 
 group :development do
   gem 'heroku'
   gem 'foreman'
   gem 'sqlite3'
+  gem 'libv8'
+  gem 'therubyracer', '~> 0.11.0beta5', :require => 'v8'
 end
 
 group :production do
