@@ -1,7 +1,7 @@
 source 'https://rubygems.org'
 
 ruby '1.9.3'
-gem 'rails', '3.2.8'
+gem 'rails', '3.2.11'
 
 # Bundle edge Rails instead:
 # gem 'rails', :git => 'git://github.com/rails/rails.git'
@@ -39,8 +39,8 @@ group :development do
   gem 'heroku'
   gem 'foreman'
   gem 'sqlite3'
-  gem 'libv8'
-  gem 'therubyracer', '~> 0.11.0beta5', :require => 'v8'
+  gem "libv8", "= 3.11.8.3"
+  gem 'therubyracer', '~> 0.11.0', :require => 'v8'
 end
 
 group :production do
