@@ -33,7 +33,7 @@ gem 'jquery-rails'
 
 gem 'execjs'
 gem 'thin'
-gem 'twitter-bootstrap-rails'
+gem 'sass-rails-bootstrap'
 
 group :development do
   gem 'heroku'
