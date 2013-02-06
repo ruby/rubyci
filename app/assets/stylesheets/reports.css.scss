@@ -5,6 +5,9 @@ table.reports {
 	th, td {
 		padding: 1px;
 	}
+	tr.branch-separator td {
+		border-top: solid 1px black;
+	}
 	tr {
 		td.server {
 			// width: 150px;
