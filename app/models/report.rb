@@ -103,7 +103,7 @@ class Report < ActiveRecord::Base
     Net::HTTP.start(uri.host, uri.port, open_timeout: 10, read_timeout: 10) do |h|
       path = basepath = uri.path
       puts "getting #{uri.host}#{basepath} ..."
-      h.get(basepath).body.scan(/href="ruby-([^"\/]+)/) do |branch_opts,_|
+      h.get(basepath).body.scan(/(?:href|HREF)="ruby-([^"\/]+)/) do |branch_opts,_|
         next if branch_opts !~ /\A(?:trunk|[1-9])/
         path = File.join(basepath, 'ruby-' + branch_opts, 'recent.html')
         puts "getting #{uri.host}#{path} ..."
