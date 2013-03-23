@@ -42,7 +42,7 @@ class Report < ActiveRecord::Base
   end
 
   def testall
-    summary[/ (\d+F\d+E(?:\d+S)?) /, 1] || summary[/(\d*failed)\(test/, 1]
+    summary[/ (\d+F\d+E(?:\d+S)?) /, 1] || summary[/(\d*failed)\(test-all/, 1]
   end
 
   def rubyspec
