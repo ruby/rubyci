@@ -18,6 +18,7 @@ class ReportsController < ApplicationController
     expires_in (last_modified.to_i - Time.now.to_i + interval - margin) % interval
     if stale?(:last_modified => last_modified, :etag => last_modified.to_s, :public => true)
       dt2weeksago = "(now() - interval '14 days')"
+      # dt2weeksago = "datetime('now', '-14 days')" # SQLite
       @reports = Report.includes(:server).order('reports.branch DESC, servers.os ASC, servers.version ASC, servers.arch ASC, reports.option ASC').
         where("reports.datetime > #{dt2weeksago}").
         where('reports.id IN (SELECT MAX(R.id) FROM reports R GROUP BY R.server_id, R.branch, R.option)').all
