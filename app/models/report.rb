@@ -89,7 +89,9 @@ class Report < ActiveRecord::Base
         datetime: datetime,
         branch: branch,
         option: option,
-        revision: (summary[/\brev:(\d+)\b/, 1] || summary[/(?:trunk|revision)\S* (\d+)\x29/, 1]).to_i,
+        revision: (summary[/\br(\d+)\b/, 1] ||
+                   summary[/\brev:(\d+)\b/, 1] ||
+                   summary[/(?:trunk|revision)\S* (\d+)\x29/, 1]).to_i,
         summary: summary.gsub(/<[^>]*>/, '')
       )
     end
