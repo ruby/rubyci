@@ -5,7 +5,8 @@ class Server < ActiveRecord::Base
   validates :os, :length => { :in => 1..20 }
   validates :version, :length => { :in => 1..20 }
   validates :uri, :length => { :in => 20..200 }
-  attr_accessible :name, :arch, :os, :version, :uri
+  validates :ordinal, :numericality => true, :uniqueness => true
+  attr_accessible :name, :arch, :os, :version, :uri, :ordinal
 
   def recent_uri(branch)
     [uri.sub(/\/$/, ''), 'ruby-' + branch, 'recent.html'].join('/')

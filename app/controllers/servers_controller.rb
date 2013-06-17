@@ -4,7 +4,7 @@ class ServersController < ApplicationController
   # GET /servers
   # GET /servers.json
   def index
-    @servers = Server.all
+    @servers = Server.order(:ordinal).all
 
     respond_to do |format|
       format.html # index.html.erb
@@ -83,6 +83,65 @@ class ServersController < ApplicationController
     end
   end
 
+  def moveup
+    servers = Server.order(:ordinal).all
+    idx = params[:id].to_i
+    idx = servers.find_index{|x| x.id == idx }
+    case idx
+    when 0
+      # nop
+    when 1
+      pre = servers[idx-1]
+      cur = servers[idx]
+      cur.ordinal = pre.ordinal - 1
+    else
+      pre2 = servers[idx-2]
+      pre = servers[idx-1]
+      cur = servers[idx]
+      cur.ordinal = (pre2.ordinal + pre.ordinal) / 2
+    end
+
+    respond_to do |format|
+      if cur.save
+        format.html { redirect_to servers_url }
+        format.json { head :ok }
+      else
+        format.html { redirect_to servers_url }
+        format.json { head :ng }
+      end
+    end
+  end
+
+  def movedown
+    servers = Server.order(:ordinal).all
+    idx = params[:id].to_i
+    idx = servers.find_index{|x| x.id == idx }
+    case idx - servers.length
+    when -1
+      # nop
+    when -2
+      cur = servers[idx]
+      nex = servers[idx+1]
+      cur.ordinal = nex.ordinal + 1
+    else
+      cur = servers[idx]
+      nex = servers[idx+1]
+      nex2 = servers[idx+2]
+      cur.ordinal = (nex.ordinal + nex2.ordinal) / 2
+    end
+
+    respond_to do |format|
+      if cur.save
+        format.html { redirect_to servers_url }
+        format.json { head :ok }
+      else
+        format.html { redirect_to servers_url }
+        format.json { head :ng }
+      end
+    end
+  end
+
+  private
   def auth
     authenticate_or_request_with_http_basic do |user, pass|
       ENV['ROOT_PASSWORD'] && user == 'root' && pass == ENV['ROOT_PASSWORD']

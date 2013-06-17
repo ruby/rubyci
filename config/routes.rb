@@ -5,7 +5,12 @@ Rubyci::Application.routes.draw do
 
   resources :reports
 
-  resources :servers
+  resources :servers do
+    member do
+      post 'moveup'
+      post 'movedown'
+    end
+  end
 
   # The priority is based upon order of creation:
   # first created -> highest priority.

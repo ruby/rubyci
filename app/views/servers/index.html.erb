@@ -10,6 +10,7 @@
     <th></th>
     <th></th>
     <th></th>
+    <th></th>
   </tr>
 
 <% @servers.each do |server| %>
@@ -19,6 +20,9 @@
     <td><%= server.os %></td>
     <td><%= server.version %></td>
     <td><%= server.uri %></td>
+    <td><%= server.ordinal %></td>
+    <td><%= link_to '↑', {controller: 'servers', id: server.id, action: :moveup}, method: :post %></td>
+    <td><%= link_to '↓', {controller: 'servers', id: server.id, action: :movedown}, method: :post %></td>
     <td><%= link_to 'Show', server %></td>
     <td><%= link_to 'Edit', edit_server_path(server) %></td>
     <td><%= link_to 'Destroy', server, confirm: 'Are you sure?', method: :delete %></td>

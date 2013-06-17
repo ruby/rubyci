@@ -11,7 +11,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20120925072526) do
+ActiveRecord::Schema.define(:version => 20130617112229) do
 
   create_table "reports", :force => true do |t|
     t.integer  "server_id"
@@ -36,6 +36,7 @@ ActiveRecord::Schema.define(:version => 20120925072526) do
     t.string   "arch"
     t.string   "os"
     t.string   "version"
+    t.float    "ordinal"
   end
 
   add_index "servers", ["name"], :name => "index_servers_on_name"
