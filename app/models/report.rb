@@ -114,7 +114,7 @@ class Report < ActiveRecord::Base
     end
     ary.sort_by!{|h|h[:datetime]}
     return ary
-  rescue Net::OpenTimeout
+  rescue Net::OpenTimeout => e
     p [e, uri, path, "failed to get_reports"]
     return []
   rescue Exception => e
