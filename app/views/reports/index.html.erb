@@ -15,9 +15,17 @@
   </thead>
 
   <tbody>
-    <% curbr = nil %>
+    <% curbr = nil; now = Time.now.to_i %>
     <% @reports.each do |report| %>
-      <tr class="<%= 'branch-separator' if curbr != report.branch %>">
+      <%
+        d = now - report.datetime.to_i
+        style = nil
+        if d > 10000
+          style = %[style="opacity:#{Math.log(Math::E, d/3600)}"]
+        end
+      %>
+      <tr class="<%= 'branch-separator' if curbr != report.branch %>"<%=style%>>
+        >
         <td class="server"><%= report.server.name %></td>
         <td class="datetime"><%= link_to report.sjstdt, report.loguri, title: report.jstdt %></td>
         <td class="branch"><%= link_to report.branch, report.recenturi %></td>
