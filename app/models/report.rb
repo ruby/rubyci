@@ -22,6 +22,10 @@ class Report < ActiveRecord::Base
     (datetime + 32400).strftime("%m-%d %H:%M")
   end
 
+  def patchlevel
+    summary[/ ruby \d+\.\d+\.\d+(p\d+) /, 1]
+  end
+
   def build
     summary[/(\d*failed)\((?:svn|make|miniruby)[^)]*\)/]
   end
