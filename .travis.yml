@@ -1,0 +1,12 @@
+language: ruby
+rvm: 2.0.0
+cache: bundler
+deploy:
+  provider: heroku
+  api_key:
+    secure: k1bzkTcHs2WJfC6dlf33rkcUMbf4M0kT/aQ6w8L33djEfxcWhp+XAwwoL0Z/szb3Oy6kRh1W6NTUj+I8UB8AVl7BHk37qj9OTn6kJu1k0Bqx4e6jBQWZPa6kyQsmbJis0jZBVJypcmXnBfKg53X04UfBduv0c6TMtDe9mPA+spg=
+  app: rubyci
+  on:
+    rvm: 2.0.0
+    repo: nurse/rubyci
+    branch: master
