@@ -51,8 +51,12 @@ task :fetch_logfile => :environment do
       next if lids[i]
       uri = "#{r.server.uri}ruby-#{r.branch}/log/#{t}.#{ext}.gz"
       puts uri
-      data = URI(uri).read
-      Logfile.create(report_id: r.id, ext: ext, data: data)
+      begin
+        data = URI(uri).read
+        Logfile.create(report_id: r.id, ext: ext, data: data)
+      rescue => e
+        p e
+      end
     end
   end
 end
