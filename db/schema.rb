@@ -11,7 +11,18 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20130617112229) do
+ActiveRecord::Schema.define(:version => 20140204075601) do
+
+  create_table "logfiles", :force => true do |t|
+    t.integer  "report_id"
+    t.string   "ext"
+    t.binary   "data"
+    t.datetime "created_at", :null => false
+    t.datetime "updated_at", :null => false
+  end
+
+  add_index "logfiles", ["report_id", "ext"], :name => "index_logfiles_on_report_id_and_ext", :unique => true
+  add_index "logfiles", ["report_id"], :name => "index_logfiles_on_report_id"
 
   create_table "reports", :force => true do |t|
     t.integer  "server_id"
