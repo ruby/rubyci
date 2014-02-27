@@ -109,7 +109,7 @@ class Report < ActiveRecord::Base
     latest = Report.where(server_id: server.id, branch: branch, option: option).last
     body.each_line do |line|
       line.chomp!
-      h = Hash[*line.split("\t").map{|x|x.split(":", 2)}.flatten]
+      h = line.split("\t").map{|x|x.split(":", 2)}.to_h
       dt = h["start_time"]
       summary = h["title"]
       summary << ' success' if / \d+W\z/ =~ summary # workaround
