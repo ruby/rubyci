@@ -102,6 +102,31 @@ class Report < ActiveRecord::Base
     results
   end
 
+  def self.scan_recent_ltsv(server, branch_opts, body, results)
+    return unless /\A([0-9a-z\.]+)(?:-(.*))?\z/ =~ branch_opts
+    branch = $1
+    option = $2
+    latest = Report.where(server_id: server.id, branch: branch, option: option).last
+    body.each_line do |line|
+      line.chomp!
+      h = Hash[*line.split("\t").map{|x|x.split(":", 2)}.flatten]
+      dt = h["start_time"]
+      summary = h["title"]
+      datetime = Time.utc(*dt.unpack("A4A2A2xA2A2A2"))
+      break if latest and datetime <= latest.datetime
+      puts "reporting #{server.name} #{branch_opts} #{dt} ..."
+      results.push(
+        server_id: server.id,
+        datetime: datetime,
+        branch: branch,
+        option: option,
+        revision: h["ruby_rev"][1,100].to_i,
+        summary: summary
+      )
+    end
+    results
+  end
+
   def self.get_reports(server)
     ary = []
     uri = URI(server.uri)
@@ -110,10 +135,27 @@ class Report < ActiveRecord::Base
       path = basepath = uri.path
       puts "getting #{uri.host}#{basepath} ..."
       h.get(basepath).body.scan(/(?:href|HREF)="ruby-([^"\/]+)/) do |branch_opts,_|
-        next if branch_opts !~ /\A(?:trunk|[1-9])/
-        path = File.join(basepath, 'ruby-' + branch_opts, 'recent.html')
-        puts "getting #{uri.host}#{path} ..."
-        self.scan_recent(server, branch_opts, h.get(path).body, ary)
+        next if /\A(?:trunk|[1-9])/ !~ branch_opts
+
+        begin # LTSV
+          path = File.join(basepath, 'ruby-' + branch_opts, 'recent.ltsv')
+          puts "getting #{uri.host}#{path} ..."
+          res = h.get(path)
+          p res
+          res.value
+          self.scan_recent_ltsv(server, branch_opts, res.body, ary)
+          next
+        rescue Net::HTTPServerException
+        end
+
+        begin# HTML
+          path = File.join(basepath, 'ruby-' + branch_opts, 'recent.html')
+          puts "getting #{uri.host}#{path} ..."
+          res = h.get(path)
+          res.value
+          self.scan_recent(server, branch_opts, res.body, ary)
+        rescue Net::HTTPServerException
+        end
       end
     end
     ary.sort_by!{|h|h[:datetime]}
@@ -130,6 +172,7 @@ class Report < ActiveRecord::Base
   def self.fetch_recent
     ary = []
     Server.all.each do |server|
+      next unless server.uri == "http://www.rubyist.net/~akr/chkbuild/debian/"
       ary.concat self.get_reports(server)
     end
     Report.transaction do
