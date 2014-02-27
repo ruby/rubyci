@@ -54,7 +54,9 @@ class Report < ActiveRecord::Base
   end
 
   def shortsummary
-    summary[/^[^\x28]+(?:\s*\([^\x29]*\)|\s*\[[^\x5D]*\])*\s*(\S.*?)(?: \(<|\z)/, 1]
+    str = summary[/^[^\x28]+(?:\s*\([^\x29]*\)|\s*\[[^\x5D]*\])*\s*(\S.*?)(?: \(|\z)/, 1]
+    str << ' success' if /\A\d+W\z/ =~ str
+    str
   end
 
   def diffstat
