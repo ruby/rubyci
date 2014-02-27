@@ -172,7 +172,6 @@ class Report < ActiveRecord::Base
   def self.fetch_recent
     ary = []
     Server.all.each do |server|
-      next unless server.uri == "http://www.rubyist.net/~akr/chkbuild/debian/"
       ary.concat self.get_reports(server)
     end
     Report.transaction do
