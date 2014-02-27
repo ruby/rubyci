@@ -55,8 +55,6 @@ class Report < ActiveRecord::Base
 
   def shortsummary
     str = summary[/^[^\x28]+(?:\s*\([^\x29]*\)|\s*\[[^\x5D]*\])*\s*(\S.*?)(?: \(|\z)/, 1]
-    str << ' success' if /\A\d+W\z/ =~ str
-    str
   end
 
   def diffstat
@@ -114,6 +112,7 @@ class Report < ActiveRecord::Base
       h = Hash[*line.split("\t").map{|x|x.split(":", 2)}.flatten]
       dt = h["start_time"]
       summary = h["title"]
+      summary << ' success' if / \d+W\z/ =~ summary # workaround
       datetime = Time.utc(*dt.unpack("A4A2A2xA2A2A2"))
       break if latest and datetime <= latest.datetime
       puts "reporting #{server.name} #{branch_opts} #{dt} ..."
