@@ -23,8 +23,7 @@
         if d > 10000
           style = %[ style="opacity:#{Math.log(Math::E, d/3600)}"]
         end
-        meta = report.meta
-        failuri = meta ? meta['compressed_failhtml_relpath'] : report.loguri
+        failuri = report.failuri || report.loguri
       %>
       <tr class="<%= 'branch-separator' if curbr != report.branch %>"<%=raw style%>>
         <td class="server"><%= report.server.name %></td>

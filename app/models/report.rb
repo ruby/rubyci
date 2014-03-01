@@ -73,6 +73,10 @@ class Report < ActiveRecord::Base
     server.uri + datetime.strftime("ruby-#{branch_opts}/log/%Y%m%dT%H%M%SZ.diff.html.gz")
   end
 
+  def failuri
+    meta ? "#{server.uri}ruby-#{branch_opts}/#{meta['compressed_failhtml_relpath']}" : nil
+  end
+
   def recenturi
     server.recent_uri(branch_opts)
   end
