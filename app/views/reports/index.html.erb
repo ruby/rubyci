@@ -23,6 +23,8 @@
         if d > 10000
           style = %[ style="opacity:#{Math.log(Math::E, d/3600)}"]
         end
+        meta = report.meta
+        failuri = meta ? meta['compressed_failhtml_relpath'] : report.loguri
       %>
       <tr class="<%= 'branch-separator' if curbr != report.branch %>"<%=raw style%>>
         <td class="server"><%= report.server.name %></td>
@@ -38,9 +40,9 @@
           <td class="rubyspecc"><%= report.rubyspec %></td>
         <% end %>
         <% if /success / =~ report.summary %>
-          <td class="summary"><div><%= link_to report.shortsummary, report.loguri, title: report.shortsummary %></div></td>
+          <td class="summary"><div><%= link_to report.shortsummary, failuri, title: report.shortsummary %></div></td>
         <% else %>
-          <td class="summary failure"><div><%= link_to report.shortsummary, report.loguri, title: report.shortsummary %></div></td>
+          <td class="summary failure"><div><%= link_to report.shortsummary, failuri, title: report.shortsummary %></div></td>
         <% end %>
         <td class="diff"><div><%= link_to report.diffstat, report.diffuri, title: report.diffstat %></div></td>
       </tr>

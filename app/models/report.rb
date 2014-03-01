@@ -3,7 +3,7 @@ class Report < ActiveRecord::Base
   require 'uri'
   require 'open-uri'
   belongs_to :server
-  attr_accessible :server_id, :datetime, :branch, :option, :revision, :summary
+  attr_accessible :server_id, :datetime, :branch, :option, :revision, :summary, :ltsv
   validates :server_id, :presence => true
   validates :revision, :numericality => { :only_integer => true }
   validates :datetime, :uniqueness => { :scope => [:server_id, :branch] }
@@ -77,6 +77,14 @@ class Report < ActiveRecord::Base
     server.recent_uri(branch_opts)
   end
 
+  def meta
+    if defined?(@meta)
+      @meta
+    else
+      @meta = (l = ltsv) ? l.split("\t").map{|x|x.split(":", 2)}.to_h : nil
+    end
+  end
+
   REG_RCNT = /name="(\d+T\d{6}Z).*?a>\s*(\S.*)<br/
 
   def self.scan_recent(server, branch_opts, body, results)
@@ -124,6 +132,7 @@ class Report < ActiveRecord::Base
         branch: branch,
         option: option,
         revision: h["ruby_rev"][1,100].to_i,
+        ltsv: line,
         summary: summary
       )
     end
@@ -144,7 +153,6 @@ class Report < ActiveRecord::Base
           path = File.join(basepath, 'ruby-' + branch_opts, 'recent.ltsv')
           puts "getting #{uri.host}#{path} ..."
           res = h.get(path)
-          p res
           res.value
           self.scan_recent_ltsv(server, branch_opts, res.body, ary)
           next
