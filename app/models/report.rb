@@ -135,7 +135,7 @@ class Report < ActiveRecord::Base
         datetime: datetime,
         branch: branch,
         option: option,
-        revision: h["ruby_rev"][1,100].to_i,
+        revision: h["ruby_rev"].to_s[1,100].to_i,
         ltsv: line,
         summary: summary
       )
