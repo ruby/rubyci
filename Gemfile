@@ -2,6 +2,7 @@ source 'https://rubygems.org'
 
 ruby '2.1.1' unless ENV['DEV']
 gem 'rails', '~> 3.2'
+gem 'thin'
 
 gem 'sass-rails'
 gem 'sass-rails-bootstrap'
@@ -12,10 +13,8 @@ gem 'uglifier'
 group :development do
   gem 'heroku'
   gem 'foreman'
-  gem 'thin'
   gem 'sqlite3'
   gem 'therubyracer'
-  gem 'execjs'
 end
 
 group :production do

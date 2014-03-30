@@ -149,7 +149,6 @@ PLATFORMS
 DEPENDENCIES
   airbrake
   coffee-rails
-  execjs
   foreman
   heroku
   jquery-rails
