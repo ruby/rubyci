@@ -1,6 +1,8 @@
-= Ruby CI
+# Ruby CI
 
 An antenna for chkbuild servers.
+
+# License
 
 Copyright (C) 2011-2012 NARUSE, Yui. All rights reserved.
 
