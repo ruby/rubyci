@@ -54,7 +54,7 @@ class Report < ActiveRecord::Base
   end
 
   def shortsummary
-    str = summary[/^[^\x28]+(?:\s*\([^\x29]*\)|\s*\[[^\x5D]*\])*\s*(\S.*?) \(/, 1]
+    summary[/^[^\x28]+(?:\s*\([^\x29]*\)|\s*\[[^\x5D]*\])*\s*(\S.*?) \(/, 1]
   end
 
   def diffstat
