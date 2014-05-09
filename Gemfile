@@ -1,6 +1,6 @@
 source 'https://rubygems.org'
 
-ruby '2.1.1' unless ENV['DEV']
+ruby '2.1.2' unless ENV['DEV']
 gem 'rails', '~> 3.2'
 gem 'thin'
 
