@@ -2,7 +2,7 @@ source 'https://rubygems.org'
 
 ruby '2.1.2' unless ENV['DEV']
 gem 'rails', '~> 4.1'
-gem 'activeresource'
+gem 'activeresource', require: 'active_resource'
 gem 'unicorn'
 
 gem 'sass-rails'
