@@ -42,7 +42,7 @@ class ServersController < ApplicationController
   # POST /servers
   # POST /servers.json
   def create
-    @server = Server.new(params[:server])
+    @server = Server.new(server_params)
 
     respond_to do |format|
       if @server.save
@@ -61,7 +61,7 @@ class ServersController < ApplicationController
     @server = Server.find(params[:id])
 
     respond_to do |format|
-      if @server.update_attributes(params[:server])
+      if @server.update_attributes(server_params)
         format.html { redirect_to @server, notice: 'Server was successfully updated.' }
         format.json { head :ok }
       else
@@ -146,5 +146,9 @@ class ServersController < ApplicationController
     authenticate_or_request_with_http_basic do |user, pass|
       ENV['ROOT_PASSWORD'] && user == 'root' && pass == ENV['ROOT_PASSWORD']
     end
+  end
+
+  def server_params
+    params.require(:server).permit(:name, :arch, :os, :version, :uri, :ordinal)
   end
 end
