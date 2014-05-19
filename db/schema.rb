@@ -11,7 +11,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20140204075601) do
+ActiveRecord::Schema.define(:version => 20140227115154) do
 
   create_table "logfiles", :force => true do |t|
     t.integer  "report_id"
@@ -33,6 +33,7 @@ ActiveRecord::Schema.define(:version => 20140204075601) do
     t.datetime "created_at"
     t.datetime "updated_at"
     t.string   "option"
+    t.text     "ltsv"
   end
 
   add_index "reports", ["branch"], :name => "index_reports_on_branch"
