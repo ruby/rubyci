@@ -1,0 +1,488 @@
+#!/usr/bin/ruby
+
+# usage:
+#   chkbuild-ruby-info [options] chkbuild-ruby-log-file.txt[.gz]
+#
+# options:
+#   -h : show help message
+#   --type TYPE,... : show only specified types
+
+require 'optparse'
+require 'zlib'
+require 'json'
+require 'pp'
+
+$opt_type = nil
+
+def optionparser
+  o = OptionParser.new
+  o.def_option('-h', 'show this message') { puts o; exit }
+  o.def_option('--type TYPE,...', 'show only specified types') {|val|
+    $opt_type = val.split(/,/)
+  }
+  o
+end
+
+def output_json_outermost_array
+  Thread.current[:chkbuild_json_array_first] = true
+  print "[\n"
+  yield
+  print "\n]\n"
+end
+
+def output_json_object(hash)
+  if $opt_type
+    unless $opt_type.include? hash["type"]
+      return
+    end
+  end
+  if Thread.current[:chkbuild_json_array_first]
+    Thread.current[:chkbuild_json_array_first] = false
+  else
+    print ",\n"
+  end
+  print JSON.dump(hash)
+end
+
+def first_paragraph(str)
+  str.sub(/\n\n[\s\S]*\z/, '')
+end
+
+def path_after_time(str)
+  if %r{/\d{8,}T\d{6}Z/} =~ str
+    $'
+  else
+    str
+  end
+end
+
+def gsub_path_to_time(str)
+  str.gsub(%r{/\S+/\d{8,}T\d{6}Z/}, '')
+end
+
+def strip_colon(str)
+  str.gsub(/\A:|:\z/, '')
+end
+
+def scan_svn(section)
+  # chkbuild run "svn info" since 2009-12-16.
+  url = /^Repository Root: (.*)$/.match(section)
+  lastrev = /^Last Changed Rev: (\d+)$/.match(section)
+  if url && lastrev
+    h = {
+      "type" => "svn",
+      "URL" => url[1],
+      "rev" => lastrev[1].to_i
+    }
+    output_json_object h
+  end
+end
+
+def scan_svn_old_chkbuild(section)
+  # chkbuild didn't run "svn info" but recorded CHG line between 2007-11-01 and 2009-12-16.
+  #
+  #+ svn checkout -q http://svn.ruby-lang.org/repos/ruby/trunk ruby
+  #CHG .   26102->26106    http://svn.ruby-lang.org/cgi-bin/viewvc.cgi?view=rev&revision=26106;diff_format=u
+  url = /^\+ svn checkout -q (\S*)/.match(section)
+  lastrev = /^CHG \.\t\d+->(\d+)/.match(section)
+  if url && lastrev
+    h = {
+      "type" => "svn",
+      "URL" => url[1],
+      "rev" => lastrev[1].to_i
+    }
+    output_json_object h
+  end
+end
+
+def scan_git(section)
+  #CHECKOUT git git://github.com/nurse/mspec.git mspec
+  #LASTCOMMIT 88ffc944daaa9f1894521f8abaddc88d9a087342
+  url = /^CHECKOUT git (.*)$/.match(section)
+  commit = /^LASTCOMMIT (\S+)$/.match(section)
+  if url && commit
+    h = {
+      "type" => "git",
+      "URL" => url[1],
+      "commit" => commit[1]
+    }
+    output_json_object h
+  end
+end
+
+BTEST_RESULT_MAP = {
+  '.' => 'success',
+  'F' => 'failure',
+}
+def scan_btest(section, btest='btest')
+  #test_io.rb
+  ##257 test_io.rb:1 .
+  ##258 test_io.rb:11 .
+  ##259 test_io.rb:34 .
+  ##260 test_io.rb:44 F
+  #stderr output is not empty
+  #   /extdisk/chkbuild/chkbuild/tmp/build/20140424T124800Z/ruby/lib/tmpdir.rb:8:in `require': cannot load such file -- etc.so (LoadError)
+  #           from /extdisk/chkbuild/chkbuild/tmp/build/20140424T124800Z/ruby/lib/tmpdir.rb:8:in `<top (required)>'
+  #           from bootstraptest.tmp.rb:2:in `require'
+  #           from bootstraptest.tmp.rb:2:in `<main>'
+  ##261 test_io.rb:60 F
+  #stderr output is not empty
+  #   /extdisk/chkbuild/chkbuild/tmp/build/20140424T124800Z/ruby/lib/tmpdir.rb:8:in `require': cannot load such file -- etc.so (LoadError)
+  #           from /extdisk/chkbuild/chkbuild/tmp/build/20140424T124800Z/ruby/lib/tmpdir.rb:8:in `<top (required)>'
+  #           from bootstraptest.tmp.rb:2:in `require'
+  #           from bootstraptest.tmp.rb:2:in `<main>'
+  ##262 test_io.rb:77 .
+  ##263 test_io.rb:85 .
+  ##264 test_io.rb:105 .
+  ##265 test_io.rb:112 .
+
+  #KNOWNBUGS.rb #1 KNOWNBUGS.rb:16:in `<top (required)>'
+  #F
+
+  section.scan(/\#(\d+) (\S+):(\d+)(.*)\s([.F])$/) {
+    h = {
+      "type" => "#{btest}-result",
+      "test-suite" => btest,
+      "testnum" => $1,
+      "file" => $2,
+      "line" => $3,
+      "caller" => strip_colon($4),
+      "result" => BTEST_RESULT_MAP.fetch($5, $5)
+    }
+    output_json_object h
+  }
+
+  ##260 test_io.rb:44:
+  #     require 'tmpdir'
+  #     begin
+  #       tmpname = "#{Dir.tmpdir}/ruby-btest-#{$$}-#{rand(0x100000000).to_s(36)}"
+  #       rw = File.open(tmpname, File::RDWR|File::CREAT|File::EXCL)
+  #     rescue Errno::EEXIST
+  #       retry
+  #     end
+  #     save = STDIN.dup
+  #     STDIN.reopen(rw)
+  #     STDIN.reopen(save)
+  #     rw.close
+  #     File.unlink(tmpname) unless RUBY_PLATFORM['nacl']
+  #     :ok
+  #  #=> "" (expected "ok")
+
+  ##1 KNOWNBUGS.rb:16:in `<top (required)>': 
+  #     open("tst-remove-load.rb", "w") {|f|
+  #       f << <<-'End'
+  #         module Kernel
+  #           remove_method :load
+  #         end
+  #         raise
+  #       End
+  #     }
+  #     load "tst-remove-load.rb"
+  #  #=> killed by SIGSEGV (signal 11)
+  #| tst-remove-load.rb:4: [BUG] Segmentation fault
+  #| ruby 1.9.2dev (2010-02-20 trunk 26717) [i686-linux]
+  #| 
+  #| -- control frame ----------
+  #| c:0006 p:0019 s:0015 b:0015 l:000014 d:000014 TOP    tst-remove-load.rb:4
+  #| c:0005 p:---- s:0013 b:0013 l:000012 d:000012 FINISH
+  #  [ruby-dev:40234] [ruby-core:27959]
+  #FAIL 1/1 tests failed
+
+  section.scan(/^\#(\d+) (\S+):(\d+):(.*) \n((?: {5}.*\n)*)  \#=> (.*)/) {
+    h = {
+      "type" => "#{btest}-detail",
+      "test-suite" => btest,
+      "testnum" => $1,
+      "file" => $2,
+      "line" => $3,
+      "caller" => strip_colon($4),
+      "code" => $5,
+      "message" => $6,
+    }
+    output_json_object h
+  }
+
+  if /^No tests, no problem$/ =~ section
+    h = {
+      "type" => "#{btest}-summary",
+      "test-suite" => btest,
+      "tests" => 0,
+      "failures" => 0
+    }
+    output_json_object h
+  elsif /^PASS all (\d+) tests/ =~ section
+    h = {
+      "type" => "#{btest}-summary",
+      "test-suite" => btest,
+      "tests" => $1.to_i,
+      "failures" => 0
+    }
+    output_json_object h
+  elsif /^FAIL (\d+)\/(\d+) tests failed/ =~ section
+    h = {
+      "type" => "#{btest}-summary",
+      "test-suite" => btest,
+      "tests" => $2.to_i,
+      "failures" => $1.to_i,
+    }
+    output_json_object h
+  end
+end
+
+def scan_testrb(section)
+  #sample/test.rb:assignment .ok 1 (sample/test.rb:129:in `<main>')
+  #.ok 2 (sample/test.rb:131:in `<main>')
+  #.ok 3 (sample/test.rb:135:in `<main>')
+  #.ok 4 (sample/test.rb:137:in `<main>')
+
+  #.ok 59 (sample/test.rb:1719:in `<main>')
+  #.ok 60 (sample/test.rb:1720:in `<main>')
+  #Fnot ok string & char 61 -- sample/test.rb:1721:in `<main>'
+  #.ok 62 (sample/test.rb:1728:in `<main>')
+  # 62
+  #sample/test.rb:assignment .ok 1 (sample/test.rb:1732:in `<main>')
+  #.ok 2 (sample/test.rb:1733:in `<main>')
+  #.ok 3 (sample/test.rb:1737:in `<main>')
+
+  what = nil
+  section.scan(%r{^sample/test\.rb:(.*) (?=[.F])|\.ok (\d+) \((.*)\)|not ok (.*) (\d+) -- (.*)\n}) {
+    if $1
+      what = $1
+    elsif $2
+      h = {
+        "type" => "testrb-result",
+        "test-suite" => "testrb",
+        "what" => what,
+        "testnum" => $2,
+        "location" => $3,
+        "result" => "success",
+      }
+      output_json_object h
+    else
+      h = {
+        "type" => "testrb-result",
+        "test-suite" => "testrb",
+        "what" => $4,
+        "testnum" => $5,
+        "location" => $6,
+        "result" => "failure",
+      }
+      output_json_object h
+    end
+  }
+
+  if /^end of test\(test: (\d+)\)/ =~ section
+    h = {
+      "type" => "testrb-summary",
+      "test-suite" => "testrb",
+      "tests" => $1.to_i,
+      "failures" => 0,
+    }
+    output_json_object h
+  elsif /^test: (\d+) failed (\d+)/ =~ section || %r{^not ok/test: (\d+) failed (\d+)} =~ section
+    h = {
+      "type" => "testrb-summary",
+      "test-suite" => "testrb",
+      "tests" => $1.to_i,
+      "failures" => $2.to_i,
+    }
+    output_json_object h
+  end
+end
+
+TEST_ALL_RESULT_MAP = {
+  '.' => 'success',
+  'E' => 'error',
+  'F' => 'failure',
+  'S' => 'skip',
+}
+def scan_test_all(section)
+  if /^Finished tests in / =~ section
+    list = $`
+    detailed_failures = $'
+  else
+    # test-all not finished properly?
+    list = section
+  end
+
+  list.scan(/^(\S+\#\S+) = (?:[\s\S]*? )??(\d+\.\d+) s = ([EFS.])$/) {
+    h = {
+      "type" => "test-all-result",
+      "test-suite" => "test-all",
+      "test-name" => $1,
+      "elapsed-time" => $2.to_f,
+      "result" => TEST_ALL_RESULT_MAP.fetch($3, $3),
+    }
+    output_json_object h
+  }
+
+  if detailed_failures
+    ary = detailed_failures.split(/^  (\d+)\) /)
+    ary.slice_before(/\A\d+\z/).each {|num, body|
+      next if /\A\d+\z/ !~ num || !body
+
+      #  1) Error:
+      #TestSymbol#test_gc_attrset:
+      #NameError: cannot make unknown type anonymous ID 4:838aed5 attrset
+      #    /extdisk/chkbuild/chkbuild/tmp/build/20140502T100500Z/ruby/test/ruby/test_symbol.rb:255:in `eval'
+      #    /extdisk/chkbuild/chkbuild/tmp/build/20140502T100500Z/ruby/test/ruby/test_symbol.rb:255:in `block in <main>'
+      #    /extdisk/chkbuild/chkbuild/tmp/build/20140502T100500Z/ruby/test/ruby/test_symbol.rb:254:in `each'
+      #    /extdisk/chkbuild/chkbuild/tmp/build/20140502T100500Z/ruby/test/ruby/test_symbol.rb:254:in `<main>'
+      if /\AError:\n(\S+):\n(\S+): (.*)\n/ =~ body
+        h = {
+          "type" => "test-all-error-detail",
+          "test-suite" => "test-all",
+          "test-name" => $1,
+          "error-class" => $2,
+          "error-message" => $3,
+          "backtrace" => gsub_path_to_time(first_paragraph($'))
+        }
+        output_json_object h
+      end
+
+      #TestThread#test_handle_interrupt [/extdisk/chkbuild/chkbuild/tmp/build/20140502T161600Z/ruby/test/ruby/test_thread.rb:551]:
+      #<[:on_blocking, :c1]> expected but was
+      #<[:on_blocking, :c2]>.
+      if /\AFailure:\n(\S+) \[(.*)\]:\n/ =~ body
+        h = {
+          "type" => "test-all-failure-detail",
+          "test-suite" => "test-all",
+          "test-name" => $1,
+          "failure-location" => path_after_time($2),
+          "detail" => first_paragraph($')
+        }
+        output_json_object h
+      end
+    }
+  end
+
+  if /^(\d+) tests, (\d+) assertions, (\d+) failures, (\d+) errors(?:, (\d+) skips)?$/m =~ section
+    h = {
+      "type" => "test-all-summary",
+      "test-suite" => "test-all",
+      "tests" => $1.to_i,
+      "assertions" => $2.to_i,
+      "failures" => $3.to_i,
+      "errors" => $4.to_i,
+    }
+    h["skips"] = $5.to_i if $5
+    output_json_object h
+  end
+end
+
+def scan_rubyspec(section)
+  if /^1\)\n/ =~ section
+    list = $`
+    detailed_failures = $& + $'
+  else
+    # rubyspec not finished properly?
+    list = section
+  end
+
+  if detailed_failures
+
+    #1)
+    #Process::Status#exited? for a terminated child returns false FAILED
+    #Expected true to be false
+    #/extdisk/chkbuild/chkbuild/tmp/build/20140511T004100Z/rubyspec/core/process/status/exited_spec.rb:25:in `block (4 levels) in <top (required)>'
+    #/extdisk/chkbuild/chkbuild/tmp/build/20140511T004100Z/rubyspec/core/process/status/exited_spec.rb:3:in `<top (required)>'
+
+    detailed_failures.split(/^\d+\)\n/).each {|body|
+      body = first_paragraph(body)
+      next if /\n/ !~ body
+      h = {
+        "type" => "rubyspec-detail",
+        "test-suite" => "rubyspec",
+        "description" => gsub_path_to_time($`),
+        "detail" => gsub_path_to_time($')
+      }
+      output_json_object h
+    }
+  end
+
+  if /^(\d+) files?, (\d+) examples?, (\d+) expectations?, (\d+) failures?, (\d+) errors?$/m =~ section
+    h = {
+      "type" => "rubyspec-summary",
+      "test-suite" => "rubyspec",
+      "files" => $1.to_i,
+      "examples" => $2.to_i,
+      "expectations" => $3.to_i,
+      "failures" => $4.to_i,
+      "errors" => $5.to_i,
+    }
+    output_json_object h
+  end
+end
+
+def detect_section_failure(secname, section)
+  if /^failed\((.*)\)\n\z/ =~ section
+    h = {
+      "type" => "section-failure",
+      "secname" => secname,
+      "message" => $1
+    }
+    output_json_object h
+  end
+end
+
+def extract_info(f)
+  first = true
+  f.each_line("\n== ") {|section|
+    section.scrub!
+    section.sub!(/\n== \z/, '')
+    if first
+      first = false
+    else
+      section = '== ' + section
+    end
+    if /\n\z/ !~ section
+      section << "\n"
+    end
+    section_line = section.lines.first
+    _, secname, rest =  section_line.split(/\s+/, 3)
+    case secname
+    when "svn/ruby", "svn-info/ruby"
+      scan_svn(section)
+    when "svn"
+      scan_svn_old_chkbuild(section)
+    when "git/mspec", "git/rubyspec", "git-mspec", "git-rubyspec"
+      scan_git(section)
+    when "btest"
+      scan_btest(section)
+    when "test.rb"
+      scan_testrb(section)
+    when "test-knownbug"
+      scan_btest(section, 'test-knownbug')
+    when "test-all"
+      scan_test_all(section)
+    when "rubyspec"
+      scan_rubyspec(section)
+    end
+    detect_section_failure(secname, section)
+  }
+end
+
+def open_log(filename)
+  if /\.gz\z/ =~ filename
+    Zlib::GzipReader.open(filename) {|f|
+      yield f
+    }
+  else
+    File.open(filename) {|f|
+      yield f
+    }
+  end
+end
+
+def main(argv)
+  optionparser.parse!(argv)
+  argv.each {|filename|
+    open_log(filename) {|f|
+      output_json_outermost_array {
+        extract_info(f)
+      }
+    }
+  }
+end
+
+main(ARGV)
