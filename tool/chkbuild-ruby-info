@@ -66,7 +66,7 @@ end
 
 def scan_svn(section)
   # chkbuild run "svn info" since 2009-12-16.
-  url = /^Repository Root: (.*)$/.match(section)
+  url = /^Repository Root: (\S+)$/.match(section)
   lastrev = /^Last Changed Rev: (\d+)$/.match(section)
   if url && lastrev
     h = {
@@ -98,7 +98,7 @@ end
 def scan_git(section)
   #CHECKOUT git git://github.com/nurse/mspec.git mspec
   #LASTCOMMIT 88ffc944daaa9f1894521f8abaddc88d9a087342
-  url = /^CHECKOUT git (.*)$/.match(section)
+  url = /^CHECKOUT git (\S+)/.match(section)
   commit = /^LASTCOMMIT (\S+)$/.match(section)
   if url && commit
     h = {
@@ -340,6 +340,7 @@ def scan_test_all(section)
         output_json_object h
       end
 
+      #  1) Failure:
       #TestThread#test_handle_interrupt [/extdisk/chkbuild/chkbuild/tmp/build/20140502T161600Z/ruby/test/ruby/test_thread.rb:551]:
       #<[:on_blocking, :c1]> expected but was
       #<[:on_blocking, :c2]>.
