@@ -462,6 +462,18 @@ def extract_info(f)
   }
 end
 
+def open_stdin
+  magic = $stdin.read(2).b
+  $stdin.ungetc(magic)
+  if magic == "\x1f\x8b".b
+    Zlib::GzipReader.wrap($stdin) {|f|
+      yield f
+    }
+  else
+    yield $stdin
+  end
+end
+
 def open_log(filename)
   if /\.gz\z/ =~ filename
     Zlib::GzipReader.open(filename) {|f|
@@ -476,6 +488,14 @@ end
 
 def main(argv)
   optionparser.parse!(argv)
+  if File.pipe?($stdin)
+    open_stdin {|f|
+      output_json_outermost_array {
+        extract_info(f)
+      }
+    }
+    return
+  end
   argv.each {|filename|
     open_log(filename) {|f|
       output_json_outermost_array {
