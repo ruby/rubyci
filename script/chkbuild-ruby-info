@@ -64,6 +64,123 @@ def strip_colon(str)
   str.gsub(/\A:|:\z/, '')
 end
 
+def scan_first_section(secname, section)
+  #== ruby-trunk # 2014-05-24T22:36:01+09:00
+  h = { "type" => "depsuffixed_name", "depsuffixed_name" => secname }
+  output_json_object h
+
+  #Nickname: boron
+  if /^Nickname: (\S+)/ =~ section
+    output_json_object({"type"=>"nickname", "nickname"=>$1 })
+  end
+
+  #uname_srvm: Linux 2.6.18-6-xen-686 #1 SMP Thu Nov 5 19:54:42 UTC 2009 i686
+  #uname_s: Linux
+  #uname_r: 2.6.18-6-xen-686
+  #uname_v: #1 SMP Thu Nov 5 19:54:42 UTC 2009
+  #uname_m: i686
+  #uname_p: unknown
+  #uname_i: unknown
+  #uname_o: GNU/Linux
+  uname = { "type" => "uname" }
+  uname["sysname"] = $1 if /^uname_s: (.+)$/ =~ section
+  uname["release"] = $1 if /^uname_r: (.+)$/ =~ section
+  uname["version"] = $1 if /^uname_v: (.+)$/ =~ section
+  uname["machine"] = $1 if /^uname_m: (.+)$/ =~ section
+  uname["processor"] = $1 if /^uname_p: (.+)$/ =~ section
+  uname["hardware-platform"] = $1 if /^uname_i: (.+)$/ =~ section
+  uname["operating-system"] = $1 if /^uname_o: (.+)$/ =~ section
+  output_json_object(uname) if 1 < uname.size
+
+  #debian_version: 6.0.9
+  #Debian Architecture: i386
+  debian = { "type" => "debian" }
+  debian["version"] = $1 if /^debian_version: (\S+)$/ =~ section
+  debian["architecture"] = $1 if /^Debian Architecture: (\S+)$/ =~ section
+  output_json_object(debian) if 1 < debian.size
+
+  #Distributor ID: Debian
+  #Description:    Debian GNU/Linux 6.0.9 (squeeze)
+  #Release:        6.0.9
+  #Codename:       squeeze
+  lsb = { "type" => "lsb" } # lsb_release
+  lsb["Distributor"] = $1 if /^Distributor ID:\s*(\S+)$/ =~ section
+  lsb["Description"] = $1 if /^Description:\s*(\S+)$/ =~ section
+  lsb["Release"] = $1 if /^Release:\s*(\S+)$/ =~ section
+  lsb["Codename"] = $1 if /^Codename:\s*(\S+)$/ =~ section
+  output_json_object(lsb) if 1 < lsb.size
+end
+
+def scan_start(section)
+  #start-time: 20140524T133600Z
+  if /^start-time: (\S+)/ =~ section
+    output_json_object({"type"=>"start-time", "start-time"=>$1 })
+  end
+end
+
+def scan_autoconf_version(section)
+  #autoconf (GNU Autoconf) 2.67
+  if /^autoconf \(GNU Autoconf\) (\S+)/ =~ section
+    output_json_object({"type"=>"autoconf-version", "version"=>$1 })
+  end
+end
+
+def scan_bison_version(section)
+  #bison (GNU Bison) 2.4.1
+  if /^bison \(GNU Bison\) (\S+)/ =~ section
+    output_json_object({"type"=>"bison-version", "version"=>$1 })
+  end
+end
+
+def scan_version_h(section)
+  ##define RUBY_VERSION "2.2.0"
+  ##define RUBY_RELEASE_DATE "2014-05-24"
+  ##define RUBY_PATCHLEVEL -1
+  ##define RUBY_BRANCH_NAME "trunk"
+  ##define RUBY_RELEASE_YEAR 2014
+  ##define RUBY_RELEASE_MONTH 5
+  ##define RUBY_RELEASE_DAY 24
+  h = { "type" => "ruby-version" }
+  h["version"] = $1 if /^\#define RUBY_VERSION "(\S+)"/ =~ section
+  h["release_date"] = $1 if /^\#define RUBY_RELEASE_DATE "(\S+)"/ =~ section
+  h["patchlevel"] = $1.to_i if /^\#define RUBY_PATCHLEVEL (\S+)/ =~ section
+  h["branch_name"] = $1 if /^\#define RUBY_BRANCH_NAME "(\S+)"/ =~ section
+  h["release_year"] = $1.to_i if /^\#define RUBY_RELEASE_YEAR (\S+)/ =~ section
+  h["release_month"] = $1.to_i if /^\#define RUBY_RELEASE_MONTH (\S+)/ =~ section
+  h["release_day"] = $1.to_i if /^\#define RUBY_RELEASE_DAY (\S+)/ =~ section
+  output_json_object(h) if 1 < h.size
+end
+
+def scan_verconf_h(section)
+  ##define RUBY_PLATFORM "i686-linux"
+  if /^\#define RUBY_PLATFORM "(\S+)"/ =~ section
+    output_json_object({"type"=>"ruby-platform", "platform"=>$1 })
+  end
+end
+
+def scan_config_files(section)
+  #config.guess: 2014-03-23
+  #config.sub: 2014-05-01
+  h = { "type" => "config-files" }
+  h["config.guess"] = $1 if /^config\.guess: (\S+)/ =~ section
+  h["config.sub"] = $1 if /^config\.sub: (\S+)/ =~ section
+  output_json_object(h) if 1 < h.size
+end
+
+def scan_cc_version(section)
+  #gcc (GCC) 4.8.0
+  if /^gcc \(GCC\) (\S+)/ =~ section
+    output_json_object({"type"=>"cc-version", "cc"=>"gcc", "version"=>$1 })
+  end
+end
+
+def scan_miniruby_libc(section)
+  #GNU C Library (Debian EGLIBC 2.11.3-4) stable release version 2.11.3, by Roland McGrath et al.
+  if /^(GNU C Library .*), by/ =~ section
+    output_json_object({"type"=>"libc-version", "version"=>$1 })
+  end
+end
+
 def scan_svn(section)
   # chkbuild run "svn info" since 2009-12-16.
   url = /^Repository Root: (\S+)$/.match(section)
@@ -108,6 +225,101 @@ def scan_git(section)
     }
     output_json_object h
   end
+end
+
+def scan_method_list(section)
+  #ARGF.class [Enumerable, Object, Kernel, BasicObject]
+  #ARGF.class#argv 0
+  #ARGF.class#each -1
+  #Array.[] -1
+  #Array#<< 1
+  #File.lchmod 0 not-implemented
+  #fatal [Exception, Object, Kernel, BasicObject]
+  section.each_line {|line|
+    case line
+    when /\A(\S+) \[(.*)\]\n/
+      h = {
+        'type' => 'builtin-class',
+        'class' => $1,
+        'ancestors' => $2.split(/,\s*/)
+      }
+      output_json_object h
+    when /\A(\S+)\#(\S+) (-?\d+)( not-implemented)?\n/
+      h = {
+        'type' => 'builtin-instance-method',
+        'class' => $1,
+        'method' => $2,
+        'arity' => $3.to_i,
+        'implemented' => $4 ? false : true
+      }
+      output_json_object h
+    when /\A(\S+)\.(\S+) (-?\d+)( not-implemented)?\n/
+      h = {
+        'type' => 'builtin-class-method',
+        'class' => $1,
+        'method' => $2,
+        'arity' => $3.to_i,
+        'implemented' => $4 ? false : true
+      }
+      output_json_object h
+    end
+  }
+end
+
+def scan_showflags(section)
+  h = { 'type' => 'make-flags' }
+  h["CC"] = $1.strip if /^[ \t]+CC = (.+)\n/ =~ section
+  h["LD"] = $1.strip if /^[ \t]+LD = (.+)\n/ =~ section
+  h["LDSHARED"] = $1.strip if /^[ \t]+LDSHARED = (.+)\n/ =~ section
+  h["CFLAGS"] = $1.strip if /^[ \t]+CFLAGS = (.+)\n/ =~ section
+  h["XCFLAGS"] = $1.strip if /^[ \t]+XCFLAGS = (.+)\n/ =~ section
+  h["CPPFLAGS"] = $1.strip if /^[ \t]+CPPFLAGS = (.+)\n/ =~ section
+  h["DLDFLAGS"] = $1.strip if /^[ \t]+DLDFLAGS = (.+)\n/ =~ section
+  h["SOLIBS"] = $1.strip if /^[ \t]+SOLIBS = (.+)\n/ =~ section
+  h["target"] = $1.strip if /^Target: (.+)\n/ =~ section
+  output_json_object h
+end
+
+def scan_ruby_v(section)
+  #ruby 2.2.0dev (2014-05-24 trunk 46082) [i686-linux]
+  if /^ruby .*/ =~ section
+    output_json_object({"type"=>"ruby-v", "version"=>$1 })
+  end
+end
+
+def scan_version_list(section)
+  %w[
+    libc
+    gmp
+    dbm
+    gdbm
+    readline
+    openssl
+    zlib
+    tcltklib
+    curses
+  ].each {|lib|
+    if /^#{Regexp.escape lib}: (.*)\n/ =~ section
+      h = { 'type' => "ruby-#{lib}-version", "version" => $1 }
+      output_json_object h
+    end
+  }
+end
+
+def scan_abi_check(section)
+  high = 0
+  section.scan(/ High +([0-9])+ *$/) { high += $1.to_i }
+  medium = 0
+  section.scan(/ Medium +([0-9])+ *$/) { medium += $1.to_i }
+  low = 0
+  section.scan(/ Low +([0-9])+ *$/) { low += $1.to_i }
+  h = {
+    'type' => "abi-check-summary",
+    "high" => high,
+    "medium" => medium,
+    "low" => low
+  }
+  output_json_object h
 end
 
 BTEST_RESULT_MAP = {
@@ -431,9 +643,7 @@ def extract_info(f)
   f.each_line("\n== ") {|section|
     section.scrub!
     section.sub!(/\n== \z/, '')
-    if first
-      first = false
-    else
+    if !first
       section = '== ' + section
     end
     if /\n\z/ !~ section
@@ -441,25 +651,53 @@ def extract_info(f)
     end
     section_line = section.lines.first
     _, secname, rest =  section_line.split(/\s+/, 3)
+    scan_first_section(secname, section) if first
     case secname
+    when "start"
+      scan_start(section)
+    when "autoconf-version"
+      scan_autoconf_version(section)
+    when "bison-version"
+      scan_bison_version(section)
     when "svn/ruby", "svn-info/ruby"
       scan_svn(section)
     when "svn"
       scan_svn_old_chkbuild(section)
     when "git/mspec", "git/rubyspec", "git-mspec", "git-rubyspec"
       scan_git(section)
+    when "version.h"
+      scan_version_h(section)
+    when "verconf.h"
+      scan_verconf_h(section)
+    when "config-files"
+      scan_config_files(section)
+    when "cc-version"
+      scan_cc_version(section)
+    when "miniruby-libc"
+      scan_miniruby_libc(section)
     when "btest"
       scan_btest(section)
     when "test.rb"
       scan_testrb(section)
+    when "method-list"
+      scan_method_list(section)
+    when "showflags"
+      scan_showflags(section)
     when "test-knownbug"
       scan_btest(section, 'test-knownbug')
+    when "version"
+      scan_ruby_v(section)
+    when "version-list"
+      scan_version_list(section)
+    when "abi-check-notitle", "abi-check"
+      scan_abi_check(section)
     when "test-all"
       scan_test_all(section)
     when "rubyspec"
       scan_rubyspec(section)
     end
     detect_section_failure(secname, section)
+    first = false
   }
 end
 
