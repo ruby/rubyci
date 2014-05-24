@@ -632,14 +632,14 @@ def scan_bug(secname, section)
     #sample/test.rb:1873: [BUG] Segmentation fault
     next if /\[BUG\]/ !~ line
     prefix = $`
-    suffix = $'
+    message = $'
     #Expected /#<Bogus:/ to match "-e:3: [BUG] Segmentation fault\nruby ...
     next if /\\n/ =~ line
     h = {
       'type' => 'BUG',
       'secname' => secname,
       'prefix' => prefix.strip,
-      'suffix' => suffix.strip
+      'message' => message.strip
     }
     output_json_object h
   }
