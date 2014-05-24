@@ -627,6 +627,24 @@ def scan_rubyspec(section)
   end
 end
 
+def scan_bug(secname, section)
+  section.each_line {|line|
+    #sample/test.rb:1873: [BUG] Segmentation fault
+    next if /\[BUG\]/ !~ line
+    prefix = $`
+    suffix = $'
+    #Expected /#<Bogus:/ to match "-e:3: [BUG] Segmentation fault\nruby ...
+    next if /\\n/ =~ line
+    h = {
+      'type' => 'BUG',
+      'secname' => secname,
+      'prefix' => prefix.strip,
+      'suffix' => suffix.strip
+    }
+    output_json_object h
+  }
+end
+
 def detect_section_failure(secname, section)
   if /^failed\((.*)\)\n\z/ =~ section
     h = {
@@ -696,6 +714,7 @@ def extract_info(f)
     when "rubyspec"
       scan_rubyspec(section)
     end
+    scan_bug(secname, section)
     detect_section_failure(secname, section)
     first = false
   }
