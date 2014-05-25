@@ -283,7 +283,7 @@ end
 def scan_ruby_v(section)
   #ruby 2.2.0dev (2014-05-24 trunk 46082) [i686-linux]
   if /^ruby .*/ =~ section
-    output_json_object({"type"=>"ruby-v", "version"=>$1 })
+    output_json_object({"type"=>"ruby-v", "version"=>$& })
   end
 end
 
