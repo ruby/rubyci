@@ -2,7 +2,16 @@ class ReportsController < ApplicationController
   # GET /reports
   # GET /reports.json
   def index
-    @reports = Report.order('datetime desc').limit(100).includes(:server).all
+    @use_opacity = false
+    @reports = Report.order('datetime DESC').limit(300).includes(:server)
+
+    str = params[:branch].to_s[/\A(?:trunk|[\d.]+)\z/]
+    @reports = @reports.where(branch: str) if str
+
+    str = params[:result].to_s[/\A(?:success|failure)\z/]
+    @reports = @reports.where(Report.arel_table[:ltsv].matches("%\tresult:#{str}\t%")) if str
+
+    @reports = @reports.all
 
     respond_to do |format|
       format.html # index.html.erb
@@ -11,6 +20,7 @@ class ReportsController < ApplicationController
   end
 
   def current
+    @use_opacity = true
     last = Report.last
     last_modified = last ? last.updated_at.utc : Time.at(0)
     interval = 600 # cron interval

@@ -20,7 +20,7 @@
       <%
         d = now - report.datetime.to_i
         style = nil
-        if d > 10000
+        if @use_opacity && d > 10000
           style = %[ style="opacity:#{Math.log(Math::E, d/3600)}"]
         end
         failuri = report.failuri || report.loguri
