@@ -517,13 +517,14 @@ def scan_test_all(section)
     list = section
   end
 
-  list.scan(/^(\S+\#\S+) = (?:[\s\S]*?)??(\d+\.\d+) s = ([EFS.])$/) {
+  list.scan(/^(\S+\#\S+) = ([\s\S]*?)(\d+\.\d+) s = ([EFS.])$/) {
     h = {
       "type" => "test-all-result",
       "test-suite" => "test-all",
       "test-name" => $1,
-      "elapsed-time" => $2.to_f,
-      "result" => TEST_ALL_RESULT_MAP.fetch($3, $3),
+      "output" => $2,
+      "elapsed-time" => $3.to_f,
+      "result" => TEST_ALL_RESULT_MAP.fetch($4, $4),
     }
     output_json_object h
   }
