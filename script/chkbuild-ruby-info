@@ -517,7 +517,7 @@ def scan_test_all(section)
     list = section
   end
 
-  list.scan(/^(\S+\#\S+) = (?:[\s\S]*? )??(\d+\.\d+) s = ([EFS.])$/) {
+  list.scan(/^(\S+\#\S+) = (?:[\s\S]*?)??(\d+\.\d+) s = ([EFS.])$/) {
     h = {
       "type" => "test-all-result",
       "test-suite" => "test-all",
