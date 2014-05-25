@@ -140,7 +140,7 @@ def scan_version_h(section)
   ##define RUBY_RELEASE_YEAR 2014
   ##define RUBY_RELEASE_MONTH 5
   ##define RUBY_RELEASE_DAY 24
-  h = { "type" => "ruby-version" }
+  h = { "type" => "ruby-release" }
   h["version"] = $1 if /^\#define RUBY_VERSION "(\S+)"/ =~ section
   h["release_date"] = $1 if /^\#define RUBY_RELEASE_DATE "(\S+)"/ =~ section
   h["patchlevel"] = $1.to_i if /^\#define RUBY_PATCHLEVEL (\S+)/ =~ section
@@ -283,7 +283,7 @@ end
 def scan_ruby_v(section)
   #ruby 2.2.0dev (2014-05-24 trunk 46082) [i686-linux]
   if /^ruby .*/ =~ section
-    output_json_object({"type"=>"ruby-v", "version"=>$& })
+    output_json_object({"type"=>"ruby-version", "version"=>$& })
   end
 end
 
