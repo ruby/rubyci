@@ -9,22 +9,25 @@
 # from scratch. The latter is a flawed and unsustainable approach (the more migrations
 # you'll amass, the slower it'll run and the greater likelihood for issues).
 #
-# It's strongly recommended to check this file into your version control system.
+# It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20140204075601) do
+ActiveRecord::Schema.define(version: 20140525060954) do
 
-  create_table "logfiles", :force => true do |t|
+  # These are extensions that must be enabled in order to support this database
+  enable_extension "plpgsql"
+
+  create_table "logfiles", force: true do |t|
     t.integer  "report_id"
     t.string   "ext"
     t.binary   "data"
-    t.datetime "created_at", :null => false
-    t.datetime "updated_at", :null => false
+    t.datetime "created_at"
+    t.datetime "updated_at"
   end
 
-  add_index "logfiles", ["report_id", "ext"], :name => "index_logfiles_on_report_id_and_ext", :unique => true
-  add_index "logfiles", ["report_id"], :name => "index_logfiles_on_report_id"
+  add_index "logfiles", ["report_id", "ext"], name: "index_logfiles_on_report_id_and_ext", unique: true, using: :btree
+  add_index "logfiles", ["report_id"], name: "index_logfiles_on_report_id", using: :btree
 
-  create_table "reports", :force => true do |t|
+  create_table "reports", force: true do |t|
     t.integer  "server_id"
     t.datetime "datetime"
     t.string   "branch"
@@ -33,13 +36,14 @@ ActiveRecord::Schema.define(:version => 20140204075601) do
     t.datetime "created_at"
     t.datetime "updated_at"
     t.string   "option"
+    t.text     "ltsv"
   end
 
-  add_index "reports", ["branch"], :name => "index_reports_on_branch"
-  add_index "reports", ["datetime"], :name => "index_reports_on_datetime"
-  add_index "reports", ["server_id", "branch"], :name => "index_reports_on_server_id_and_branch"
+  add_index "reports", ["branch"], name: "index_reports_on_branch", using: :btree
+  add_index "reports", ["datetime"], name: "index_reports_on_datetime", using: :btree
+  add_index "reports", ["server_id", "branch"], name: "index_reports_on_server_id_and_branch", using: :btree
 
-  create_table "servers", :force => true do |t|
+  create_table "servers", force: true do |t|
     t.string   "name"
     t.string   "uri"
     t.datetime "created_at"
@@ -50,6 +54,6 @@ ActiveRecord::Schema.define(:version => 20140204075601) do
     t.float    "ordinal"
   end
 
-  add_index "servers", ["name"], :name => "index_servers_on_name"
+  add_index "servers", ["name"], name: "index_servers_on_name", using: :btree
 
 end
