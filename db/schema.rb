@@ -11,18 +11,17 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20140525060954) do
+ActiveRecord::Schema.define(version: 20140227115154) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
-  enable_extension "pg_stat_statements"
 
   create_table "logfiles", force: true do |t|
     t.integer  "report_id"
     t.string   "ext"
     t.binary   "data"
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
+    t.datetime "created_at"
+    t.datetime "updated_at"
   end
 
   add_index "logfiles", ["report_id", "ext"], name: "index_logfiles_on_report_id_and_ext", unique: true, using: :btree
