@@ -44,6 +44,15 @@ def output_json_object(hash)
   print JSON.dump(hash)
 end
 
+$unique_hash = {}
+def output_unique_json_object(hash)
+  hash = hash.dup.freeze
+  if !$unique_hash.has_key?(hash)
+    output_json_object(hash)
+    $unique_hash[hash] = true
+  end
+end
+
 def first_paragraph(str)
   str.sub(/\n\n[\s\S]*\z/, '')
 end
@@ -114,7 +123,7 @@ end
 def scan_start(section)
   #start-time: 20140524T133600Z
   if /^start-time: (\S+)/ =~ section
-    output_json_object({"type"=>"start-time", "start-time"=>$1 })
+    output_unique_json_object({"type"=>"start-time", "start-time"=>$1 })
   end
 end
 
@@ -149,6 +158,13 @@ def scan_version_h(section)
   h["release_month"] = $1.to_i if /^\#define RUBY_RELEASE_MONTH (\S+)/ =~ section
   h["release_day"] = $1.to_i if /^\#define RUBY_RELEASE_DAY (\S+)/ =~ section
   output_json_object(h) if 1 < h.size
+end
+
+def scan_configure(section)
+  #+ ./configure --prefix=/extdisk/chkbuild/chkbuild/tmp/build/20140521T114300Z ...
+  if %r{^\+ \S+/configure --prefix=\S+/([0-9]{8,}T[0-9]{6}Z?) } =~ section
+    output_unique_json_object({"type"=>"start-time", "start-time"=>$1 })
+  end
 end
 
 def scan_verconf_h(section)
@@ -699,6 +715,8 @@ def extract_info(f)
       scan_git(section)
     when "version.h"
       scan_version_h(section)
+    when "configure"
+      scan_configure(section)
     when "verconf.h"
       scan_verconf_h(section)
     when "config-files"
