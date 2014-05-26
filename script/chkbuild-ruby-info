@@ -670,7 +670,12 @@ def extract_info(f)
   f.each_line("\n== ") {|section|
     section.scrub!
     section.sub!(/\n== \z/, '')
-    if !first
+    if first
+      if /<html>/ =~ section
+        STDERR.puts "chkbuild-ruby-info needs text log (not HTML log)."
+        exit false
+      end
+    else
       section = '== ' + section
     end
     if /\n\z/ !~ section
