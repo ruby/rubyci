@@ -611,7 +611,7 @@ def scan_test_all(secname, section)
   end
 end
 
-def scan_rubyspec(section)
+def scan_rubyspec(secname, section)
   if /^1\)\n/ =~ section
     list = $`
     detailed_failures = $& + $'
@@ -632,8 +632,8 @@ def scan_rubyspec(section)
       body = first_paragraph(body)
       next if /\n/ !~ body
       h = {
-        "type" => "rubyspec-detail",
-        "test-suite" => "rubyspec",
+        "type" => "#{secname}-detail",
+        "test-suite" => secname,
         "description" => gsub_path_to_time($`),
         "detail" => gsub_path_to_time($')
       }
@@ -643,8 +643,8 @@ def scan_rubyspec(section)
 
   if /^(\d+) files?, (\d+) examples?, (\d+) expectations?, (\d+) failures?, (\d+) errors?$/m =~ section
     h = {
-      "type" => "rubyspec-summary",
-      "test-suite" => "rubyspec",
+      "type" => "#{secname}-summary",
+      "test-suite" => secname,
       "files" => $1.to_i,
       "examples" => $2.to_i,
       "expectations" => $3.to_i,
@@ -772,8 +772,8 @@ def extract_info(f)
       scan_abi_check(section)
     when "test-all", %r{\Atest/}
       scan_test_all(secname, section)
-    when "rubyspec"
-      scan_rubyspec(section)
+    when "rubyspec", %r{\Arubyspec/}
+      scan_rubyspec(secname, section)
     end
     scan_bug(secname, section)
     scan_make_failure(secname, section)
