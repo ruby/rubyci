@@ -44,6 +44,15 @@ def output_json_object(hash)
   print JSON.dump(hash)
 end
 
+$unique_hash = {}
+def output_unique_json_object(hash)
+  hash = hash.dup.freeze
+  if !$unique_hash.has_key?(hash)
+    output_json_object(hash)
+    $unique_hash[hash] = true
+  end
+end
+
 def first_paragraph(str)
   str.sub(/\n\n[\s\S]*\z/, '')
 end
@@ -114,7 +123,7 @@ end
 def scan_start(section)
   #start-time: 20140524T133600Z
   if /^start-time: (\S+)/ =~ section
-    output_json_object({"type"=>"start-time", "start-time"=>$1 })
+    output_unique_json_object({"type"=>"start-time", "start-time"=>$1 })
   end
 end
 
@@ -140,7 +149,7 @@ def scan_version_h(section)
   ##define RUBY_RELEASE_YEAR 2014
   ##define RUBY_RELEASE_MONTH 5
   ##define RUBY_RELEASE_DAY 24
-  h = { "type" => "ruby-version" }
+  h = { "type" => "ruby-release" }
   h["version"] = $1 if /^\#define RUBY_VERSION "(\S+)"/ =~ section
   h["release_date"] = $1 if /^\#define RUBY_RELEASE_DATE "(\S+)"/ =~ section
   h["patchlevel"] = $1.to_i if /^\#define RUBY_PATCHLEVEL (\S+)/ =~ section
@@ -149,6 +158,13 @@ def scan_version_h(section)
   h["release_month"] = $1.to_i if /^\#define RUBY_RELEASE_MONTH (\S+)/ =~ section
   h["release_day"] = $1.to_i if /^\#define RUBY_RELEASE_DAY (\S+)/ =~ section
   output_json_object(h) if 1 < h.size
+end
+
+def scan_configure(section)
+  #+ ./configure --prefix=/extdisk/chkbuild/chkbuild/tmp/build/20140521T114300Z ...
+  if %r{^\+ \S+/configure --prefix=\S+/([0-9]{8,}T[0-9]{6}Z?) } =~ section
+    output_unique_json_object({"type"=>"start-time", "start-time"=>$1 })
+  end
 end
 
 def scan_verconf_h(section)
@@ -228,21 +244,29 @@ def scan_git(section)
 end
 
 def scan_method_list(section)
-  #ARGF.class [Enumerable, Object, Kernel, BasicObject]
+  #class ARGF.class [Enumerable, Object, Kernel, BasicObject]
   #ARGF.class#argv 0
   #ARGF.class#each -1
   #Array.[] -1
   #Array#<< 1
   #File.lchmod 0 not-implemented
-  #fatal [Exception, Object, Kernel, BasicObject]
+  #module Comparable []
+  #class fatal [Exception, Object, Kernel, BasicObject]
+  #
+  #Old format:
+  #ARGF.class [Enumerable, Object, Kernel, BasicObject]
   section.each_line {|line|
     case line
-    when /\A(\S+) \[(.*)\]\n/
+    when /\A(?:(module|class) )?(\S+) \[(.*)\]\n/
+      module_or_class = $1
       h = {
-        'type' => 'builtin-class',
-        'class' => $1,
-        'ancestors' => $2.split(/,\s*/)
+        'type' => 'builtin-module',
+        'module' => $2,
+        'ancestors' => $3.split(/,\s*/)
       }
+      if module_or_class
+        h['class'] = module_or_class == 'class'
+      end
       output_json_object h
     when /\A(\S+)\#(\S+) (-?\d+)( not-implemented)?\n/
       h = {
@@ -283,7 +307,7 @@ end
 def scan_ruby_v(section)
   #ruby 2.2.0dev (2014-05-24 trunk 46082) [i686-linux]
   if /^ruby .*/ =~ section
-    output_json_object({"type"=>"ruby-v", "version"=>$& })
+    output_json_object({"type"=>"ruby-version", "version"=>$& })
   end
 end
 
@@ -517,13 +541,17 @@ def scan_test_all(section)
     list = section
   end
 
-  list.scan(/^(\S+\#\S+) = (?:[\s\S]*? )??(\d+\.\d+) s = ([EFS.])$/) {
+  # TestIOScanf#test_" ,10,1.1"(" ,%d,%f") = 0.00 s = .
+  # TestVariable#test_global_variable_0 = (eval):1: warning: possibly useless use of a variable in void context
+  # 0.12 s = .
+  list.scan(/^(\S+\#[\s\S]+?) = ([\s\S]*?)(\d+\.\d+) s = ([EFS.])$/) {
     h = {
       "type" => "test-all-result",
       "test-suite" => "test-all",
       "test-name" => $1,
-      "elapsed-time" => $2.to_f,
-      "result" => TEST_ALL_RESULT_MAP.fetch($3, $3),
+      "output" => $2,
+      "elapsed-time" => $3.to_f,
+      "result" => TEST_ALL_RESULT_MAP.fetch($4, $4),
     }
     output_json_object h
   }
@@ -661,7 +689,12 @@ def extract_info(f)
   f.each_line("\n== ") {|section|
     section.scrub!
     section.sub!(/\n== \z/, '')
-    if !first
+    if first
+      if /\A<html>/ =~ section
+        STDERR.puts "chkbuild-ruby-info needs text log (not HTML log)."
+        exit false
+      end
+    else
       section = '== ' + section
     end
     if /\n\z/ !~ section
@@ -685,6 +718,8 @@ def extract_info(f)
       scan_git(section)
     when "version.h"
       scan_version_h(section)
+    when "configure"
+      scan_configure(section)
     when "verconf.h"
       scan_verconf_h(section)
     when "config-files"
