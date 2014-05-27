@@ -105,7 +105,15 @@ class ChkBuildRubyInfo
 
   def scan_first_section(secname, section)
     #== ruby-trunk # 2014-05-24T22:36:01+09:00
-    h = { "type" => "depsuffixed_name", "depsuffixed_name" => secname }
+    h = { "type" => "depsuffixed-name", "depsuffixed-name" => secname }
+    output_json_object h
+
+    suffixed_name = secname[/\A[^_]+/]
+    h = { "type" => "suffixed-name", "suffixed-name" => suffixed_name }
+    output_json_object h
+
+    target_name = suffixed_name[/\A[^-]+/]
+    h = { "type" => "target-name", "target-name" => target_name }
     output_json_object h
 
     #Nickname: boron
