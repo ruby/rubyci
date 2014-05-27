@@ -697,6 +697,15 @@ def scan_glibc_failure(secname, section)
     }
     output_json_object h
   }
+  section.scan(/^(.*): symbol lookup error: (.*)\n/) {
+    h = {
+      "type" => "glibc-symbol-lookup-error",
+      "secname" => secname,
+      "prefix" => $1,
+      "message" => $2.strip
+    }
+    output_json_object h
+  }
 end
 
 def detect_section_failure(secname, section)
