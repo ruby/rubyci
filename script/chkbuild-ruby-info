@@ -350,7 +350,7 @@ BTEST_RESULT_MAP = {
   '.' => 'success',
   'F' => 'failure',
 }
-def scan_btest(section, btest='btest')
+def scan_btest(secname, section)
   #test_io.rb
   ##257 test_io.rb:1 .
   ##258 test_io.rb:11 .
@@ -377,8 +377,8 @@ def scan_btest(section, btest='btest')
 
   section.scan(/\#(\d+) (\S+):(\d+)(.*)\s([.F])$/) {
     h = {
-      "type" => "#{btest}-result",
-      "test-suite" => btest,
+      "type" => "#{secname}-result",
+      "test-suite" => secname,
       "testnum" => $1,
       "file" => $2,
       "line" => $3,
@@ -426,8 +426,8 @@ def scan_btest(section, btest='btest')
 
   section.scan(/^\#(\d+) (\S+):(\d+):(.*) \n((?: {5}.*\n)*)  \#=> (.*)/) {
     h = {
-      "type" => "#{btest}-detail",
-      "test-suite" => btest,
+      "type" => "#{secname}-detail",
+      "test-suite" => secname,
       "testnum" => $1,
       "file" => $2,
       "line" => $3,
@@ -440,24 +440,24 @@ def scan_btest(section, btest='btest')
 
   if /^No tests, no problem$/ =~ section
     h = {
-      "type" => "#{btest}-summary",
-      "test-suite" => btest,
+      "type" => "#{secname}-summary",
+      "test-suite" => secname,
       "tests" => 0,
       "failures" => 0
     }
     output_json_object h
   elsif /^PASS all (\d+) tests/ =~ section
     h = {
-      "type" => "#{btest}-summary",
-      "test-suite" => btest,
+      "type" => "#{secname}-summary",
+      "test-suite" => secname,
       "tests" => $1.to_i,
       "failures" => 0
     }
     output_json_object h
   elsif /^FAIL (\d+)\/(\d+) tests failed/ =~ section
     h = {
-      "type" => "#{btest}-summary",
-      "test-suite" => btest,
+      "type" => "#{secname}-summary",
+      "test-suite" => secname,
       "tests" => $2.to_i,
       "failures" => $1.to_i,
     }
@@ -755,7 +755,7 @@ def extract_info(f)
     when "miniruby-libc"
       scan_miniruby_libc(section)
     when "btest"
-      scan_btest(section)
+      scan_btest(secname, section)
     when "test.rb"
       scan_testrb(section)
     when "method-list"
@@ -763,7 +763,7 @@ def extract_info(f)
     when "showflags"
       scan_showflags(section)
     when "test-knownbug"
-      scan_btest(section, 'test-knownbug')
+      scan_btest(secname, section)
     when "version"
       scan_ruby_v(section)
     when "version-list"
