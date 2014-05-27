@@ -10,12 +10,17 @@
 require 'optparse'
 require 'zlib'
 require 'json'
+require 'time'
 require 'pp'
 
 class ChkBuildRubyInfo
   def initialize
     @opt_type = nil
     @unique_hash = {}
+    @json_array_first = nil
+
+    @current_section_name = nil
+    @current_section_start_time = nil
   end
 
   def optionparser
@@ -28,7 +33,7 @@ class ChkBuildRubyInfo
   end
 
   def output_json_outermost_array
-    Thread.current[:chkbuild_json_array_first] = true
+    @json_array_first = true
     print "[\n"
     yield
     print "\n]\n"
@@ -40,8 +45,8 @@ class ChkBuildRubyInfo
         return
       end
     end
-    if Thread.current[:chkbuild_json_array_first]
-      Thread.current[:chkbuild_json_array_first] = false
+    if @json_array_first
+      @json_array_first = false
     else
       print ",\n"
     end
@@ -74,6 +79,28 @@ class ChkBuildRubyInfo
 
   def strip_colon(str)
     str.gsub(/\A:|:\z/, '')
+  end
+
+  def scan_section_start(secname, rest)
+    if /\d{4,}-\d\d-\d\dT\d\d:\d\d:\d\d[+-]\d\d:\d\d/ =~ rest
+      t = $&
+    end
+
+    if @current_section_name
+      h = { "type" => "section-end", "secname" => @current_section_name }
+      h["end-time"] = t if t
+      if t && @current_section_start_time
+        h["elapsed-time[s]"] = Time.iso8601(t) - Time.iso8601(@current_section_start_time)
+      end
+      output_json_object h
+    end
+
+    h = { "type" => "section-start", "secname" => secname }
+    h["start-time"] = t if t
+    output_json_object h
+
+    @current_section_name = secname
+    @current_section_start_time = t
   end
 
   def scan_first_section(secname, section)
@@ -740,6 +767,7 @@ class ChkBuildRubyInfo
       end
       section_line = section.lines.first
       _, secname, rest =  section_line.split(/\s+/, 3)
+      scan_section_start(secname, rest)
       scan_first_section(secname, section) if first
       case secname
       when "start"
