@@ -673,6 +673,32 @@ def scan_bug(secname, section)
   }
 end
 
+def scan_make_failure(secname, section)
+  section.scan(/^(.*)\n(.*)make: \*\*\* (.*)\n/) { # GNU make
+    h = {
+      "type" => "make-failure",
+      "secname" => secname,
+      "prev-line" => $1,
+      "prefix" => $2,
+      "message" => $3
+    }
+    output_json_object h
+  }
+end
+
+def scan_glibc_failure(secname, section)
+  section.scan(/^(.*)\*\*\* (.*) \*\*\*(.*)\n/) {
+    h = {
+      "type" => "glibc-failure",
+      "secname" => secname,
+      "prefix" => $1,
+      "message1" => $2,
+      "message2" => $3.strip
+    }
+    output_json_object h
+  }
+end
+
 def detect_section_failure(secname, section)
   if /^failed\((.*)\)\n\z/ =~ section
     h = {
@@ -750,6 +776,8 @@ def extract_info(f)
       scan_rubyspec(section)
     end
     scan_bug(secname, section)
+    scan_make_failure(secname, section)
+    scan_glibc_failure(secname, section)
     detect_section_failure(secname, section)
     first = false
   }
