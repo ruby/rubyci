@@ -754,6 +754,18 @@ class ChkBuildRubyInfo
     }
   end
 
+  def scan_timeout(secname, section)
+    section.scan(/^(.*)timeout: ((command execution time exceeds|output interval exceeds|too long line\.) .*)\n/) {
+      h = {
+        "type" => "timeout",
+        "secname" => secname,
+        "prefix" => $1,
+        "message" => $2
+      }
+      output_json_object h
+    }
+  end
+
   def detect_section_failure(secname, section)
     if /^failed\((.*)\)\n\z/ =~ section
       h = {
@@ -835,6 +847,7 @@ class ChkBuildRubyInfo
       scan_fatal(secname, section)
       scan_make_failure(secname, section)
       scan_glibc_failure(secname, section)
+      scan_timeout(secname, section)
       detect_section_failure(secname, section)
       first = false
     }
