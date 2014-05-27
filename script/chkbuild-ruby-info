@@ -582,7 +582,7 @@ class ChkBuildRubyInfo
     # TestIOScanf#test_" ,10,1.1"(" ,%d,%f") = 0.00 s = .
     # TestVariable#test_global_variable_0 = (eval):1: warning: possibly useless use of a variable in void context
     # 0.12 s = .
-    list.scan(/^(\S+\#[\s\S]+?) = ([\s\S]*?)(\d+\.\d+) s = ([EFS.])$/) {
+    list.scan(/^(\S+\#.+?) = ([\s\S]*?)(\d+\.\d+) s = ([EFS.])$/) {
       h = {
         "type" => "#{secname}-result",
         "test-suite" => secname,
