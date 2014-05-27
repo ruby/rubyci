@@ -703,6 +703,22 @@ class ChkBuildRubyInfo
     }
   end
 
+  def scan_fatal(secname, section)
+    section.each_line {|line|
+      #[FATAL] failed to allocate memory
+      next if /\[FATAL\]/ !~ line
+      prefix = $`
+      message = $'
+      h = {
+        'type' => 'FATAL',
+        'secname' => secname,
+        'prefix' => prefix.strip,
+        'message' => message.strip
+      }
+      output_json_object h
+    }
+  end
+
   def scan_make_failure(secname, section)
     section.scan(/^(.*)\n(.*)make: \*\*\* (.*)\n/) { # GNU make
       h = {
@@ -816,6 +832,7 @@ class ChkBuildRubyInfo
         scan_rubyspec(secname, section)
       end
       scan_bug(secname, section)
+      scan_fatal(secname, section)
       scan_make_failure(secname, section)
       scan_glibc_failure(secname, section)
       detect_section_failure(secname, section)
