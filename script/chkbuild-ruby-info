@@ -532,7 +532,7 @@ TEST_ALL_RESULT_MAP = {
   'F' => 'failure',
   'S' => 'skip',
 }
-def scan_test_all(section)
+def scan_test_all(secname, section)
   if /^Finished tests in / =~ section
     list = $`
     detailed_failures = $'
@@ -546,8 +546,8 @@ def scan_test_all(section)
   # 0.12 s = .
   list.scan(/^(\S+\#[\s\S]+?) = ([\s\S]*?)(\d+\.\d+) s = ([EFS.])$/) {
     h = {
-      "type" => "test-all-result",
-      "test-suite" => "test-all",
+      "type" => "#{secname}-result",
+      "test-suite" => secname,
       "test-name" => $1,
       "output" => $2,
       "elapsed-time" => $3.to_f,
@@ -570,8 +570,8 @@ def scan_test_all(section)
       #    /extdisk/chkbuild/chkbuild/tmp/build/20140502T100500Z/ruby/test/ruby/test_symbol.rb:254:in `<main>'
       if /\AError:\n(\S+):\n(\S+): (.*)\n/ =~ body
         h = {
-          "type" => "test-all-error-detail",
-          "test-suite" => "test-all",
+          "type" => "#{secname}-error-detail",
+          "test-suite" => secname,
           "test-name" => $1,
           "error-class" => $2,
           "error-message" => $3,
@@ -586,8 +586,8 @@ def scan_test_all(section)
       #<[:on_blocking, :c2]>.
       if /\AFailure:\n(\S+) \[(.*)\]:\n/ =~ body
         h = {
-          "type" => "test-all-failure-detail",
-          "test-suite" => "test-all",
+          "type" => "#{secname}-failure-detail",
+          "test-suite" => secname,
           "test-name" => $1,
           "failure-location" => path_after_time($2),
           "detail" => first_paragraph($')
@@ -599,8 +599,8 @@ def scan_test_all(section)
 
   if /^(\d+) tests, (\d+) assertions, (\d+) failures, (\d+) errors(?:, (\d+) skips)?$/m =~ section
     h = {
-      "type" => "test-all-summary",
-      "test-suite" => "test-all",
+      "type" => "#{secname}-summary",
+      "test-suite" => secname,
       "tests" => $1.to_i,
       "assertions" => $2.to_i,
       "failures" => $3.to_i,
@@ -770,8 +770,8 @@ def extract_info(f)
       scan_version_list(section)
     when "abi-check-notitle", "abi-check"
       scan_abi_check(section)
-    when "test-all"
-      scan_test_all(section)
+    when "test-all", %r{\Atest/}
+      scan_test_all(secname, section)
     when "rubyspec"
       scan_rubyspec(section)
     end
