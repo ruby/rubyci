@@ -14,7 +14,8 @@ require 'time'
 require 'pp'
 
 class ChkBuildRubyInfo
-  def initialize
+  def initialize(f)
+    @f = f
     @unique_hash = {}
     @json_array_first = nil
 
@@ -855,9 +856,9 @@ class ChkBuildRubyInfo
     }
   end
 
-  def generate_json(f)
+  def convert_to_json
     output_json_outermost_array {
-      extract_info(f)
+      extract_info(@f)
     }
   end
 end
@@ -900,13 +901,13 @@ def main(argv)
   optionparser.parse!(argv)
   if File.pipe?($stdin)
     open_stdin {|f|
-      ChkBuildRubyInfo.new.generate_json(f)
+      ChkBuildRubyInfo.new(f).convert_to_json
     }
     return
   end
   argv.each {|filename|
     open_log(filename) {|f|
-      ChkBuildRubyInfo.new.generate_json(f)
+      ChkBuildRubyInfo.new(f).convert_to_json
     }
   }
 end
