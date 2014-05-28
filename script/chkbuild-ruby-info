@@ -25,9 +25,12 @@ class ChkBuildRubyInfo
 
   def output_json_outermost_array
     @json_array_first = true
-    print "[\n"
     yield
-    print "\n]\n"
+    if @json_array_first
+      print "[]\n"
+    else
+      print "\n]\n"
+    end
   end
 
   def output_json_object(hash)
@@ -37,6 +40,7 @@ class ChkBuildRubyInfo
       end
     end
     if @json_array_first
+      print "[\n"
       @json_array_first = false
     else
       print ",\n"
