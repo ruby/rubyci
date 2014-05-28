@@ -126,7 +126,6 @@ end
 
 def test_start
 check(<<'End1', <<'End2', %w[start-time build-dir])
-== ruby-trunk # 2010-12-02T16:51:01+09:00
 == start # 2014-05-28T21:05:12+09:00
 start-time: 20140528T120400Z
 build-dir: /extdisk/chkbuild/chkbuild/tmp/build/20140528T120400Z
@@ -139,7 +138,6 @@ end
 def test_configure
 ["", " optflags=-O0"].each {|str|
 check(<<"End1", <<'End2', %w[start-time build-dir])
-== ruby-trunk # 2010-12-02T16:51:01+09:00
 == configure # 2014-05-28T21:05:58+09:00
 + ./configure --prefix=/extdisk/chkbuild/chkbuild/tmp/build/20140528T120400Z#{str}
 End1
@@ -151,7 +149,6 @@ end
 
 def test_all_with_output
 check(<<'End1', <<'End2', 'test-all-result')
-== ruby-trunk # 2010-12-02T16:51:01+09:00
 == test-all # 2010-12-02T16:51:01+09:00
 TestVariable#test_global_variable_0 = (eval):1: warning: possibly useless use of a variable in void context
 0.12 s = .
@@ -162,7 +159,6 @@ end
 
 def test_all_method_with_spaces
 check(<<'End1', <<'End2', 'test-all-result')
-== ruby-trunk # 2010-12-02T16:51:01+09:00
 == test-all # 2010-12-02T16:51:01+09:00
 TestIOScanf#test_" ,10,1.1"(" ,%d,%f") = 0.00 s = .
 End1
