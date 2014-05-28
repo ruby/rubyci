@@ -12,15 +12,16 @@ class ChkBuildRubyInfo
 
     @current_section_name = nil
     @current_section_start_time = nil
+    @out = $stdout
   end
 
   def output_json_outermost_array
     @json_array_first = true
     yield
     if @json_array_first
-      print "[]\n"
+      @out.print "[]\n"
     else
-      print "\n]\n"
+      @out.print "\n]\n"
     end
   end
 
@@ -31,12 +32,12 @@ class ChkBuildRubyInfo
       end
     end
     if @json_array_first
-      print "[\n"
+      @out.print "[\n"
       @json_array_first = false
     else
-      print ",\n"
+      @out.print ",\n"
     end
-    print JSON.dump(hash)
+    @out.print JSON.dump(hash)
   end
 
   def output_unique_json_object(hash)
@@ -107,14 +108,6 @@ class ChkBuildRubyInfo
       output_json_object({"type"=>"nickname", "nickname"=>$1 })
     end
 
-    #uname_srvm: Linux 2.6.18-6-xen-686 #1 SMP Thu Nov 5 19:54:42 UTC 2009 i686
-    #uname_s: Linux
-    #uname_r: 2.6.18-6-xen-686
-    #uname_v: #1 SMP Thu Nov 5 19:54:42 UTC 2009
-    #uname_m: i686
-    #uname_p: unknown
-    #uname_i: unknown
-    #uname_o: GNU/Linux
     uname = { "type" => "uname" }
     uname["sysname"] = $1 if /^uname_s: (.+)$/ =~ section
     uname["release"] = $1 if /^uname_r: (.+)$/ =~ section
@@ -125,17 +118,11 @@ class ChkBuildRubyInfo
     uname["operating-system"] = $1 if /^uname_o: (.+)$/ =~ section
     output_json_object(uname) if 1 < uname.size
 
-    #debian_version: 6.0.9
-    #Debian Architecture: i386
     debian = { "type" => "debian" }
     debian["version"] = $1 if /^debian_version: (\S+)$/ =~ section
     debian["architecture"] = $1 if /^Debian Architecture: (\S+)$/ =~ section
     output_json_object(debian) if 1 < debian.size
 
-    #Distributor ID: Debian
-    #Description:    Debian GNU/Linux 6.0.9 (squeeze)
-    #Release:        6.0.9
-    #Codename:       squeeze
     lsb = { "type" => "lsb" } # lsb_release
     lsb["Distributor"] = $1 if /^Distributor ID:\s*(\S+)$/ =~ section
     lsb["Description"] = $1 if /^Description:\s*(\S+)$/ =~ section
@@ -778,11 +765,11 @@ class ChkBuildRubyInfo
       section.sub!(/\n== \z/, '')
       if first
         if /\A<html>/ =~ section
-          STDERR.puts "chkbuild-ruby-info needs text log (not HTML log)."
+          $stderr.puts "chkbuild-ruby-info needs text log (not HTML log)."
           exit false
         end
         if /\A== / !~ section
-          STDERR.puts "It seems not a chkbuild log."
+          $stderr.puts "It seems not a chkbuild log."
           exit false
         end
       else
@@ -851,7 +838,8 @@ class ChkBuildRubyInfo
     }
   end
 
-  def convert_to_json
+  def convert_to_json(out=$stdout)
+    @out = out
     output_json_outermost_array {
       extract_info(@f)
     }
