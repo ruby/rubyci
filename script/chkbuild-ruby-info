@@ -15,7 +15,6 @@ require 'pp'
 
 class ChkBuildRubyInfo
   def initialize
-    @opt_type = nil
     @unique_hash = {}
     @json_array_first = nil
 
@@ -31,8 +30,8 @@ class ChkBuildRubyInfo
   end
 
   def output_json_object(hash)
-    if @opt_type
-      unless @opt_type.include? hash["type"]
+    if $opt_type
+      unless $opt_type.include? hash["type"]
         return
       end
     end
@@ -863,11 +862,12 @@ class ChkBuildRubyInfo
   end
 end
 
+$opt_type = nil
 def optionparser
   o = OptionParser.new
   o.def_option('-h', 'show this message') { puts o; exit }
   o.def_option('--type TYPE,...', 'show only specified types') {|val|
-    @opt_type = val.split(/,/)
+    $opt_type = val.split(/,/)
   }
   o
 end
