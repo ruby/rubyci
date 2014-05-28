@@ -31,8 +31,8 @@ class ChkBuildRubyInfo
   end
 
   def output_json_object(hash)
-    if $opt_type
-      unless $opt_type.include? hash["type"]
+    if self.class.opt_type
+      unless self.class.opt_type.include? hash["type"]
         return
       end
     end
@@ -861,57 +861,61 @@ class ChkBuildRubyInfo
       extract_info(@f)
     }
   end
-end
 
-$opt_type = nil
-def optionparser
-  o = OptionParser.new
-  o.def_option('-h', 'show this message') { puts o; exit }
-  o.def_option('--type TYPE,...', 'show only specified types') {|val|
-    $opt_type = val.split(/,/)
-  }
-  o
-end
-
-def open_stdin
-  magic = $stdin.read(2).b
-  $stdin.ungetc(magic)
-  if magic == "\x1f\x8b".b
-    Zlib::GzipReader.wrap($stdin) {|f|
-      yield f
-    }
-  else
-    yield $stdin
+  class << self
+    attr_reader :opt_type
   end
-end
+  @opt_type = nil
 
-def open_log(filename)
-  if /\.gz\z/ =~ filename
-    Zlib::GzipReader.open(filename) {|f|
-      yield f
+  def self.optionparser
+    o = OptionParser.new
+    o.def_option('-h', 'show this message') { puts o; exit }
+    o.def_option('--type TYPE,...', 'show only specified types') {|val|
+      @opt_type = val.split(/,/)
     }
-  else
-    File.open(filename) {|f|
-      yield f
+    o
+  end
+
+  def self.open_stdin
+    magic = $stdin.read(2).b
+    $stdin.ungetc(magic)
+    if magic == "\x1f\x8b".b
+      Zlib::GzipReader.wrap($stdin) {|f|
+        yield f
+      }
+    else
+      yield $stdin
+    end
+  end
+
+  def self.open_log(filename)
+    if /\.gz\z/ =~ filename
+      Zlib::GzipReader.open(filename) {|f|
+        yield f
+      }
+    else
+      File.open(filename) {|f|
+        yield f
+      }
+    end
+  end
+
+  def self.main(argv)
+    optionparser.parse!(argv)
+    if File.pipe?($stdin)
+      open_stdin {|f|
+        ChkBuildRubyInfo.new(f).convert_to_json
+      }
+      return
+    end
+    argv.each {|filename|
+      open_log(filename) {|f|
+        ChkBuildRubyInfo.new(f).convert_to_json
+      }
     }
   end
-end
-
-def main(argv)
-  optionparser.parse!(argv)
-  if File.pipe?($stdin)
-    open_stdin {|f|
-      ChkBuildRubyInfo.new(f).convert_to_json
-    }
-    return
-  end
-  argv.each {|filename|
-    open_log(filename) {|f|
-      ChkBuildRubyInfo.new(f).convert_to_json
-    }
-  }
 end
 
 if $0 == __FILE__
-  main(ARGV)
+  ChkBuildRubyInfo.main(ARGV)
 end
