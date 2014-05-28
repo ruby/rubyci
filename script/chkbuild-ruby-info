@@ -23,15 +23,6 @@ class ChkBuildRubyInfo
     @current_section_start_time = nil
   end
 
-  def optionparser
-    o = OptionParser.new
-    o.def_option('-h', 'show this message') { puts o; exit }
-    o.def_option('--type TYPE,...', 'show only specified types') {|val|
-      @opt_type = val.split(/,/)
-    }
-    o
-  end
-
   def output_json_outermost_array
     @json_array_first = true
     print "[\n"
@@ -861,50 +852,61 @@ class ChkBuildRubyInfo
     }
   end
 
-  def open_stdin
-    magic = $stdin.read(2).b
-    $stdin.ungetc(magic)
-    if magic == "\x1f\x8b".b
-      Zlib::GzipReader.wrap($stdin) {|f|
-        yield f
-      }
-    else
-      yield $stdin
-    end
-  end
-
-  def open_log(filename)
-    if /\.gz\z/ =~ filename
-      Zlib::GzipReader.open(filename) {|f|
-        yield f
-      }
-    else
-      File.open(filename) {|f|
-        yield f
-      }
-    end
-  end
-
-  def main(argv)
-    optionparser.parse!(argv)
-    if File.pipe?($stdin)
-      open_stdin {|f|
-        output_json_outermost_array {
-          extract_info(f)
-        }
-      }
-      return
-    end
-    argv.each {|filename|
-      open_log(filename) {|f|
-        output_json_outermost_array {
-          extract_info(f)
-        }
-      }
+  def generate_json(f)
+    output_json_outermost_array {
+      extract_info(f)
     }
   end
 end
 
+def optionparser
+  o = OptionParser.new
+  o.def_option('-h', 'show this message') { puts o; exit }
+  o.def_option('--type TYPE,...', 'show only specified types') {|val|
+    @opt_type = val.split(/,/)
+  }
+  o
+end
+
+def open_stdin
+  magic = $stdin.read(2).b
+  $stdin.ungetc(magic)
+  if magic == "\x1f\x8b".b
+    Zlib::GzipReader.wrap($stdin) {|f|
+      yield f
+    }
+  else
+    yield $stdin
+  end
+end
+
+def open_log(filename)
+  if /\.gz\z/ =~ filename
+    Zlib::GzipReader.open(filename) {|f|
+      yield f
+    }
+  else
+    File.open(filename) {|f|
+      yield f
+    }
+  end
+end
+
+def main(argv)
+  optionparser.parse!(argv)
+  if File.pipe?($stdin)
+    open_stdin {|f|
+      ChkBuildRubyInfo.new.generate_json(f)
+    }
+    return
+  end
+  argv.each {|filename|
+    open_log(filename) {|f|
+      ChkBuildRubyInfo.new.generate_json(f)
+    }
+  }
+end
+
 if $0 == __FILE__
-  ChkBuildRubyInfo.new.main(ARGV)
+  main(ARGV)
 end
