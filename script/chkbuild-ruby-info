@@ -786,6 +786,10 @@ class ChkBuildRubyInfo
           STDERR.puts "chkbuild-ruby-info needs text log (not HTML log)."
           exit false
         end
+        if /\A== / !~ section
+          STDERR.puts "It seems not a chkbuild log."
+          exit false
+        end
       else
         section = '== ' + section
       end
