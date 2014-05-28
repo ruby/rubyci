@@ -902,17 +902,17 @@ class ChkBuildRubyInfo
 
   def self.main(argv)
     optionparser.parse!(argv)
-    if File.pipe?($stdin)
+    if argv.empty?
       open_stdin {|f|
         ChkBuildRubyInfo.new(f).convert_to_json
       }
-      return
-    end
-    argv.each {|filename|
-      open_log(filename) {|f|
-        ChkBuildRubyInfo.new(f).convert_to_json
+    else
+      argv.each {|filename|
+        open_log(filename) {|f|
+          ChkBuildRubyInfo.new(f).convert_to_json
+        }
       }
-    }
+    end
   end
 end
 
