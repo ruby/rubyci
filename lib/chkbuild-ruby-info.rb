@@ -132,9 +132,12 @@ class ChkBuildRubyInfo
   end
 
   def scan_start(section)
-    #start-time: 20140524T133600Z
     if /^start-time: (\S+)/ =~ section
       output_unique_json_object({"type"=>"start-time", "start-time"=>$1 })
+    end
+
+    if /^build-dir: (\S+)/ =~ section
+      output_unique_json_object({"type"=>"build-dir", "dir"=>$1 })
     end
   end
 

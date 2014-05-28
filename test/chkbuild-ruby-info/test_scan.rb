@@ -10,8 +10,12 @@ class TestChkBuildRubyInfo < Test::Unit::TestCase
     ChkBuildRubyInfo.new(src).convert_to_json(out)
     result = out.string.gsub(/,$/, '').sub(/\A\[\n/, '').sub(/\]\n\z/, '')
     if type
-      json_type = JSON.dump(type)
-      pat = /"type":#{Regexp.escape json_type}/
+      if type.kind_of?(Array)
+        json_type_pat = Regexp.union(*type.map {|t| JSON.dump(t) })
+      else
+        json_type_pat = Regexp.escape(JSON.dump(type))
+      end
+      pat = /"type":#{json_type_pat}/
       result = result.lines.grep(pat).join
     end
     expected = expected.gsub(/,$/, '')
@@ -117,6 +121,18 @@ Release:        6.0.9
 Codename:       squeeze
 End1
 {"type":"lsb","Distributor":"Debian","Release":"6.0.9","Codename":"squeeze"},
+End2
+end
+
+def test_start
+check(<<'End1', <<'End2', %w[start-time build-dir])
+== ruby-trunk # 2010-12-02T16:51:01+09:00
+== start # 2014-05-28T21:05:12+09:00
+start-time: 20140528T120400Z
+build-dir: /extdisk/chkbuild/chkbuild/tmp/build/20140528T120400Z
+End1
+{"type":"start-time","start-time":"20140528T120400Z"},
+{"type":"build-dir","dir":"/extdisk/chkbuild/chkbuild/tmp/build/20140528T120400Z"},
 End2
 end
 
