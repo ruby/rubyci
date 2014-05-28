@@ -136,6 +136,19 @@ End1
 End2
 end
 
+def test_configure
+["", " optflags=-O0"].each {|str|
+check(<<"End1", <<'End2', %w[start-time build-dir])
+== ruby-trunk # 2010-12-02T16:51:01+09:00
+== configure # 2014-05-28T21:05:58+09:00
++ ./configure --prefix=/extdisk/chkbuild/chkbuild/tmp/build/20140528T120400Z#{str}
+End1
+{"type":"start-time","start-time":"20140528T120400Z"},
+{"type":"build-dir","dir":"/extdisk/chkbuild/chkbuild/tmp/build/20140528T120400Z"},
+End2
+}
+end
+
 def test_all_with_output
 check(<<'End1', <<'End2', 'test-all-result')
 == ruby-trunk # 2010-12-02T16:51:01+09:00

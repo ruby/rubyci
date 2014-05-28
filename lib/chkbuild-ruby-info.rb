@@ -175,9 +175,9 @@ class ChkBuildRubyInfo
   end
 
   def scan_configure(section)
-    #+ ./configure --prefix=/extdisk/chkbuild/chkbuild/tmp/build/20140521T114300Z ...
-    if %r{^\+ \S+/configure --prefix=\S+/([0-9]{8,}T[0-9]{6}Z?) } =~ section
-      output_unique_json_object({"type"=>"start-time", "start-time"=>$1 })
+    if %r{^\+ \S+/configure --prefix=(\S+/([0-9]{8,}T[0-9]{6}Z?))(?: |$)} =~ section
+      output_unique_json_object({"type"=>"start-time", "start-time"=>$2 })
+      output_unique_json_object({"type"=>"build-dir", "dir"=>$1 })
     end
   end
 
