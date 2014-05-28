@@ -3,7 +3,6 @@ class Report < ActiveRecord::Base
   require 'uri'
   require 'open-uri'
   belongs_to :server
-  attr_accessible :server_id, :datetime, :branch, :option, :revision, :summary, :ltsv
   validates :server_id, :presence => true
   validates :revision, :numericality => { :only_integer => true }
   validates :datetime, :uniqueness => { :scope => [:server_id, :branch] }

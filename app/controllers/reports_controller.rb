@@ -3,8 +3,7 @@ class ReportsController < ApplicationController
   # GET /reports.json
   def index
     @use_opacity = false
-    orderstr = defined?(SQLite3) ? 'datetime(datetime) DESC' : 'datetime DESC'
-    @reports = Report.order(orderstr).limit(300).includes(:server)
+    @reports = Report.order('datetime DESC').limit(300).includes(:server)
 
     str = params[:branch].to_s[/\A(?:trunk|[\d.]+)\z/]
     @reports = @reports.where(branch: str) if str
@@ -28,9 +27,9 @@ class ReportsController < ApplicationController
     margin = 30 # margin for cron's processing
     expires_in (last_modified.to_i - Time.now.to_i + interval - margin) % interval
     if stale?(:last_modified => last_modified, :etag => last_modified.to_s, :public => true)
-      dt2weeksago = defined?(SQLite3) ? "datetime('now', '-14 days')" : "(now() - interval '14 days')"
       @reports = Report.includes(:server).order('reports.branch DESC, servers.ordinal ASC, reports.option ASC').
-        where("reports.datetime > #{dt2weeksago}").
+        references(:server).
+        where("reports.datetime > (now() - interval '14 days')").
         where('reports.id IN (SELECT MAX(R.id) FROM reports R GROUP BY R.server_id, R.branch, R.option)').all
       render 'index'
     end

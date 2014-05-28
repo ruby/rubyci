@@ -1,5 +1,4 @@
 class Logfile < ActiveRecord::Base
-  attr_accessible :data, :ext, :report_id
   belongs_to :report
   validates :report_id, :presence => true
   validates :ext,
