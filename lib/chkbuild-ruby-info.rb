@@ -677,7 +677,7 @@ class ChkBuildRubyInfo
       h = {
         'type' => 'BUG',
         'secname' => secname,
-        'prefix' => prefix.strip,
+        'line-prefix' => prefix.strip,
         'message' => message.strip
       }
       output_json_object h
@@ -693,7 +693,7 @@ class ChkBuildRubyInfo
       h = {
         'type' => 'FATAL',
         'secname' => secname,
-        'prefix' => prefix.strip,
+        'line-prefix' => prefix.strip,
         'message' => message.strip
       }
       output_json_object h
@@ -706,7 +706,7 @@ class ChkBuildRubyInfo
         "type" => "make-failure",
         "secname" => secname,
         "prev-line" => $1,
-        "prefix" => $2,
+        "line-prefix" => $2,
         "message" => $3
       }
       output_json_object h
@@ -718,7 +718,7 @@ class ChkBuildRubyInfo
       h = {
         "type" => "glibc-failure",
         "secname" => secname,
-        "prefix" => $1,
+        "line-prefix" => $1,
         "message1" => $2,
         "message2" => $3.strip
       }
@@ -728,7 +728,7 @@ class ChkBuildRubyInfo
       h = {
         "type" => "glibc-symbol-lookup-error",
         "secname" => secname,
-        "prefix" => $1,
+        "line-prefix" => $1,
         "message" => $2.strip
       }
       output_json_object h
@@ -740,7 +740,7 @@ class ChkBuildRubyInfo
       h = {
         "type" => "timeout",
         "secname" => secname,
-        "prefix" => $1,
+        "line-prefix" => $1,
         "message" => $2
       }
       output_json_object h

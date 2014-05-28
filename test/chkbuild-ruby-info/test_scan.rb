@@ -120,4 +120,59 @@ End1
 End2
 end
 
+def test_bug
+check(<<'End1', <<'End2', 'BUG')
+== ruby-trunk # 2010-12-02T16:51:01+09:00
+sample/test.rb:1873: [BUG] Segmentation fault
+End1
+{"type":"BUG","secname":"ruby-trunk","line-prefix":"sample/test.rb:1873:","message":"Segmentation fault"},
+End2
+end
+
+def test_fatal
+check(<<'End1', <<'End2', 'FATAL')
+== ruby-trunk # 2010-12-02T16:51:01+09:00
+[FATAL] failed to allocate memory
+End1
+{"type":"FATAL","secname":"ruby-trunk","line-prefix":"","message":"failed to allocate memory"},
+End2
+end
+
+def test_make_failure
+check(<<'End1', <<'End2', 'make-failure')
+== ruby-trunk # 2010-12-02T16:51:01+09:00
+foo
+bar make: *** baz
+End1
+{"type":"make-failure","secname":"ruby-trunk","prev-line":"foo","line-prefix":"bar ","message":"baz"},
+End2
+end
+
+def test_glibc_symbol_lookup_error
+check(<<'End1', <<'End2', 'glibc-symbol-lookup-error')
+== ruby-trunk # 2010-12-02T16:51:01+09:00
+bar: symbol lookup error: baz
+End1
+{"type":"glibc-symbol-lookup-error","secname":"ruby-trunk","line-prefix":"bar","message":"baz"},
+End2
+end
+
+def test_timeout
+check(<<'End1', <<'End2', 'timeout')
+== ruby-trunk # 2010-12-02T16:51:01+09:00
+foo timeout: command execution time exceeds 1800s
+End1
+{"type":"timeout","secname":"ruby-trunk","line-prefix":"foo ","message":"command execution time exceeds 1800s"},
+End2
+end
+
+def test_glibc_failure
+check(<<'End1', <<'End2', 'glibc-failure')
+== ruby-trunk # 2010-12-02T16:51:01+09:00
+bar *** baz *** qux
+End1
+{"type":"glibc-failure","secname":"ruby-trunk","line-prefix":"bar ","message1":"baz","message2":"qux"},
+End2
+end
+
 end
