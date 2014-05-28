@@ -120,6 +120,27 @@ End1
 End2
 end
 
+def test_all_with_output
+check(<<'End1', <<'End2', 'test-all-result')
+== ruby-trunk # 2010-12-02T16:51:01+09:00
+== test-all # 2010-12-02T16:51:01+09:00
+TestVariable#test_global_variable_0 = (eval):1: warning: possibly useless use of a variable in void context
+0.12 s = .
+End1
+{"type":"test-all-result","test-suite":"test-all","test-name":"TestVariable#test_global_variable_0","output":"(eval):1: warning: possibly useless use of a variable in void context\n","elapsed-time[s]":0.12,"result":"success"},
+End2
+end
+
+def test_all_method_with_spaces
+check(<<'End1', <<'End2', 'test-all-result')
+== ruby-trunk # 2010-12-02T16:51:01+09:00
+== test-all # 2010-12-02T16:51:01+09:00
+TestIOScanf#test_" ,10,1.1"(" ,%d,%f") = 0.00 s = .
+End1
+{"type":"test-all-result","test-suite":"test-all","test-name":"TestIOScanf#test_\" ,10,1.1\"(\" ,%d,%f\")","output":"","elapsed-time[s]":0.0,"result":"success"},
+End2
+end
+
 def test_bug
 check(<<'End1', <<'End2', 'BUG')
 == ruby-trunk # 2010-12-02T16:51:01+09:00

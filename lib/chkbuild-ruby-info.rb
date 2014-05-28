@@ -552,16 +552,13 @@ class ChkBuildRubyInfo
       list = section
     end
 
-    # TestIOScanf#test_" ,10,1.1"(" ,%d,%f") = 0.00 s = .
-    # TestVariable#test_global_variable_0 = (eval):1: warning: possibly useless use of a variable in void context
-    # 0.12 s = .
     list.scan(/^(\S+\#.+?) = ([\s\S]*?)(\d+\.\d+) s = ([EFS.])$/) {
       h = {
         "type" => "#{secname}-result",
         "test-suite" => secname,
         "test-name" => $1,
         "output" => $2,
-        "elapsed-time" => $3.to_f,
+        "elapsed-time[s]" => $3.to_f,
         "result" => TEST_ALL_RESULT_MAP.fetch($4, $4),
       }
       output_json_object h
