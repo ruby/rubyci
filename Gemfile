@@ -5,6 +5,7 @@ gem 'rails', '~> 4.1'
 gem 'activeresource', require: 'active_resource'
 gem 'actionpack-page_caching'
 gem 'unicorn'
+gem 'tzinfo-data'
 
 gem 'sass-rails'
 gem 'sass-rails-bootstrap'

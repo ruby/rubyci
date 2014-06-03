@@ -138,6 +138,8 @@ GEM
       polyglot (>= 0.3.1)
     tzinfo (1.1.0)
       thread_safe (~> 0.1)
+    tzinfo-data (1.2014.3)
+      tzinfo (>= 1.0.0)
     uglifier (2.5.0)
       execjs (>= 0.3.0)
       json (>= 1.8.0)
@@ -164,5 +166,6 @@ DEPENDENCIES
   sass-rails
   sass-rails-bootstrap
   sqlite3
+  tzinfo-data
   uglifier
   unicorn
