@@ -1,6 +1,7 @@
 require 'net/http'
 require 'uri'
 require 'open-uri'
+require 'chkbuild-ruby-info'
 
 class Report < ActiveRecord::Base
   belongs_to :server
@@ -100,16 +101,29 @@ class Report < ActiveRecord::Base
       datetime = Time.utc(*dt.unpack("A4A2A2xA2A2A2"))
       break if latest and datetime <= latest.datetime
       puts "reporting #{server.name} #{depsuffixed_name} #{dt} ..."
+      revision = (summary[/\br(\d+)\b/, 1] ||
+                  summary[/\brev:(\d+)\b/, 1] ||
+                  summary[/(?:trunk|revision)\S* (\d+)\x29/, 1]).to_i
       results.push(
         server_id: server.id,
         datetime: datetime,
         branch: branch,
         option: option,
-        revision: (summary[/\br(\d+)\b/, 1] ||
-                   summary[/\brev:(\d+)\b/, 1] ||
-                   summary[/(?:trunk|revision)\S* (\d+)\x29/, 1]).to_i,
+        revision: revision,
         summary: summary.gsub(/<[^>]*>/, '')
       )
+
+      path = File.join(recentpath, "../log/#{dt}.log.txt.gz")
+      res = http.get(path)
+      res.value
+      cb = ChkBuildRubyInfo.new(res.body)
+      cb.td_common = {
+        server_id: server.id,
+        depsuffixed_name: depsuffixed_name,
+        epoch: datetime.to_i,
+        revision: revision,
+      }
+      cb.convert_to_json
     end
     results
   end
@@ -130,15 +144,28 @@ class Report < ActiveRecord::Base
       datetime = Time.utc(*dt.unpack("A4A2A2xA2A2A2"))
       break if latest and datetime <= latest.datetime
       puts "reporting #{server.name} #{depsuffixed_name} #{dt} ..."
+      revision = h["ruby_rev"].to_s[1,100].to_i
       results.push(
         server_id: server.id,
         datetime: datetime,
         branch: branch,
         option: option,
-        revision: h["ruby_rev"].to_s[1,100].to_i,
+        revision: revision,
         ltsv: line,
         summary: summary
       )
+
+      path = File.join(recentpath, "../log/#{dt}.log.txt.gz")
+      res = http.get(path)
+      res.value
+      cb = ChkBuildRubyInfo.new(res.body)
+      cb.td_common = {
+        server_id: server.id,
+        depsuffixed_name: depsuffixed_name,
+        epoch: datetime.to_i,
+        revision: revision,
+      }
+      cb.convert_to_json
     end
     results
   end
