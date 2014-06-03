@@ -145,9 +145,8 @@ class Report < ActiveRecord::Base
   def self.get_reports(server)
     ary = []
     uri = URI(server.uri)
-    path = nil
+    path = basepath = uri.path # for rescue
     Net::HTTP.start(uri.host, uri.port, open_timeout: 10, read_timeout: 10) do |h|
-      path = basepath = uri.path
       puts "getting #{uri.host}#{basepath} ..."
       h.get(basepath).body.scan(/(?:href|HREF)="ruby-([^"\/]+)/) do |branch_opts,_|
         next if /\A(?:trunk|[1-9])/ !~ branch_opts
