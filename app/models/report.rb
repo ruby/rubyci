@@ -1,7 +1,8 @@
+require 'net/http'
+require 'uri'
+require 'open-uri'
+
 class Report < ActiveRecord::Base
-  require 'net/http'
-  require 'uri'
-  require 'open-uri'
   belongs_to :server
   validates :server_id, :presence => true
   validates :revision, :numericality => { :only_integer => true }
