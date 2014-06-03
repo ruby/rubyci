@@ -91,15 +91,15 @@ class Report < ActiveRecord::Base
 
   REG_RCNT = /name="(\d+T\d{6}Z).*?a>\s*(\S.*)<br/
 
-  def self.scan_recent(server, branch_opts, body, results)
-    return unless /\A([0-9a-z\.]+)(?:-(.*))?\z/ =~ branch_opts
+  def self.scan_recent(server, depsuffixed_name, body, results, http, recentpath)
+    return unless /\Aruby-([0-9a-z\.]+)(?:-(.*))?\z/ =~ depsuffixed_name
     branch = $1
     option = $2
     latest = Report.where(server_id: server.id, branch: branch, option: option).last
     body.scan(REG_RCNT) do |dt, summary|
       datetime = Time.utc(*dt.unpack("A4A2A2xA2A2A2"))
       break if latest and datetime <= latest.datetime
-      puts "reporting #{server.name} #{branch_opts} #{dt} ..."
+      puts "reporting #{server.name} #{depsuffixed_name} #{dt} ..."
       results.push(
         server_id: server.id,
         datetime: datetime,
@@ -114,8 +114,8 @@ class Report < ActiveRecord::Base
     results
   end
 
-  def self.scan_recent_ltsv(server, branch_opts, body, results)
-    return unless /\A([0-9a-z\.]+)(?:-(.*))?\z/ =~ branch_opts
+  def self.scan_recent_ltsv(server, depsuffixed_name, body, results, http, recentpath)
+    return unless /\Aruby-([0-9a-z\.]+)(?:-(.*))?\z/ =~ depsuffixed_name
     branch = $1
     option = $2
     latest = Report.where(server_id: server.id, branch: branch, option: option).last
@@ -129,7 +129,7 @@ class Report < ActiveRecord::Base
       summary << (diff ? " (diff:#{diff})" : " (no diff)")
       datetime = Time.utc(*dt.unpack("A4A2A2xA2A2A2"))
       break if latest and datetime <= latest.datetime
-      puts "reporting #{server.name} #{branch_opts} #{dt} ..."
+      puts "reporting #{server.name} #{depsuffixed_name} #{dt} ..."
       results.push(
         server_id: server.id,
         datetime: datetime,
@@ -149,22 +149,22 @@ class Report < ActiveRecord::Base
     path = basepath = uri.path # for rescue
     Net::HTTP.start(uri.host, uri.port, open_timeout: 10, read_timeout: 10) do |h|
       puts "getting #{uri.host}#{basepath} ..."
-      h.get(basepath).body.scan(/(?:href|HREF)="ruby-([^"\/]+)/) do |branch_opts,_|
-        next if /\A(?:trunk|[1-9])/ !~ branch_opts
+      h.get(basepath).body.scan(/(?:href|HREF)="(ruby-[^"\/]+)/) do |depsuffixed_name,_|
+        next if /\Aruby-(?:trunk|[1-9])/ !~ depsuffixed_name
 
         begin # LTSV
-          path = File.join(basepath, 'ruby-' + branch_opts, 'recent.ltsv')
+          path = File.join(basepath, depsuffixed_name, 'recent.ltsv')
           puts "getting #{uri.host}#{path} ..."
           res = h.get(path)
           res.value
-          self.scan_recent_ltsv(server, branch_opts, res.body, ary)
+          self.scan_recent_ltsv(server, depsuffixed_name, res.body, ary, h, path)
         rescue Net::HTTPServerException
           begin # HTML
-            path = File.join(basepath, 'ruby-' + branch_opts, 'recent.html')
+            path = File.join(basepath, depsuffixed_name, 'recent.html')
             puts "getting #{uri.host}#{path} ..."
             res = h.get(path)
             res.value
-            self.scan_recent(server, branch_opts, res.body, ary)
+            self.scan_recent(server, depsuffixed_name, res.body, ary, h, path)
           rescue Net::HTTPServerException
           end
         end
