@@ -157,17 +157,15 @@ class Report < ActiveRecord::Base
           res = h.get(path)
           res.value
           self.scan_recent_ltsv(server, branch_opts, res.body, ary)
-          next
         rescue Net::HTTPServerException
-        end
-
-        begin# HTML
-          path = File.join(basepath, 'ruby-' + branch_opts, 'recent.html')
-          puts "getting #{uri.host}#{path} ..."
-          res = h.get(path)
-          res.value
-          self.scan_recent(server, branch_opts, res.body, ary)
-        rescue Net::HTTPServerException
+          begin # HTML
+            path = File.join(basepath, 'ruby-' + branch_opts, 'recent.html')
+            puts "getting #{uri.host}#{path} ..."
+            res = h.get(path)
+            res.value
+            self.scan_recent(server, branch_opts, res.body, ary)
+          rescue Net::HTTPServerException
+          end
         end
       end
     end
