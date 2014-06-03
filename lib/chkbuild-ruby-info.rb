@@ -35,7 +35,13 @@ class ChkBuildRubyInfo
       end
     end
     if @td_common
-      print "@[chkbuild.#{hash["type"].tr('-','_')}] "
+      tblname = hash["type"]
+      if /\Arubyspec-.*-(\w+)\z/ =~ tblname
+        tblname = "rubyspec_$1"
+      else
+        tblname.tr!('-','_')
+      end
+      print "@[chkbuild.#{tblname}] "
       puts JSON.dump(hash.merge(@td_common))
       return
     elsif @json_array_first
