@@ -46,13 +46,7 @@ class ChkBuildRubyInfo
         return
       end
     end
-    if @td_common
-      tblname = hash["type"]
-      tblname.tr!('-','_')
-      print "@[chkbuild.#{tblname}] "
-      puts JSON.dump(hash.merge(@td_common))
-      return
-    elsif @json_array_first
+    if @json_array_first
       @out.print "[\n"
       @json_array_first = false
     else
@@ -970,17 +964,23 @@ class ChkBuildRubyInfo
     }
   end
 
+  def convert_to_td
+    extract {|hash|
+      tblname = hash["type"]
+      tblname.tr!('-','_')
+      print "@[chkbuild.#{tblname}] "
+      puts JSON.dump(hash.merge(@td_common))
+    }
+  end
+
   def convert_to_json(out=$stdout)
+    return convert_to_td if @td_common
     @out = out
     output_proc = lambda {|hash| output_json_object hash }
     with_output_proc(output_proc) {
-      if @td_common
+      output_json_outermost_array {
         extract_info(@f)
-      else
-        output_json_outermost_array {
-          extract_info(@f)
-        }
-      end
+      }
     }
   end
 
