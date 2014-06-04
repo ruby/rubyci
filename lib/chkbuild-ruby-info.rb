@@ -5,10 +5,13 @@ require 'time'
 require 'pp'
 
 class ChkBuildRubyInfo
+  attr_accessor :td_common
+
   def initialize(f)
     @f = f
     @unique_hash = {}
     @json_array_first = nil
+    @td_common = nil
 
     @current_section_name = nil
     @current_section_start_time = nil
@@ -31,7 +34,14 @@ class ChkBuildRubyInfo
         return
       end
     end
-    if @json_array_first
+    if @td_common
+      tblname = hash.delete("table") rescue nil
+      tblname = hash["type"] unless tblname
+      tblname.tr!('-','_')
+      print "@[chkbuild.#{tblname}] "
+      puts JSON.dump(hash.merge(@td_common))
+      return
+    elsif @json_array_first
       @out.print "[\n"
       @json_array_first = false
     else
@@ -503,7 +513,7 @@ class ChkBuildRubyInfo
           "type" => "testrb-result",
           "test-suite" => "testrb",
           "what" => what,
-          "testnum" => $2,
+          "testnum" => $2.to_i,
           "location" => $3,
           "result" => "success",
         }
@@ -513,7 +523,7 @@ class ChkBuildRubyInfo
           "type" => "testrb-result",
           "test-suite" => "testrb",
           "what" => $4,
-          "testnum" => $5,
+          "testnum" => $5.to_i,
           "location" => $6,
           "result" => "failure",
         }
@@ -557,6 +567,7 @@ class ChkBuildRubyInfo
 
     list.scan(/^(\S+\#.+?) = ([\s\S]*?)(\d+\.\d+) s = ([EFS.])$/) {
       h = {
+        "table" => "test-all-result",
         "type" => "#{secname}-result",
         "test-suite" => secname,
         "test-name" => $1,
@@ -581,6 +592,7 @@ class ChkBuildRubyInfo
         #    /extdisk/chkbuild/chkbuild/tmp/build/20140502T100500Z/ruby/test/ruby/test_symbol.rb:254:in `<main>'
         if /\AError:\n(\S+):\n(\S+): (.*)\n/ =~ body
           h = {
+            "table" => "test-all-error-detail",
             "type" => "#{secname}-error-detail",
             "test-suite" => secname,
             "test-name" => $1,
@@ -597,6 +609,7 @@ class ChkBuildRubyInfo
         #<[:on_blocking, :c2]>.
         if /\AFailure:\n(\S+) \[(.*)\]:\n/ =~ body
           h = {
+            "table" => "test-all-failure-detail",
             "type" => "#{secname}-failure-detail",
             "test-suite" => secname,
             "test-name" => $1,
@@ -610,6 +623,7 @@ class ChkBuildRubyInfo
 
     if /^(\d+) tests, (\d+) assertions, (\d+) failures, (\d+) errors(?:, (\d+) skips)?$/m =~ section
       h = {
+        "table" => "test-all-summary",
         "type" => "#{secname}-summary",
         "test-suite" => secname,
         "tests" => $1.to_i,
@@ -643,6 +657,7 @@ class ChkBuildRubyInfo
         body = first_paragraph(body)
         next if /\n/ !~ body
         h = {
+          "table" => "rubyspec-detail",
           "type" => "#{secname}-detail",
           "test-suite" => secname,
           "description" => gsub_path_to_time($`),
@@ -654,6 +669,7 @@ class ChkBuildRubyInfo
 
     if /^(\d+) files?, (\d+) examples?, (\d+) expectations?, (\d+) failures?, (\d+) errors?$/m =~ section
       h = {
+        "table" => "rubyspec-summary",
         "type" => "#{secname}-summary",
         "test-suite" => secname,
         "files" => $1.to_i,
@@ -840,9 +856,13 @@ class ChkBuildRubyInfo
 
   def convert_to_json(out=$stdout)
     @out = out
-    output_json_outermost_array {
+    if @td_common
       extract_info(@f)
-    }
+    else
+      output_json_outermost_array {
+        extract_info(@f)
+      }
+    end
   end
 
   class << self

@@ -1,4 +1,4 @@
-#!/usr/bin/ruby
+#!/usr/bin/env ruby
 
 # usage:
 #   chkbuild-ruby-info [options] chkbuild-ruby-log-file.txt[.gz]
