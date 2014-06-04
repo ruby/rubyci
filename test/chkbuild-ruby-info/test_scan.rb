@@ -159,14 +159,14 @@ defcheck(:all_with_output, <<'End1', <<'End2', 'test_all_result')
 TestVariable#test_global_variable_0 = (eval):1: warning: possibly useless use of a variable in void context
 0.12 s = .
 End1
-{"type":"test_all_result","test_suite":"test-all","test_name":"TestVariable#test_global_variable_0","output":"(eval):1: warning: possibly useless use of a variable in void context\n","elapsed_time_s":0.12,"result":"success"},
+{"type":"test_all_result","test_suite":"test-all","test_name":"TestVariable#test_global_variable_0","output":"(eval):1: warning: possibly useless use of a variable in void context\n","elapsed":0.12,"result":"success"},
 End2
 
 defcheck(:all_method_with_spaces, <<'End1', <<'End2', 'test_all_result')
 == test-all # 2010-12-02T16:51:01+09:00
 TestIOScanf#test_" ,10,1.1"(" ,%d,%f") = 0.00 s = .
 End1
-{"type":"test_all_result","test_suite":"test-all","test_name":"TestIOScanf#test_\" ,10,1.1\"(\" ,%d,%f\")","output":"","elapsed_time_s":0.0,"result":"success"},
+{"type":"test_all_result","test_suite":"test-all","test_name":"TestIOScanf#test_\" ,10,1.1\"(\" ,%d,%f\")","output":"","elapsed":0.0,"result":"success"},
 End2
 
 defcheck(:bug, <<'End1', <<'End2', 'bug')

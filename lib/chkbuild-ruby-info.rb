@@ -109,7 +109,7 @@ class ChkBuildRubyInfo
       h = { "type" => "section_end", "secname" => @current_section_name }
       h["end_time"] = t if t
       if t && @current_section_start_time
-        h["elapsed_time_s"] = Time.iso8601(t) - Time.iso8601(@current_section_start_time)
+        h["elapsed"] = Time.iso8601(t) - Time.iso8601(@current_section_start_time)
       end
       output_hash h
     end
@@ -425,9 +425,9 @@ class ChkBuildRubyInfo
       h = {
         "type" => "btest_result",
         "test_suite" => secname,
-        "testnum" => $1,
+        "testnum" => $1.to_i,
         "file" => $2,
-        "line" => $3,
+        "line" => $3.to_i,
         "caller" => strip_colon($4),
         "result" => BTEST_RESULT_MAP.fetch($5, $5)
       }
@@ -474,9 +474,9 @@ class ChkBuildRubyInfo
       h = {
         "type" => "btest_detail",
         "test_suite" => secname,
-        "testnum" => $1,
+        "testnum" => $1.to_i,
         "file" => $2,
-        "line" => $3,
+        "line" => $3.to_i,
         "caller" => strip_colon($4),
         "code" => $5,
         "message" => $6,
@@ -593,7 +593,7 @@ class ChkBuildRubyInfo
         "test_suite" => secname,
         "test_name" => $1,
         "output" => $2,
-        "elapsed_time_s" => $3.to_f,
+        "elapsed" => $3.to_f,
         "result" => TEST_ALL_RESULT_MAP.fetch($4, $4),
       }
       output_hash h
