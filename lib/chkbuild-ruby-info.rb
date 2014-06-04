@@ -951,8 +951,10 @@ class ChkBuildRubyInfo
       when "rubyspec", %r{\Arubyspec/}
         scan_rubyspec(secname, section)
       end
-      scan_bug(secname, section)
-      scan_fatal(secname, section)
+      if secname != 'title-info'
+        scan_bug(secname, section)
+        scan_fatal(secname, section)
+      end
       scan_make_failure(secname, section)
       scan_glibc_failure(secname, section)
       scan_timeout(secname, section)
