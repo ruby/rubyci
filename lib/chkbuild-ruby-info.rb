@@ -15,7 +15,18 @@ class ChkBuildRubyInfo
 
     @current_section_name = nil
     @current_section_start_time = nil
+    @output_proc = nil
     @out = $stdout
+  end
+
+  def with_output_proc(callable)
+    save = @output_proc
+    @output_proc = callable
+    begin
+      yield
+    ensure
+      @output_proc = save
+    end
   end
 
   def output_json_outermost_array
@@ -35,8 +46,7 @@ class ChkBuildRubyInfo
       end
     end
     if @td_common
-      tblname = hash.delete("table") rescue nil
-      tblname = hash["type"] unless tblname
+      tblname = hash["type"]
       tblname.tr!('-','_')
       print "@[chkbuild.#{tblname}] "
       puts JSON.dump(hash.merge(@td_common))
@@ -50,10 +60,10 @@ class ChkBuildRubyInfo
     @out.print JSON.dump(hash)
   end
 
-  def output_unique_json_object(hash)
+  def output_unique_hash(hash)
     hash = hash.dup.freeze
     if !@unique_hash.has_key?(hash)
-      output_json_object(hash)
+      output_hash(hash)
       @unique_hash[hash] = true
     end
   end
@@ -70,6 +80,18 @@ class ChkBuildRubyInfo
     end
   end
 
+  def output_hash(hash)
+    if  /\A[a-z0-9_]+\z/ !~ hash['type']
+      warn "unexpected type name: #{hash['type']}"
+    end
+    hash.each {|k, v|
+      if /\A[a-z0-9_]+\z/ !~ k
+        warn "unexpected field name: #{k.inspect}"
+      end
+    }
+    @output_proc.call hash
+  end
+
   def gsub_path_to_time(str)
     str.gsub(%r{/\S+/\d{8,}T\d{6}Z/}, '')
   end
@@ -84,17 +106,17 @@ class ChkBuildRubyInfo
     end
 
     if @current_section_name
-      h = { "type" => "section-end", "secname" => @current_section_name }
-      h["end-time"] = t if t
+      h = { "type" => "section_end", "secname" => @current_section_name }
+      h["end_time"] = t if t
       if t && @current_section_start_time
         h["elapsed"] = Time.iso8601(t) - Time.iso8601(@current_section_start_time)
       end
-      output_json_object h
+      output_hash h
     end
 
-    h = { "type" => "section-start", "secname" => secname }
+    h = { "type" => "section_start", "secname" => secname }
     h["start_time"] = t if t
-    output_json_object h
+    output_hash h
 
     @current_section_name = secname
     @current_section_start_time = t
@@ -102,20 +124,20 @@ class ChkBuildRubyInfo
 
   def scan_first_section(secname, section)
     #== ruby-trunk # 2014-05-24T22:36:01+09:00
-    h = { "type" => "depsuffixed-name", "depsuffixed_name" => secname }
-    output_json_object h
+    h = { "type" => "depsuffixed_name", "depsuffixed_name" => secname }
+    output_hash h
 
     suffixed_name = secname[/\A[^_]+/]
-    h = { "type" => "suffixed-name", "suffixed_name" => suffixed_name }
-    output_json_object h
+    h = { "type" => "suffixed_name", "suffixed_name" => suffixed_name }
+    output_hash h
 
     target_name = suffixed_name[/\A[^-]+/]
     h = { "type" => "target_name", "target_name" => target_name }
-    output_json_object h
+    output_hash h
 
     #Nickname: boron
     if /^Nickname: (\S+)/ =~ section
-      output_json_object({"type"=>"nickname", "nickname"=>$1 })
+      output_hash({"type"=>"nickname", "nickname"=>$1 })
     end
 
     uname = { "type" => "uname" }
@@ -126,42 +148,42 @@ class ChkBuildRubyInfo
     uname["processor"] = $1 if /^uname_p: (.+)$/ =~ section
     uname["hardware_platform"] = $1 if /^uname_i: (.+)$/ =~ section
     uname["operating_system"] = $1 if /^uname_o: (.+)$/ =~ section
-    output_json_object(uname) if 1 < uname.size
+    output_hash(uname) if 1 < uname.size
 
     debian = { "type" => "debian" }
     debian["version"] = $1 if /^debian_version: (\S+)$/ =~ section
     debian["architecture"] = $1 if /^Debian Architecture: (\S+)$/ =~ section
-    output_json_object(debian) if 1 < debian.size
+    output_hash(debian) if 1 < debian.size
 
     lsb = { "type" => "lsb" } # lsb_release
     lsb["distributor"] = $1 if /^Distributor ID:\s*(\S+)$/ =~ section
     lsb["description"] = $1 if /^Description:\s*(\S+)$/ =~ section
     lsb["release"] = $1 if /^Release:\s*(\S+)$/ =~ section
     lsb["codename"] = $1 if /^Codename:\s*(\S+)$/ =~ section
-    output_json_object(lsb) if 1 < lsb.size
+    output_hash(lsb) if 1 < lsb.size
   end
 
   def scan_start(section)
     if /^start-time: (\S+)/ =~ section
-      output_unique_json_object({"type"=>"start-time", "start_time"=>$1 })
+      output_unique_hash({"type"=>"start_time", "start_time"=>$1 })
     end
 
     if /^build-dir: (\S+)/ =~ section
-      output_unique_json_object({"type"=>"build-dir", "dir"=>$1 })
+      output_unique_hash({"type"=>"build_dir", "dir"=>$1 })
     end
   end
 
   def scan_autoconf_version(section)
     #autoconf (GNU Autoconf) 2.67
     if /^autoconf \(GNU Autoconf\) (\S+)/ =~ section
-      output_json_object({"type"=>"autoconf-version", "version"=>$1 })
+      output_hash({"type"=>"autoconf_version", "version"=>$1 })
     end
   end
 
   def scan_bison_version(section)
     #bison (GNU Bison) 2.4.1
     if /^bison \(GNU Bison\) (\S+)/ =~ section
-      output_json_object({"type"=>"bison-version", "version"=>$1 })
+      output_hash({"type"=>"bison_version", "version"=>$1 })
     end
   end
 
@@ -173,7 +195,7 @@ class ChkBuildRubyInfo
     ##define RUBY_RELEASE_YEAR 2014
     ##define RUBY_RELEASE_MONTH 5
     ##define RUBY_RELEASE_DAY 24
-    h = { "type" => "ruby-release" }
+    h = { "type" => "ruby_release" }
     h["version"] = $1 if /^\#define RUBY_VERSION "(\S+)"/ =~ section
     h["release_date"] = $1 if /^\#define RUBY_RELEASE_DATE "(\S+)"/ =~ section
     h["patchlevel"] = $1.to_i if /^\#define RUBY_PATCHLEVEL (\S+)/ =~ section
@@ -181,43 +203,43 @@ class ChkBuildRubyInfo
     h["release_year"] = $1.to_i if /^\#define RUBY_RELEASE_YEAR (\S+)/ =~ section
     h["release_month"] = $1.to_i if /^\#define RUBY_RELEASE_MONTH (\S+)/ =~ section
     h["release_day"] = $1.to_i if /^\#define RUBY_RELEASE_DAY (\S+)/ =~ section
-    output_json_object(h) if 1 < h.size
+    output_hash(h) if 1 < h.size
   end
 
   def scan_configure(section)
-    #+ ./configure --prefix=/extdisk/chkbuild/chkbuild/tmp/build/20140521T114300Z ...
-    if %r{^\+ \S+/configure --prefix=\S+/([0-9]{8,}T[0-9]{6}Z?) } =~ section
-      output_unique_json_object({"type"=>"start-time", "start_time"=>$1 })
+    if %r{^\+ \S+/configure --prefix=(\S+/([0-9]{8,}T[0-9]{6}Z?))(?: |$)} =~ section
+      output_unique_hash({"type"=>"start_time", "start_time"=>$2 })
+      output_unique_hash({"type"=>"build_dir", "dir"=>$1 })
     end
   end
 
   def scan_verconf_h(section)
     ##define RUBY_PLATFORM "i686-linux"
     if /^\#define RUBY_PLATFORM "(\S+)"/ =~ section
-      output_json_object({"type"=>"ruby-platform", "platform"=>$1 })
+      output_hash({"type"=>"ruby_platform", "platform"=>$1 })
     end
   end
 
   def scan_config_files(section)
     #config.guess: 2014-03-23
     #config.sub: 2014-05-01
-    h = { "type" => "config-files" }
-    h["config.guess"] = $1 if /^config\.guess: (\S+)/ =~ section
-    h["config.sub"] = $1 if /^config\.sub: (\S+)/ =~ section
-    output_json_object(h) if 1 < h.size
+    h = { "type" => "config_files" }
+    h["config_guess"] = $1 if /^config\.guess: (\S+)/ =~ section
+    h["config_sub"] = $1 if /^config\.sub: (\S+)/ =~ section
+    output_hash(h) if 1 < h.size
   end
 
   def scan_cc_version(section)
     #gcc (GCC) 4.8.0
     if /^gcc \(GCC\) (\S+)/ =~ section
-      output_json_object({"type"=>"cc-version", "cc"=>"gcc", "version"=>$1 })
+      output_hash({"type"=>"cc_version", "cc"=>"gcc", "version"=>$1 })
     end
   end
 
   def scan_miniruby_libc(section)
     #GNU C Library (Debian EGLIBC 2.11.3-4) stable release version 2.11.3, by Roland McGrath et al.
     if /^(GNU C Library .*), by/ =~ section
-      output_json_object({"type"=>"libc-version", "version"=>$1 })
+      output_hash({"type"=>"libc_version", "version"=>$1 })
     end
   end
 
@@ -231,7 +253,7 @@ class ChkBuildRubyInfo
         "url" => url[1],
         "rev" => lastrev[1].to_i
       }
-      output_json_object h
+      output_hash h
     end
   end
 
@@ -248,7 +270,7 @@ class ChkBuildRubyInfo
         "url" => url[1],
         "rev" => lastrev[1].to_i
       }
-      output_json_object h
+      output_hash h
     end
   end
 
@@ -263,7 +285,7 @@ class ChkBuildRubyInfo
         "url" => url[1],
         "commit" => commit[1]
       }
-      output_json_object h
+      output_hash h
     end
   end
 
@@ -284,54 +306,54 @@ class ChkBuildRubyInfo
       when /\A(?:(module|class) )?(\S+) \[(.*)\]\n/
         module_or_class = $1
         h = {
-          'type' => 'builtin-module',
+          'type' => 'builtin_module',
           'module' => $2,
           'ancestors' => $3.split(/,\s*/)
         }
         if module_or_class
           h['class'] = module_or_class == 'class'
         end
-        output_json_object h
+        output_hash h
       when /\A(\S+)\#(\S+) (-?\d+)( not-implemented)?\n/
         h = {
-          'type' => 'builtin-instance-method',
+          'type' => 'builtin_instance_method',
           'class' => $1,
           'method' => $2,
           'arity' => $3.to_i,
           'implemented' => $4 ? false : true
         }
-        output_json_object h
+        output_hash h
       when /\A(\S+)\.(\S+) (-?\d+)( not-implemented)?\n/
         h = {
-          'type' => 'builtin-class-method',
+          'type' => 'builtin_class_method',
           'class' => $1,
           'method' => $2,
           'arity' => $3.to_i,
           'implemented' => $4 ? false : true
         }
-        output_json_object h
+        output_hash h
       end
     }
   end
 
   def scan_showflags(section)
-    h = { 'type' => 'make-flags' }
-    h["CC"] = $1.strip if /^[ \t]+CC = (.+)\n/ =~ section
-    h["LD"] = $1.strip if /^[ \t]+LD = (.+)\n/ =~ section
-    h["LDSHARED"] = $1.strip if /^[ \t]+LDSHARED = (.+)\n/ =~ section
-    h["CFLAGS"] = $1.strip if /^[ \t]+CFLAGS = (.+)\n/ =~ section
-    h["XCFLAGS"] = $1.strip if /^[ \t]+XCFLAGS = (.+)\n/ =~ section
-    h["CPPFLAGS"] = $1.strip if /^[ \t]+CPPFLAGS = (.+)\n/ =~ section
-    h["DLDFLAGS"] = $1.strip if /^[ \t]+DLDFLAGS = (.+)\n/ =~ section
-    h["SOLIBS"] = $1.strip if /^[ \t]+SOLIBS = (.+)\n/ =~ section
+    h = { 'type' => 'make_flags' }
+    h["cc"] = $1.strip if /^[ \t]+CC = (.+)\n/ =~ section
+    h["ld"] = $1.strip if /^[ \t]+LD = (.+)\n/ =~ section
+    h["ldshared"] = $1.strip if /^[ \t]+LDSHARED = (.+)\n/ =~ section
+    h["cflags"] = $1.strip if /^[ \t]+CFLAGS = (.+)\n/ =~ section
+    h["xcflags"] = $1.strip if /^[ \t]+XCFLAGS = (.+)\n/ =~ section
+    h["cppflags"] = $1.strip if /^[ \t]+CPPFLAGS = (.+)\n/ =~ section
+    h["dldflags"] = $1.strip if /^[ \t]+DLDFLAGS = (.+)\n/ =~ section
+    h["solibs"] = $1.strip if /^[ \t]+SOLIBS = (.+)\n/ =~ section
     h["target"] = $1.strip if /^Target: (.+)\n/ =~ section
-    output_json_object h
+    output_hash h
   end
 
   def scan_ruby_v(section)
     #ruby 2.2.0dev (2014-05-24 trunk 46082) [i686-linux]
     if /^ruby .*/ =~ section
-      output_json_object({"type"=>"ruby-version", "version"=>$& })
+      output_hash({"type"=>"ruby_version", "version"=>$& })
     end
   end
 
@@ -348,8 +370,8 @@ class ChkBuildRubyInfo
       curses
     ].each {|lib|
       if /^#{Regexp.escape lib}: (.*)\n/ =~ section
-        h = { 'type' => "ruby-#{lib}-version", "version" => $1 }
-        output_json_object h
+        h = { 'type' => "ruby_lib_version", "lib" => lib, "version" => $1 }
+        output_hash h
       end
     }
   end
@@ -362,12 +384,12 @@ class ChkBuildRubyInfo
     low = 0
     section.scan(/ Low +([0-9])+ *$/) { low += $1.to_i }
     h = {
-      'type' => "abi-check-summary",
+      'type' => "abi_check_summary",
       "high" => high,
       "medium" => medium,
       "low" => low
     }
-    output_json_object h
+    output_hash h
   end
 
   BTEST_RESULT_MAP = {
@@ -401,7 +423,7 @@ class ChkBuildRubyInfo
 
     section.scan(/\#(\d+) (\S+):(\d+)(.*)\s([.F])$/) {
       h = {
-        "type" => "#{secname}-result",
+        "type" => "btest_result",
         "test_suite" => secname,
         "testnum" => $1.to_i,
         "file" => $2,
@@ -409,7 +431,7 @@ class ChkBuildRubyInfo
         "caller" => strip_colon($4),
         "result" => BTEST_RESULT_MAP.fetch($5, $5)
       }
-      output_json_object h
+      output_hash h
     }
 
     ##260 test_io.rb:44:
@@ -450,7 +472,7 @@ class ChkBuildRubyInfo
 
     section.scan(/^\#(\d+) (\S+):(\d+):(.*) \n((?: {5}.*\n)*)  \#=> (.*)/) {
       h = {
-        "type" => "#{secname}-detail",
+        "type" => "btest_detail",
         "test_suite" => secname,
         "testnum" => $1.to_i,
         "file" => $2,
@@ -459,33 +481,33 @@ class ChkBuildRubyInfo
         "code" => $5,
         "message" => $6,
       }
-      output_json_object h
+      output_hash h
     }
 
     if /^No tests, no problem$/ =~ section
       h = {
-        "type" => "#{secname}-summary",
+        "type" => "btest_summary",
         "test_suite" => secname,
         "tests" => 0,
         "failures" => 0
       }
-      output_json_object h
+      output_hash h
     elsif /^PASS all (\d+) tests/ =~ section
       h = {
-        "type" => "#{secname}-summary",
+        "type" => "btest_summary",
         "test_suite" => secname,
         "tests" => $1.to_i,
         "failures" => 0
       }
-      output_json_object h
+      output_hash h
     elsif /^FAIL (\d+)\/(\d+) tests failed/ =~ section
       h = {
-        "type" => "#{secname}-summary",
+        "type" => "btest_summary",
         "test_suite" => secname,
         "tests" => $2.to_i,
         "failures" => $1.to_i,
       }
-      output_json_object h
+      output_hash h
     end
   end
 
@@ -510,43 +532,43 @@ class ChkBuildRubyInfo
         what = $1
       elsif $2
         h = {
-          "type" => "testrb-result",
+          "type" => "testrb_result",
           "test_suite" => "testrb",
           "what" => what,
           "testnum" => $2.to_i,
           "location" => $3,
           "result" => "success",
         }
-        output_json_object h
+        output_hash h
       else
         h = {
-          "type" => "testrb-result",
+          "type" => "testrb_result",
           "test_suite" => "testrb",
           "what" => $4,
           "testnum" => $5.to_i,
           "location" => $6,
           "result" => "failure",
         }
-        output_json_object h
+        output_hash h
       end
     }
 
     if /^end of test\(test: (\d+)\)/ =~ section
       h = {
-        "type" => "testrb-summary",
+        "type" => "testrb_summary",
         "test_suite" => "testrb",
         "tests" => $1.to_i,
         "failures" => 0,
       }
-      output_json_object h
+      output_hash h
     elsif /^test: (\d+) failed (\d+)/ =~ section || %r{^not ok/test: (\d+) failed (\d+)} =~ section
       h = {
-        "type" => "testrb-summary",
+        "type" => "testrb_summary",
         "test_suite" => "testrb",
         "tests" => $1.to_i,
         "failures" => $2.to_i,
       }
-      output_json_object h
+      output_hash h
     end
   end
 
@@ -567,15 +589,14 @@ class ChkBuildRubyInfo
 
     list.scan(/^(\S+\#.+?) = ([\s\S]*?)(\d+\.\d+) s = ([EFS.])$/) {
       h = {
-        "table" => "test-all-result",
-        "type" => "#{secname}-result",
+        "type" => "test_all_result",
         "test_suite" => secname,
         "test_name" => $1,
         "output" => $2,
         "elapsed" => $3.to_f,
         "result" => TEST_ALL_RESULT_MAP.fetch($4, $4),
       }
-      output_json_object h
+      output_hash h
     }
 
     if detailed_failures
@@ -592,15 +613,14 @@ class ChkBuildRubyInfo
         #    /extdisk/chkbuild/chkbuild/tmp/build/20140502T100500Z/ruby/test/ruby/test_symbol.rb:254:in `<main>'
         if /\AError:\n(\S+):\n(\S+): (.*)\n/ =~ body
           h = {
-            "table" => "test-all-error-detail",
-            "type" => "#{secname}-error-detail",
+            "type" => "test_all_error_detail",
             "test_suite" => secname,
             "test_name" => $1,
             "error_class" => $2,
             "error_message" => $3,
             "backtrace" => gsub_path_to_time(first_paragraph($'))
           }
-          output_json_object h
+          output_hash h
         end
 
         #  1) Failure:
@@ -609,22 +629,20 @@ class ChkBuildRubyInfo
         #<[:on_blocking, :c2]>.
         if /\AFailure:\n(\S+) \[(.*)\]:\n/ =~ body
           h = {
-            "table" => "test-all-failure-detail",
-            "type" => "#{secname}-failure-detail",
+            "type" => "test_all_failure_detail",
             "test_suite" => secname,
             "test_name" => $1,
             "failure_location" => path_after_time($2),
             "detail" => first_paragraph($')
           }
-          output_json_object h
+          output_hash h
         end
       }
     end
 
     if /^(\d+) tests, (\d+) assertions, (\d+) failures, (\d+) errors(?:, (\d+) skips)?$/m =~ section
       h = {
-        "table" => "test-all-summary",
-        "type" => "#{secname}-summary",
+        "type" => "test_all_summary",
         "test_suite" => secname,
         "tests" => $1.to_i,
         "assertions" => $2.to_i,
@@ -632,7 +650,7 @@ class ChkBuildRubyInfo
         "errors" => $4.to_i,
       }
       h["skips"] = $5.to_i if $5
-      output_json_object h
+      output_hash h
     end
   end
 
@@ -657,20 +675,18 @@ class ChkBuildRubyInfo
         body = first_paragraph(body)
         next if /\n/ !~ body
         h = {
-          "table" => "rubyspec-detail",
-          "type" => "#{secname}-detail",
+          "type" => "rubyspec_detail",
           "test_suite" => secname,
           "description" => gsub_path_to_time($`),
           "detail" => gsub_path_to_time($')
         }
-        output_json_object h
+        output_hash h
       }
     end
 
     if /^(\d+) files?, (\d+) examples?, (\d+) expectations?, (\d+) failures?, (\d+) errors?$/m =~ section
       h = {
-        "table" => "rubyspec-summary",
-        "type" => "#{secname}-summary",
+        "type" => "rubyspec_summary",
         "test_suite" => secname,
         "files" => $1.to_i,
         "examples" => $2.to_i,
@@ -678,7 +694,7 @@ class ChkBuildRubyInfo
         "failures" => $4.to_i,
         "errors" => $5.to_i,
       }
-      output_json_object h
+      output_hash h
     end
   end
 
@@ -691,12 +707,12 @@ class ChkBuildRubyInfo
       #Expected /#<Bogus:/ to match "-e:3: [BUG] Segmentation fault\nruby ...
       next if /\\n/ =~ line
       h = {
-        'type' => 'BUG',
+        'type' => 'bug',
         'secname' => secname,
-        'line-prefix' => prefix.strip,
+        'line_prefix' => prefix.strip,
         'message' => message.strip
       }
-      output_json_object h
+      output_hash h
     }
   end
 
@@ -707,47 +723,47 @@ class ChkBuildRubyInfo
       prefix = $`
       message = $'
       h = {
-        'type' => 'FATAL',
+        'type' => 'fatal',
         'secname' => secname,
         'line_prefix' => prefix.strip,
         'message' => message.strip
       }
-      output_json_object h
+      output_hash h
     }
   end
 
   def scan_make_failure(secname, section)
     section.scan(/^(.*)\n(.*)make: \*\*\* (.*)\n/) { # GNU make
       h = {
-        "type" => "make-failure",
+        "type" => "make_failure",
         "secname" => secname,
         "prev_line" => $1,
         "line_prefix" => $2,
         "message" => $3
       }
-      output_json_object h
+      output_hash h
     }
   end
 
   def scan_glibc_failure(secname, section)
     section.scan(/^(.*)\*\*\* (.*) \*\*\*(.*)\n/) {
       h = {
-        "type" => "glibc-failure",
+        "type" => "glibc_failure",
         "secname" => secname,
         "line_prefix" => $1,
         "message1" => $2,
         "message2" => $3.strip
       }
-      output_json_object h
+      output_hash h
     }
     section.scan(/^(.*): symbol lookup error: (.*)\n/) {
       h = {
-        "type" => "glibc-symbol-lookup-error",
+        "type" => "glibc_symbol_lookup_error",
         "secname" => secname,
         "line_prefix" => $1,
         "message" => $2.strip
       }
-      output_json_object h
+      output_hash h
     }
   end
 
@@ -759,18 +775,18 @@ class ChkBuildRubyInfo
         "line_prefix" => $1,
         "message" => $2
       }
-      output_json_object h
+      output_hash h
     }
   end
 
   def detect_section_failure(secname, section)
     if /^failed\((.*)\)\n\z/ =~ section
       h = {
-        "type" => "section-failure",
+        "type" => "section_failure",
         "secname" => secname,
         "message" => $1
       }
-      output_json_object h
+      output_hash h
     end
   end
 
@@ -854,15 +870,24 @@ class ChkBuildRubyInfo
     }
   end
 
+  def extract(&block)
+    with_output_proc(block) {
+      extract_info(@f)
+    }
+  end
+
   def convert_to_json(out=$stdout)
     @out = out
-    if @td_common
-      extract_info(@f)
-    else
-      output_json_outermost_array {
+    output_proc = lambda {|hash| output_json_object hash }
+    with_output_proc(output_proc) {
+      if @td_common
         extract_info(@f)
-      }
-    end
+      else
+        output_json_outermost_array {
+          extract_info(@f)
+        }
+      end
+    }
   end
 
   class << self
@@ -903,18 +928,25 @@ class ChkBuildRubyInfo
     end
   end
 
-  def self.main(argv)
-    optionparser.parse!(argv)
+  def self.each_argfile(argv)
     if argv.empty?
       open_stdin {|f|
-        ChkBuildRubyInfo.new(f).convert_to_json
+        yield f
       }
     else
       argv.each {|filename|
         open_log(filename) {|f|
-          ChkBuildRubyInfo.new(f).convert_to_json
+          yield f
         }
       }
     end
   end
+
+  def self.main(argv)
+    optionparser.parse!(argv)
+    each_argfile(argv) {|f|
+      ChkBuildRubyInfo.new(f).convert_to_json
+    }
+  end
+
 end
