@@ -74,7 +74,7 @@ class TestChkBuildRubyInfo < Test::Unit::TestCase
 
 # Following tests are not indented because here documents are used extensively.
 
-defcheck(:depsuffixed_name, <<'End1', <<'End2')
+defcheck(:depsuffixed_name, <<'End1', <<'End2', %w[section_start depsuffixed_name suffixed_name target_name])
 == ruby-trunk # 2010-12-02T16:51:01+09:00
 End1
 {"type":"section_start","secname":"ruby-trunk","start_time":"2010-12-02T16:51:01+09:00"},

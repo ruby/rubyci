@@ -10,6 +10,7 @@ class ChkBuildRubyInfo
   def initialize(f)
     @f = f
     @unique_hash = {}
+    @last_hash = {"type"=>"build"}
     @json_array_first = nil
     @td_common = nil
 
@@ -92,6 +93,18 @@ class ChkBuildRubyInfo
     @output_proc.call hash
   end
 
+  def update_last_hash(hash, prefix=nil)
+    hash.each {|k, v|
+      next if k == 'type'
+      k = "#{prefix}_#{k}" if prefix
+      if @last_hash.has_key?(k) && v != @last_hash[k]
+        warn "last hash not updated: #{k.inspect} : #{@last_hash[k].inspect} v.s. #{hash[k].inspect}"
+        next
+      end
+      @last_hash[k] = v
+    }
+  end
+
   def gsub_path_to_time(str)
     str.gsub(%r{/\S+/\d{8,}T\d{6}Z/}, '')
   end
@@ -126,18 +139,23 @@ class ChkBuildRubyInfo
     #== ruby-trunk # 2014-05-24T22:36:01+09:00
     h = { "type" => "depsuffixed_name", "depsuffixed_name" => secname }
     output_hash h
+    update_last_hash(h)
 
     suffixed_name = secname[/\A[^_]+/]
     h = { "type" => "suffixed_name", "suffixed_name" => suffixed_name }
     output_hash h
+    update_last_hash(h)
 
     target_name = suffixed_name[/\A[^-]+/]
     h = { "type" => "target_name", "target_name" => target_name }
     output_hash h
+    update_last_hash(h)
 
     #Nickname: boron
     if /^Nickname: (\S+)/ =~ section
-      output_hash({"type"=>"nickname", "nickname"=>$1 })
+      h = {"type"=>"nickname", "nickname"=>$1 }
+      output_hash(h)
+      update_last_hash(h)
     end
 
     uname = { "type" => "uname" }
@@ -148,42 +166,59 @@ class ChkBuildRubyInfo
     uname["processor"] = $1 if /^uname_p: (.+)$/ =~ section
     uname["hardware_platform"] = $1 if /^uname_i: (.+)$/ =~ section
     uname["operating_system"] = $1 if /^uname_o: (.+)$/ =~ section
-    output_hash(uname) if 1 < uname.size
+    if 1 < uname.size
+      output_hash(uname)
+      update_last_hash(uname, 'uname')
+    end
 
     debian = { "type" => "debian" }
     debian["version"] = $1 if /^debian_version: (\S+)$/ =~ section
     debian["architecture"] = $1 if /^Debian Architecture: (\S+)$/ =~ section
-    output_hash(debian) if 1 < debian.size
+    if 1 < debian.size
+      output_hash(debian)
+      update_last_hash(debian, 'debian')
+    end
 
     lsb = { "type" => "lsb" } # lsb_release
     lsb["distributor"] = $1 if /^Distributor ID:\s*(\S+)$/ =~ section
     lsb["description"] = $1 if /^Description:\s*(\S+)$/ =~ section
     lsb["release"] = $1 if /^Release:\s*(\S+)$/ =~ section
     lsb["codename"] = $1 if /^Codename:\s*(\S+)$/ =~ section
-    output_hash(lsb) if 1 < lsb.size
+    if 1 < lsb.size
+      output_hash(lsb)
+      update_last_hash(lsb, 'lsb')
+    end
   end
 
   def scan_start(section)
     if /^start-time: (\S+)/ =~ section
-      output_unique_hash({"type"=>"start_time", "start_time"=>$1 })
+      h = {"type"=>"start_time", "start_time"=>$1 }
+      output_unique_hash(h)
+      update_last_hash(h)
     end
 
     if /^build-dir: (\S+)/ =~ section
-      output_unique_hash({"type"=>"build_dir", "dir"=>$1 })
+      h = {"type"=>"build_dir", "dir"=>$1 }
+      output_unique_hash(h)
+      update_last_hash(h, 'build')
     end
   end
 
   def scan_autoconf_version(section)
     #autoconf (GNU Autoconf) 2.67
     if /^autoconf \(GNU Autoconf\) (\S+)/ =~ section
-      output_hash({"type"=>"autoconf_version", "version"=>$1 })
+      h = {"type"=>"autoconf_version", "version"=>$1 }
+      output_hash(h)
+      update_last_hash(h, 'autoconf')
     end
   end
 
   def scan_bison_version(section)
     #bison (GNU Bison) 2.4.1
     if /^bison \(GNU Bison\) (\S+)/ =~ section
-      output_hash({"type"=>"bison_version", "version"=>$1 })
+      h = {"type"=>"bison_version", "version"=>$1 }
+      output_hash(h)
+      update_last_hash(h, 'bison')
     end
   end
 
@@ -203,20 +238,32 @@ class ChkBuildRubyInfo
     h["release_year"] = $1.to_i if /^\#define RUBY_RELEASE_YEAR (\S+)/ =~ section
     h["release_month"] = $1.to_i if /^\#define RUBY_RELEASE_MONTH (\S+)/ =~ section
     h["release_day"] = $1.to_i if /^\#define RUBY_RELEASE_DAY (\S+)/ =~ section
-    output_hash(h) if 1 < h.size
+    if 1 < h.size
+      output_hash(h)
+      h1 = h.reject {|k, v| /\Arelease_/ =~ k }
+      h2 = h.reject {|k, v| /\Arelease_/ !~ k }
+      update_last_hash(h1, 'ruby_release')
+      update_last_hash(h2, 'ruby')
+    end
   end
 
   def scan_configure(section)
     if %r{^\+ \S+/configure --prefix=(\S+/([0-9]{8,}T[0-9]{6}Z?))(?: |$)} =~ section
-      output_unique_hash({"type"=>"start_time", "start_time"=>$2 })
-      output_unique_hash({"type"=>"build_dir", "dir"=>$1 })
+      h = {"type"=>"start_time", "start_time"=>$2 }
+      output_unique_hash(h)
+      update_last_hash(h)
+      h = {"type"=>"build_dir", "dir"=>$1 }
+      output_unique_hash(h)
+      update_last_hash(h, 'build')
     end
   end
 
   def scan_verconf_h(section)
     ##define RUBY_PLATFORM "i686-linux"
     if /^\#define RUBY_PLATFORM "(\S+)"/ =~ section
-      output_hash({"type"=>"ruby_platform", "platform"=>$1 })
+      h = {"type"=>"ruby_platform", "platform"=>$1 }
+      output_hash(h)
+      update_last_hash(h, 'ruby')
     end
   end
 
@@ -226,20 +273,27 @@ class ChkBuildRubyInfo
     h = { "type" => "config_files" }
     h["config_guess"] = $1 if /^config\.guess: (\S+)/ =~ section
     h["config_sub"] = $1 if /^config\.sub: (\S+)/ =~ section
-    output_hash(h) if 1 < h.size
+    if 1 < h.size
+      output_hash(h)
+      update_last_hash(h)
+    end
   end
 
   def scan_cc_version(section)
     #gcc (GCC) 4.8.0
     if /^gcc \(GCC\) (\S+)/ =~ section
-      output_hash({"type"=>"cc_version", "cc"=>"gcc", "version"=>$1 })
+      h = {"type"=>"cc_version", "cc"=>"gcc", "version"=>$1 }
+      output_hash(h)
+      update_last_hash({ "cc"=>"gcc", "cc_version"=>h["version"] })
     end
   end
 
   def scan_miniruby_libc(section)
     #GNU C Library (Debian EGLIBC 2.11.3-4) stable release version 2.11.3, by Roland McGrath et al.
     if /^(GNU C Library .*), by/ =~ section
-      output_hash({"type"=>"libc_version", "version"=>$1 })
+      h = {"type"=>"libc_version", "version"=>$1 }
+      output_hash(h)
+      update_last_hash(h, 'libc')
     end
   end
 
@@ -254,6 +308,9 @@ class ChkBuildRubyInfo
         "rev" => lastrev[1].to_i
       }
       output_hash h
+      if h["url"] == "http://svn.ruby-lang.org/repos/ruby"
+        update_last_hash({ "ruby_rev" => h["rev"] })
+      end
     end
   end
 
@@ -271,6 +328,9 @@ class ChkBuildRubyInfo
         "rev" => lastrev[1].to_i
       }
       output_hash h
+      if h["url"] == "http://svn.ruby-lang.org/repos/ruby"
+        update_last_hash({ "ruby_rev" => h["rev"] })
+      end
     end
   end
 
@@ -286,6 +346,12 @@ class ChkBuildRubyInfo
         "commit" => commit[1]
       }
       output_hash h
+      case h["url"]
+      when "git://github.com/nurse/mspec.git", "git://github.com/rubyspec/mspec.git"
+        update_last_hash({ "mspec_commit" => h["commit"] })
+      when "git://github.com/nurse/rubyspec.git", "git://github.com/rubyspec/rubyspec.git"
+        update_last_hash({ "rubyspec_commit" => h["commit"] })
+      end
     end
   end
 
@@ -348,12 +414,15 @@ class ChkBuildRubyInfo
     h["solibs"] = $1.strip if /^[ \t]+SOLIBS = (.+)\n/ =~ section
     h["target"] = $1.strip if /^Target: (.+)\n/ =~ section
     output_hash h
+    update_last_hash(h, 'make_flag')
   end
 
   def scan_ruby_v(section)
     #ruby 2.2.0dev (2014-05-24 trunk 46082) [i686-linux]
     if /^ruby .*/ =~ section
-      output_hash({"type"=>"ruby_version", "version"=>$& })
+      h = {"type"=>"ruby_version", "version"=>$& }
+      output_hash(h)
+      update_last_hash(h, 'ruby')
     end
   end
 
@@ -372,6 +441,7 @@ class ChkBuildRubyInfo
       if /^#{Regexp.escape lib}: (.*)\n/ =~ section
         h = { 'type' => "ruby_lib_version", "lib" => lib, "version" => $1 }
         output_hash h
+        update_last_hash({ "used_#{lib}_version" => h["version"] })
       end
     }
   end
@@ -390,6 +460,7 @@ class ChkBuildRubyInfo
       "low" => low
     }
     output_hash h
+    update_last_hash(h, 'abi_check_summary')
   end
 
   BTEST_RESULT_MAP = {
@@ -484,6 +555,7 @@ class ChkBuildRubyInfo
       output_hash h
     }
 
+    h = nil
     if /^No tests, no problem$/ =~ section
       h = {
         "type" => "btest_summary",
@@ -491,7 +563,6 @@ class ChkBuildRubyInfo
         "tests" => 0,
         "failures" => 0
       }
-      output_hash h
     elsif /^PASS all (\d+) tests/ =~ section
       h = {
         "type" => "btest_summary",
@@ -499,7 +570,6 @@ class ChkBuildRubyInfo
         "tests" => $1.to_i,
         "failures" => 0
       }
-      output_hash h
     elsif /^FAIL (\d+)\/(\d+) tests failed/ =~ section
       h = {
         "type" => "btest_summary",
@@ -507,7 +577,16 @@ class ChkBuildRubyInfo
         "tests" => $2.to_i,
         "failures" => $1.to_i,
       }
+    end
+    if h
       output_hash h
+      h.delete 'test_suite'
+      case secname
+      when 'btest'
+        update_last_hash(h, 'btest')
+      when 'test-knownbug'
+        update_last_hash(h, 'knownbug')
+      end
     end
   end
 
@@ -553,6 +632,7 @@ class ChkBuildRubyInfo
       end
     }
 
+    h = nil
     if /^end of test\(test: (\d+)\)/ =~ section
       h = {
         "type" => "testrb_summary",
@@ -560,7 +640,6 @@ class ChkBuildRubyInfo
         "tests" => $1.to_i,
         "failures" => 0,
       }
-      output_hash h
     elsif /^test: (\d+) failed (\d+)/ =~ section || %r{^not ok/test: (\d+) failed (\d+)} =~ section
       h = {
         "type" => "testrb_summary",
@@ -568,7 +647,11 @@ class ChkBuildRubyInfo
         "tests" => $1.to_i,
         "failures" => $2.to_i,
       }
+    end
+    if h
       output_hash h
+      h.delete 'test_suite'
+      update_last_hash(h, 'testrb')
     end
   end
 
@@ -651,6 +734,10 @@ class ChkBuildRubyInfo
       }
       h["skips"] = $5.to_i if $5
       output_hash h
+      if secname == 'test-all'
+        h.delete 'test_suite'
+        update_last_hash(h, 'test_all')
+      end
     end
   end
 
@@ -695,6 +782,10 @@ class ChkBuildRubyInfo
         "errors" => $5.to_i,
       }
       output_hash h
+      if secname == 'rubyspec'
+        h.delete 'test_suite'
+        update_last_hash(h, 'rubyspec')
+      end
     end
   end
 
@@ -868,6 +959,7 @@ class ChkBuildRubyInfo
       detect_section_failure(secname, section)
       first = false
     }
+    output_hash(@last_hash)
   end
 
   def extract(&block)
