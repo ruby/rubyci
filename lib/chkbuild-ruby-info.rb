@@ -46,8 +46,7 @@ class ChkBuildRubyInfo
       end
     end
     if @td_common
-      tblname = hash.delete("table") rescue nil
-      tblname = hash["type"] unless tblname
+      tblname = hash["type"]
       tblname.tr!('-','_')
       print "@[chkbuild.#{tblname}] "
       puts JSON.dump(hash.merge(@td_common))
@@ -582,8 +581,7 @@ class ChkBuildRubyInfo
 
     list.scan(/^(\S+\#.+?) = ([\s\S]*?)(\d+\.\d+) s = ([EFS.])$/) {
       h = {
-        "table" => "test-all-result",
-        "type" => "#{secname}-result",
+        "type" => "test-all-result",
         "test-suite" => secname,
         "test-name" => $1,
         "output" => $2,
@@ -607,8 +605,7 @@ class ChkBuildRubyInfo
         #    /extdisk/chkbuild/chkbuild/tmp/build/20140502T100500Z/ruby/test/ruby/test_symbol.rb:254:in `<main>'
         if /\AError:\n(\S+):\n(\S+): (.*)\n/ =~ body
           h = {
-            "table" => "test-all-error-detail",
-            "type" => "#{secname}-error-detail",
+            "type" => "test-all-error-detail",
             "test-suite" => secname,
             "test-name" => $1,
             "error-class" => $2,
@@ -624,8 +621,7 @@ class ChkBuildRubyInfo
         #<[:on_blocking, :c2]>.
         if /\AFailure:\n(\S+) \[(.*)\]:\n/ =~ body
           h = {
-            "table" => "test-all-failure-detail",
-            "type" => "#{secname}-failure-detail",
+            "type" => "test-all-failure-detail",
             "test-suite" => secname,
             "test-name" => $1,
             "failure-location" => path_after_time($2),
@@ -638,8 +634,7 @@ class ChkBuildRubyInfo
 
     if /^(\d+) tests, (\d+) assertions, (\d+) failures, (\d+) errors(?:, (\d+) skips)?$/m =~ section
       h = {
-        "table" => "test-all-summary",
-        "type" => "#{secname}-summary",
+        "type" => "test-all-summary",
         "test-suite" => secname,
         "tests" => $1.to_i,
         "assertions" => $2.to_i,
@@ -672,8 +667,7 @@ class ChkBuildRubyInfo
         body = first_paragraph(body)
         next if /\n/ !~ body
         h = {
-          "table" => "rubyspec-detail",
-          "type" => "#{secname}-detail",
+          "type" => "rubyspec-detail",
           "test-suite" => secname,
           "description" => gsub_path_to_time($`),
           "detail" => gsub_path_to_time($')
@@ -684,8 +678,7 @@ class ChkBuildRubyInfo
 
     if /^(\d+) files?, (\d+) examples?, (\d+) expectations?, (\d+) failures?, (\d+) errors?$/m =~ section
       h = {
-        "table" => "rubyspec-summary",
-        "type" => "#{secname}-summary",
+        "type" => "rubyspec-summary",
         "test-suite" => secname,
         "files" => $1.to_i,
         "examples" => $2.to_i,
