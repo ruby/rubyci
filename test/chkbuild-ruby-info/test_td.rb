@@ -4,24 +4,6 @@ require 'stringio'
 require_relative '../../lib/chkbuild-ruby-info'
 
 class TestChkBuildRubyInfoTD < Test::Unit::TestCase
-  def check(src, expected, type=nil)
-    src = StringIO.new(src)
-    out = StringIO.new
-    ChkBuildRubyInfo.new(src).convert_to_json(out)
-    result = out.string.gsub(/,$/, '').sub(/\A\[\n/, '').sub(/\]\n\z/, '')
-    if type
-      if type.kind_of?(Array)
-        json_type_pat = Regexp.union(*type.map {|t| JSON.dump(t) })
-      else
-        json_type_pat = Regexp.escape(JSON.dump(type))
-      end
-      pat = /"type":#{json_type_pat}/
-      result = result.lines.grep(pat).join
-    end
-    expected = expected.gsub(/,$/, '')
-    assert_equal(expected, result)
-  end
-
   def capture_stdout_stderr
     orig_stdout = $stdout
     orig_stderr = $stderr
