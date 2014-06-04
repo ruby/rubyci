@@ -117,13 +117,13 @@ class Report < ActiveRecord::Base
       res = http.get(path)
       res.value
       cb = ChkBuildRubyInfo.new(res.body)
-      cb.td_common = {
+      common = {
         server_id: server.id,
         depsuffixed_name: depsuffixed_name,
         epoch: datetime.to_i,
         revision: revision,
       }
-      cb.convert_to_json
+      cb.convert_to_td(common)
     end
     results
   end
@@ -159,13 +159,13 @@ class Report < ActiveRecord::Base
       res = http.get(path)
       res.value
       cb = ChkBuildRubyInfo.new(res.body)
-      cb.td_common = {
+      common = {
         server_id: server.id,
         depsuffixed_name: depsuffixed_name,
         epoch: datetime.to_i,
         revision: revision,
       }
-      cb.convert_to_json
+      cb.convert_to_td(common)
     end
     results
   end
