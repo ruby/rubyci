@@ -35,12 +35,8 @@ class ChkBuildRubyInfo
       end
     end
     if @td_common
-      tblname = hash["type"]
-      if /\Arubyspec-.*-(\w+)\z/ =~ tblname
-        tblname = "rubyspec_$1"
-      else
-        tblname.tr!('-','_')
-      end
+      tblname = hash.delete("table") || hash["type"]
+      tblname.tr!('-','_')
       print "@[chkbuild.#{tblname}] "
       puts JSON.dump(hash.merge(@td_common))
       return
@@ -404,6 +400,7 @@ class ChkBuildRubyInfo
 
     section.scan(/\#(\d+) (\S+):(\d+)(.*)\s([.F])$/) {
       h = {
+        "table" => "btest-result",
         "type" => "#{secname}-result",
         "test-suite" => secname,
         "testnum" => $1,
@@ -453,6 +450,7 @@ class ChkBuildRubyInfo
 
     section.scan(/^\#(\d+) (\S+):(\d+):(.*) \n((?: {5}.*\n)*)  \#=> (.*)/) {
       h = {
+        "table" => "btest-detail",
         "type" => "#{secname}-detail",
         "test-suite" => secname,
         "testnum" => $1,
@@ -467,6 +465,7 @@ class ChkBuildRubyInfo
 
     if /^No tests, no problem$/ =~ section
       h = {
+        "table" => "btest-summary",
         "type" => "#{secname}-summary",
         "test-suite" => secname,
         "tests" => 0,
@@ -475,6 +474,7 @@ class ChkBuildRubyInfo
       output_json_object h
     elsif /^PASS all (\d+) tests/ =~ section
       h = {
+        "table" => "btest-summary",
         "type" => "#{secname}-summary",
         "test-suite" => secname,
         "tests" => $1.to_i,
@@ -483,6 +483,7 @@ class ChkBuildRubyInfo
       output_json_object h
     elsif /^FAIL (\d+)\/(\d+) tests failed/ =~ section
       h = {
+        "table" => "btest-summary",
         "type" => "#{secname}-summary",
         "test-suite" => secname,
         "tests" => $2.to_i,
@@ -516,7 +517,7 @@ class ChkBuildRubyInfo
           "type" => "testrb-result",
           "test-suite" => "testrb",
           "what" => what,
-          "testnum" => $2,
+          "testnum" => $2.to_i,
           "location" => $3,
           "result" => "success",
         }
@@ -526,7 +527,7 @@ class ChkBuildRubyInfo
           "type" => "testrb-result",
           "test-suite" => "testrb",
           "what" => $4,
-          "testnum" => $5,
+          "testnum" => $5.to_i,
           "location" => $6,
           "result" => "failure",
         }
@@ -570,6 +571,7 @@ class ChkBuildRubyInfo
 
     list.scan(/^(\S+\#.+?) = ([\s\S]*?)(\d+\.\d+) s = ([EFS.])$/) {
       h = {
+        "table" => "test-all-result",
         "type" => "#{secname}-result",
         "test-suite" => secname,
         "test-name" => $1,
@@ -594,6 +596,7 @@ class ChkBuildRubyInfo
         #    /extdisk/chkbuild/chkbuild/tmp/build/20140502T100500Z/ruby/test/ruby/test_symbol.rb:254:in `<main>'
         if /\AError:\n(\S+):\n(\S+): (.*)\n/ =~ body
           h = {
+            "table" => "test-all-error-detail",
             "type" => "#{secname}-error-detail",
             "test-suite" => secname,
             "test-name" => $1,
@@ -610,6 +613,7 @@ class ChkBuildRubyInfo
         #<[:on_blocking, :c2]>.
         if /\AFailure:\n(\S+) \[(.*)\]:\n/ =~ body
           h = {
+            "table" => "test-all-failure-detail",
             "type" => "#{secname}-failure-detail",
             "test-suite" => secname,
             "test-name" => $1,
@@ -623,6 +627,7 @@ class ChkBuildRubyInfo
 
     if /^(\d+) tests, (\d+) assertions, (\d+) failures, (\d+) errors(?:, (\d+) skips)?$/m =~ section
       h = {
+        "table" => "test-all-summary",
         "type" => "#{secname}-summary",
         "test-suite" => secname,
         "tests" => $1.to_i,
@@ -656,6 +661,7 @@ class ChkBuildRubyInfo
         body = first_paragraph(body)
         next if /\n/ !~ body
         h = {
+          "table" => "rubyspec-detail",
           "type" => "#{secname}-detail",
           "test-suite" => secname,
           "description" => gsub_path_to_time($`),
@@ -667,6 +673,7 @@ class ChkBuildRubyInfo
 
     if /^(\d+) files?, (\d+) examples?, (\d+) expectations?, (\d+) failures?, (\d+) errors?$/m =~ section
       h = {
+        "table" => "rubyspec-summary",
         "type" => "#{secname}-summary",
         "test-suite" => secname,
         "files" => $1.to_i,
