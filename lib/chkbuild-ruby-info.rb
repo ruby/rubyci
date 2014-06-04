@@ -927,18 +927,25 @@ class ChkBuildRubyInfo
     end
   end
 
-  def self.main(argv)
-    optionparser.parse!(argv)
+  def self.each_argfile(argv)
     if argv.empty?
       open_stdin {|f|
-        ChkBuildRubyInfo.new(f).convert_to_json
+        yield f
       }
     else
       argv.each {|filename|
         open_log(filename) {|f|
-          ChkBuildRubyInfo.new(f).convert_to_json
+          yield f
         }
       }
     end
   end
+
+  def self.main(argv)
+    optionparser.parse!(argv)
+    each_argfile(argv) {|f|
+      ChkBuildRubyInfo.new(f).convert_to_json
+    }
+  end
+
 end
