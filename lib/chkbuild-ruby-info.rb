@@ -35,7 +35,8 @@ class ChkBuildRubyInfo
       end
     end
     if @td_common
-      tblname = hash.delete("table") || hash["type"]
+      tblname = hash.delete("table") rescue nil
+      tblname = hash["type"] unless tblname
       tblname.tr!('-','_')
       print "@[chkbuild.#{tblname}] "
       puts JSON.dump(hash.merge(@td_common))
