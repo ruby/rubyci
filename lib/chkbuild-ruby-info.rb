@@ -400,7 +400,6 @@ class ChkBuildRubyInfo
 
     section.scan(/\#(\d+) (\S+):(\d+)(.*)\s([.F])$/) {
       h = {
-        "table" => "btest-result",
         "type" => "#{secname}-result",
         "test-suite" => secname,
         "testnum" => $1,
@@ -450,7 +449,6 @@ class ChkBuildRubyInfo
 
     section.scan(/^\#(\d+) (\S+):(\d+):(.*) \n((?: {5}.*\n)*)  \#=> (.*)/) {
       h = {
-        "table" => "btest-detail",
         "type" => "#{secname}-detail",
         "test-suite" => secname,
         "testnum" => $1,
@@ -465,7 +463,6 @@ class ChkBuildRubyInfo
 
     if /^No tests, no problem$/ =~ section
       h = {
-        "table" => "btest-summary",
         "type" => "#{secname}-summary",
         "test-suite" => secname,
         "tests" => 0,
@@ -474,7 +471,6 @@ class ChkBuildRubyInfo
       output_json_object h
     elsif /^PASS all (\d+) tests/ =~ section
       h = {
-        "table" => "btest-summary",
         "type" => "#{secname}-summary",
         "test-suite" => secname,
         "tests" => $1.to_i,
@@ -483,7 +479,6 @@ class ChkBuildRubyInfo
       output_json_object h
     elsif /^FAIL (\d+)\/(\d+) tests failed/ =~ section
       h = {
-        "table" => "btest-summary",
         "type" => "#{secname}-summary",
         "test-suite" => secname,
         "tests" => $2.to_i,
