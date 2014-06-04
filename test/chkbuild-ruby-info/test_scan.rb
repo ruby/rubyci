@@ -77,10 +77,10 @@ class TestChkBuildRubyInfo < Test::Unit::TestCase
 defcheck(:depsuffixed_name, <<'End1', <<'End2')
 == ruby-trunk # 2010-12-02T16:51:01+09:00
 End1
-{"type":"section-start","secname":"ruby-trunk","start-time":"2010-12-02T16:51:01+09:00"},
-{"type":"depsuffixed-name","depsuffixed-name":"ruby-trunk"},
-{"type":"suffixed-name","suffixed-name":"ruby-trunk"},
-{"type":"target-name","target-name":"ruby"}
+{"type":"section_start","secname":"ruby-trunk","start_time":"2010-12-02T16:51:01+09:00"},
+{"type":"depsuffixed_name","depsuffixed_name":"ruby-trunk"},
+{"type":"suffixed_name","suffixed_name":"ruby-trunk"},
+{"type":"target_name","target_name":"ruby"}
 End2
 
 defcheck(:nickname, <<'End1', <<'End2', 'nickname')
@@ -101,7 +101,7 @@ uname_p: unknown
 uname_i: unknown
 uname_o: GNU/Linux
 End1
-{"type":"uname","sysname":"Linux","release":"2.6.18-6-xen-686","version":"#1 SMP Thu Nov 5 19:54:42 UTC 2009","machine":"i686","processor":"unknown","hardware-platform":"unknown","operating-system":"GNU/Linux"},
+{"type":"uname","sysname":"Linux","release":"2.6.18-6-xen-686","version":"#1 SMP Thu Nov 5 19:54:42 UTC 2009","machine":"i686","processor":"unknown","hardware_platform":"unknown","operating_system":"GNU/Linux"},
 End2
 
 defcheck(:test_debian, <<'End1', <<'End2', 'debian')
@@ -120,96 +120,96 @@ Description:    Debian GNU/Linux 6.0.9 (squeeze)
 Release:        6.0.9
 Codename:       squeeze
 End1
-{"type":"lsb","Distributor":"Debian","Release":"6.0.9","Codename":"squeeze"},
+{"type":"lsb","distributor":"Debian","release":"6.0.9","codename":"squeeze"},
 End2
 end
 
-defcheck(:start, <<'End1', <<'End2', %w[start-time build-dir])
+defcheck(:start, <<'End1', <<'End2', %w[start_time build_dir])
 == start # 2014-05-28T21:05:12+09:00
 start-time: 20140528T120400Z
 build-dir: /extdisk/chkbuild/chkbuild/tmp/build/20140528T120400Z
 End1
-{"type":"start-time","start-time":"20140528T120400Z"},
-{"type":"build-dir","dir":"/extdisk/chkbuild/chkbuild/tmp/build/20140528T120400Z"},
+{"type":"start_time","start_time":"20140528T120400Z"},
+{"type":"build_dir","dir":"/extdisk/chkbuild/chkbuild/tmp/build/20140528T120400Z"},
 End2
 
 ["", " optflags=-O0"].each {|str|
-defcheck(:configure, <<"End1", <<'End2', %w[start-time build-dir])
+defcheck(:configure, <<"End1", <<'End2', %w[start_time build_dir])
 == configure # 2014-05-28T21:05:58+09:00
 + ./configure --prefix=/extdisk/chkbuild/chkbuild/tmp/build/20140528T120400Z#{str}
 End1
-{"type":"start-time","start-time":"20140528T120400Z"},
-{"type":"build-dir","dir":"/extdisk/chkbuild/chkbuild/tmp/build/20140528T120400Z"},
+{"type":"start_time","start_time":"20140528T120400Z"},
+{"type":"build_dir","dir":"/extdisk/chkbuild/chkbuild/tmp/build/20140528T120400Z"},
 End2
 }
 
-defcheck(:start_and_configure, <<'End1', <<'End2', %w[start-time build-dir])
+defcheck(:start_and_configure, <<'End1', <<'End2', %w[start_time build_dir])
 == start # 2014-05-28T21:05:12+09:00
 start-time: 20140528T120400Z
 build-dir: /extdisk/chkbuild/chkbuild/tmp/build/20140528T120400Z
 == configure # 2014-05-28T21:05:58+09:00
 + ./configure --prefix=/extdisk/chkbuild/chkbuild/tmp/build/20140528T120400Z
 End1
-{"type":"start-time","start-time":"20140528T120400Z"},
-{"type":"build-dir","dir":"/extdisk/chkbuild/chkbuild/tmp/build/20140528T120400Z"},
+{"type":"start_time","start_time":"20140528T120400Z"},
+{"type":"build_dir","dir":"/extdisk/chkbuild/chkbuild/tmp/build/20140528T120400Z"},
 End2
 
-defcheck(:all_with_output, <<'End1', <<'End2', 'test-all-result')
+defcheck(:all_with_output, <<'End1', <<'End2', 'test_all_result')
 == test-all # 2010-12-02T16:51:01+09:00
 TestVariable#test_global_variable_0 = (eval):1: warning: possibly useless use of a variable in void context
 0.12 s = .
 End1
-{"type":"test-all-result","test-suite":"test-all","test-name":"TestVariable#test_global_variable_0","output":"(eval):1: warning: possibly useless use of a variable in void context\n","elapsed-time[s]":0.12,"result":"success"},
+{"type":"test_all_result","test_suite":"test-all","test_name":"TestVariable#test_global_variable_0","output":"(eval):1: warning: possibly useless use of a variable in void context\n","elapsed_time_s":0.12,"result":"success"},
 End2
 
-defcheck(:all_method_with_spaces, <<'End1', <<'End2', 'test-all-result')
+defcheck(:all_method_with_spaces, <<'End1', <<'End2', 'test_all_result')
 == test-all # 2010-12-02T16:51:01+09:00
 TestIOScanf#test_" ,10,1.1"(" ,%d,%f") = 0.00 s = .
 End1
-{"type":"test-all-result","test-suite":"test-all","test-name":"TestIOScanf#test_\" ,10,1.1\"(\" ,%d,%f\")","output":"","elapsed-time[s]":0.0,"result":"success"},
+{"type":"test_all_result","test_suite":"test-all","test_name":"TestIOScanf#test_\" ,10,1.1\"(\" ,%d,%f\")","output":"","elapsed_time_s":0.0,"result":"success"},
 End2
 
-defcheck(:bug, <<'End1', <<'End2', 'BUG')
+defcheck(:bug, <<'End1', <<'End2', 'bug')
 == ruby-trunk # 2010-12-02T16:51:01+09:00
 sample/test.rb:1873: [BUG] Segmentation fault
 End1
-{"type":"BUG","secname":"ruby-trunk","line-prefix":"sample/test.rb:1873:","message":"Segmentation fault"},
+{"type":"bug","secname":"ruby-trunk","line_prefix":"sample/test.rb:1873:","message":"Segmentation fault"},
 End2
 
-defcheck(:fatal, <<'End1', <<'End2', 'FATAL')
+defcheck(:fatal, <<'End1', <<'End2', 'fatal')
 == ruby-trunk # 2010-12-02T16:51:01+09:00
 [FATAL] failed to allocate memory
 End1
-{"type":"FATAL","secname":"ruby-trunk","line-prefix":"","message":"failed to allocate memory"},
+{"type":"fatal","secname":"ruby-trunk","line_prefix":"","message":"failed to allocate memory"},
 End2
 
-defcheck(:make_failure, <<'End1', <<'End2', 'make-failure')
+defcheck(:make_failure, <<'End1', <<'End2', 'make_failure')
 == ruby-trunk # 2010-12-02T16:51:01+09:00
 foo
 bar make: *** baz
 End1
-{"type":"make-failure","secname":"ruby-trunk","prev-line":"foo","line-prefix":"bar ","message":"baz"},
+{"type":"make_failure","secname":"ruby-trunk","prev_line":"foo","line_prefix":"bar ","message":"baz"},
 End2
 
-defcheck(:glibc_symbol_lookup_error, <<'End1', <<'End2', 'glibc-symbol-lookup-error')
+defcheck(:glibc_symbol_lookup_error, <<'End1', <<'End2', 'glibc_symbol_lookup_error')
 == ruby-trunk # 2010-12-02T16:51:01+09:00
 bar: symbol lookup error: baz
 End1
-{"type":"glibc-symbol-lookup-error","secname":"ruby-trunk","line-prefix":"bar","message":"baz"},
+{"type":"glibc_symbol_lookup_error","secname":"ruby-trunk","line_prefix":"bar","message":"baz"},
 End2
 
 defcheck(:timeout, <<'End1', <<'End2', 'timeout')
 == ruby-trunk # 2010-12-02T16:51:01+09:00
 foo timeout: command execution time exceeds 1800s
 End1
-{"type":"timeout","secname":"ruby-trunk","line-prefix":"foo ","message":"command execution time exceeds 1800s"},
+{"type":"timeout","secname":"ruby-trunk","line_prefix":"foo ","message":"command execution time exceeds 1800s"},
 End2
 
-defcheck(:glibc_failure, <<'End1', <<'End2', 'glibc-failure')
+defcheck(:glibc_failure, <<'End1', <<'End2', 'glibc_failure')
 == ruby-trunk # 2010-12-02T16:51:01+09:00
 bar *** baz *** qux
 End1
-{"type":"glibc-failure","secname":"ruby-trunk","line-prefix":"bar ","message1":"baz","message2":"qux"},
+{"type":"glibc_failure","secname":"ruby-trunk","line_prefix":"bar ","message1":"baz","message2":"qux"},
 End2
 
 end
