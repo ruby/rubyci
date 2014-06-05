@@ -5,14 +5,14 @@ require 'time'
 require 'pp'
 
 class ChkBuildRubyInfo
-  attr_accessor :td_common
+  attr_accessor :common_hash
 
   def initialize(f)
     @f = f
     @unique_hash = {}
     @last_hash = {"type"=>"build"}
     @json_array_first = nil
-    @td_common = nil
+    @common_hash = nil
 
     @current_section_name = nil
     @current_section_start_time = nil
@@ -966,8 +966,8 @@ class ChkBuildRubyInfo
 
   def extract
     extract1 {|hash|
-      if @td_common
-        hash = hash.merge(@td_common)
+      if @common_hash
+        hash = hash.merge(@common_hash)
       end
       yield hash
     }

@@ -24,7 +24,7 @@ class TestChkBuildRubyInfoTD < Test::Unit::TestCase
       cb = ChkBuildRubyInfo.new(<<'End')
 == ruby-trunk # 2010-12-02T16:51:01+09:00
 End
-      cb.td_common = {
+      cb.common_hash = {
         server_id: 1,
         depsuffixed_name: 'ruby-trunk',
         epoch: 1291276261,

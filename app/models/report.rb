@@ -117,7 +117,7 @@ class Report < ActiveRecord::Base
       res = http.get(path)
       res.value
       cb = ChkBuildRubyInfo.new(res.body)
-      cb.td_common = {
+      cb.common_hash = {
         server_id: server.id,
         depsuffixed_name: depsuffixed_name,
         epoch: datetime.to_i,
@@ -159,7 +159,7 @@ class Report < ActiveRecord::Base
       res = http.get(path)
       res.value
       cb = ChkBuildRubyInfo.new(res.body)
-      cb.td_common = {
+      cb.common_hash = {
         server_id: server.id,
         depsuffixed_name: depsuffixed_name,
         epoch: datetime.to_i,
