@@ -5,12 +5,14 @@ require 'time'
 require 'pp'
 
 class ChkBuildRubyInfo
+  attr_accessor :td_common
 
   def initialize(f)
     @f = f
     @unique_hash = {}
     @last_hash = {"type"=>"build"}
     @json_array_first = nil
+    @td_common = nil
 
     @current_section_name = nil
     @current_section_start_time = nil
@@ -962,16 +964,17 @@ class ChkBuildRubyInfo
     }
   end
 
-  def convert_to_td(common)
+  def convert_to_td
     extract {|hash|
       tblname = hash["type"]
       tblname.tr!('-','_')
       print "@[chkbuild.#{tblname}] "
-      puts JSON.dump(hash.merge(common))
+      puts JSON.dump(hash.merge(@td_common))
     }
   end
 
   def convert_to_json(out=$stdout)
+    return convert_to_td if @td_common
     @out = out
     output_proc = lambda {|hash| output_json_object hash }
     with_output_proc(output_proc) {

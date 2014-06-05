@@ -24,13 +24,13 @@ class TestChkBuildRubyInfoTD < Test::Unit::TestCase
       cb = ChkBuildRubyInfo.new(<<'End')
 == ruby-trunk # 2010-12-02T16:51:01+09:00
 End
-      common = {
+      cb.td_common = {
         server_id: 1,
         depsuffixed_name: 'ruby-trunk',
         epoch: 1291276261,
         revision: 4200,
       }
-      cb.convert_to_td(common)
+      cb.convert_to_json
     }
     assert_equal(<<'End', out)
 @[chkbuild.section_start] {"type":"section_start","secname":"ruby-trunk","start_time":"2010-12-02T16:51:01+09:00","server_id":1,"depsuffixed_name":"ruby-trunk","epoch":1291276261,"revision":4200}
