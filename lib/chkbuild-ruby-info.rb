@@ -5,8 +5,6 @@ require 'time'
 require 'pp'
 
 class ChkBuildRubyInfo
-  attr_accessor :common_hash
-
   def initialize(f)
     @f = f
     @unique_hash = {}
@@ -18,6 +16,15 @@ class ChkBuildRubyInfo
     @current_section_start_time = nil
     @output_proc = nil
     @out = $stdout
+  end
+
+  attr_reader :common_hash
+  def common_hash=(hash)
+    h = {}
+    hash.each {|k, v|
+      h[k.to_s]= v
+    }
+    @common_hash = h
   end
 
   def with_output_proc(callable)
@@ -967,7 +974,12 @@ class ChkBuildRubyInfo
   def extract
     extract1 {|hash|
       if @common_hash
-        hash = hash.merge(@common_hash)
+        hash = hash.merge(@common_hash) {|k, v1, v2|
+          if v1 != v2
+            warn "common hash override #{k.inspect}: #{v1.inspect} v.s. #{v2.inspect}"
+          end
+          v2
+        }
       end
       yield hash
     }
