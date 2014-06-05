@@ -196,6 +196,18 @@ End1
 {"type":"test_all_error_detail","test_suite":"test-all","test_name":"test_make_socket_ipv6_multicast(Rinda::TestRingServer)","error_class":"Errno::EINVAL","error_message":"Invalid argument - bind(2) for [ff02::1]:7647","backtrace":"    ruby/lib/rinda/ring.rb:117:in `bind'\n    ruby/lib/rinda/ring.rb:117:in `make_socket'\n    ruby/test/rinda/test_rinda.rb:582:in `test_make_socket_ipv6_multicast'\n"},
 End2
 
+defcheck(:test_all_failure_detail, <<'End1', <<'End2', 'test_all_failure_detail')
+== test-all # 2010-12-02T16:51:01+09:00
+Finished tests in 1054.102372s, 12.5794 tests/s, 2135.9595 assertions/s.
+
+  1) Failure:
+TestThread#test_handle_interrupt [/extdisk/chkbuild/chkbuild/tmp/build/20140502T161600Z/ruby/test/ruby/test_thread.rb:551]:
+<[:on_blocking, :c1]> expected but was
+<[:on_blocking, :c2]>.
+End1
+{"type":"test_all_failure_detail","test_suite":"test-all","test_name":"TestThread#test_handle_interrupt","failure_location":"ruby/test/ruby/test_thread.rb:551","detail":"<[:on_blocking, :c1]> expected but was\n<[:on_blocking, :c2]>.\n"}
+End2
+
 defcheck(:exception, <<"End1", <<'End2', 'exception')
 == ruby-trunk # 2010-12-02T16:51:01+09:00
 sample/test.rb:1873: [BUG] Segmentation fault

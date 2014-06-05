@@ -700,10 +700,6 @@ class ChkBuildRubyInfo
           output_hash h
         end
 
-        #  1) Failure:
-        #TestThread#test_handle_interrupt [/extdisk/chkbuild/chkbuild/tmp/build/20140502T161600Z/ruby/test/ruby/test_thread.rb:551]:
-        #<[:on_blocking, :c1]> expected but was
-        #<[:on_blocking, :c2]>.
         if /\AFailure:\n(\S+) \[(.*)\]:\n/ =~ body
           h = {
             "type" => "test_all_failure_detail",
