@@ -958,9 +958,18 @@ class ChkBuildRubyInfo
     output_hash(@last_hash)
   end
 
-  def extract(&block)
+  def extract1(&block)
     with_output_proc(block) {
       extract_info(@f)
+    }
+  end
+
+  def extract
+    extract1 {|hash|
+      if @td_common
+        hash = hash.merge(@td_common)
+      end
+      yield hash
     }
   end
 
@@ -969,7 +978,7 @@ class ChkBuildRubyInfo
       tblname = hash["type"]
       tblname.tr!('-','_')
       print "@[chkbuild.#{tblname}] "
-      puts JSON.dump(hash.merge(@td_common))
+      puts JSON.dump(hash)
     }
   end
 
