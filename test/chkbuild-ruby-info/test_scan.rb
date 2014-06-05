@@ -169,6 +169,33 @@ End1
 {"type":"test_all_result","test_suite":"test-all","test_name":"TestIOScanf#test_\" ,10,1.1\"(\" ,%d,%f\")","output":"","elapsed":0.0,"result":"success"},
 End2
 
+defcheck(:test_all_error_detail, <<'End1', <<'End2', 'test_all_error_detail')
+== test-all # 2010-12-02T16:51:01+09:00
+Finished tests in 1054.102372s, 12.5794 tests/s, 2135.9595 assertions/s.
+
+  1) Error:
+TestSymbol#test_gc_attrset:
+NameError: cannot make unknown type anonymous ID 4:838aed5 attrset
+    /extdisk/chkbuild/chkbuild/tmp/build/20140502T100500Z/ruby/test/ruby/test_symbol.rb:255:in `eval'
+    /extdisk/chkbuild/chkbuild/tmp/build/20140502T100500Z/ruby/test/ruby/test_symbol.rb:255:in `block in <main>'
+End1
+{"type":"test_all_error_detail","test_suite":"test-all","test_name":"TestSymbol#test_gc_attrset","error_class":"NameError","error_message":"cannot make unknown type anonymous ID 4:838aed5 attrset","backtrace":"    ruby/test/ruby/test_symbol.rb:255:in `eval'\n    ruby/test/ruby/test_symbol.rb:255:in `block in <main>'\n"},
+End2
+
+defcheck(:test_all_error_detail, <<'End1', <<'End2', 'test_all_error_detail')
+== test-all # 2010-12-02T16:51:01+09:00
+Finished tests in 1054.102372s, 12.5794 tests/s, 2135.9595 assertions/s.
+
+ 16) Error:
+test_make_socket_ipv6_multicast(Rinda::TestRingServer):
+Errno::EINVAL: Invalid argument - bind(2) for [ff02::1]:7647
+    /extdisk/chkbuild/chkbuild/tmp/build/20130411T015300Z/ruby/lib/rinda/ring.rb:117:in `bind'
+    /extdisk/chkbuild/chkbuild/tmp/build/20130411T015300Z/ruby/lib/rinda/ring.rb:117:in `make_socket'
+    /extdisk/chkbuild/chkbuild/tmp/build/20130411T015300Z/ruby/test/rinda/test_rinda.rb:582:in `test_make_socket_ipv6_multicast'
+End1
+{"type":"test_all_error_detail","test_suite":"test-all","test_name":"test_make_socket_ipv6_multicast(Rinda::TestRingServer)","error_class":"Errno::EINVAL","error_message":"Invalid argument - bind(2) for [ff02::1]:7647","backtrace":"    ruby/lib/rinda/ring.rb:117:in `bind'\n    ruby/lib/rinda/ring.rb:117:in `make_socket'\n    ruby/test/rinda/test_rinda.rb:582:in `test_make_socket_ipv6_multicast'\n"},
+End2
+
 defcheck(:exception, <<"End1", <<'End2', 'exception')
 == ruby-trunk # 2010-12-02T16:51:01+09:00
 sample/test.rb:1873: [BUG] Segmentation fault

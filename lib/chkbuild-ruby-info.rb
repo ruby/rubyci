@@ -684,17 +684,10 @@ class ChkBuildRubyInfo
     }
 
     if detailed_failures
-      ary = detailed_failures.split(/^  (\d+)\) /)
+      ary = detailed_failures.split(/^ *(\d+)\) /)
       ary.slice_before(/\A\d+\z/).each {|num, body|
         next if /\A\d+\z/ !~ num || !body
 
-        #  1) Error:
-        #TestSymbol#test_gc_attrset:
-        #NameError: cannot make unknown type anonymous ID 4:838aed5 attrset
-        #    /extdisk/chkbuild/chkbuild/tmp/build/20140502T100500Z/ruby/test/ruby/test_symbol.rb:255:in `eval'
-        #    /extdisk/chkbuild/chkbuild/tmp/build/20140502T100500Z/ruby/test/ruby/test_symbol.rb:255:in `block in <main>'
-        #    /extdisk/chkbuild/chkbuild/tmp/build/20140502T100500Z/ruby/test/ruby/test_symbol.rb:254:in `each'
-        #    /extdisk/chkbuild/chkbuild/tmp/build/20140502T100500Z/ruby/test/ruby/test_symbol.rb:254:in `<main>'
         if /\AError:\n(\S+):\n(\S+): (.*)\n/ =~ body
           h = {
             "type" => "test_all_error_detail",
