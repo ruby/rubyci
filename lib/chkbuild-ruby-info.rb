@@ -886,11 +886,12 @@ class ChkBuildRubyInfo
   end
 
   def detect_section_failure(secname, section)
-    if /^failed\((.*)\)\n\z/ =~ section
+    if /^(.*)\nfailed\((.*)\)\n\z/ =~ section
       h = {
         "type" => "section_failure",
         "secname" => secname,
-        "message" => $1
+        "prev_line" => $1,
+        "message" => $2
       }
       output_hash h
     end

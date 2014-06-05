@@ -225,4 +225,13 @@ End1
 {"type":"glibc_failure","secname":"ruby-trunk","line_prefix":"bar ","message1":"baz","message2":"qux"},
 End2
 
+defcheck(:section_failure, <<'End1', <<'End2', 'section_failure')
+== rubyspec # 2010-12-02T16:51:01+09:00
+- writes the buffered data to permanent storage
+signal SIGKILL (9)
+failed(rubyspec)
+End1
+{"type":"section_failure","secname":"rubyspec","prev_line":"signal SIGKILL (9)","message":"rubyspec"},
+End2
+
 end
