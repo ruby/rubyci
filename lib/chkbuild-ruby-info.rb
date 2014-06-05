@@ -973,12 +973,12 @@ class ChkBuildRubyInfo
     }
   end
 
-  def convert_to_td
+  def convert_to_td(out=$stdout)
     extract {|hash|
       tblname = hash["type"]
       tblname.tr!('-','_')
-      print "@[chkbuild.#{tblname}] "
-      puts JSON.dump(hash)
+      out.print "@[chkbuild.#{tblname}] "
+      out.puts JSON.dump(hash)
     }
   end
 
