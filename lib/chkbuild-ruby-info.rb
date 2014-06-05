@@ -955,6 +955,8 @@ class ChkBuildRubyInfo
         scan_test_all(secname, section)
       when "rubyspec", %r{\Arubyspec/}
         scan_rubyspec(secname, section)
+      when "success"
+        update_last_hash({'success'=>true})
       end
       if secname != 'title-info'
         scan_exception(secname, section)
