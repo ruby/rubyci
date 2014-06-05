@@ -30,7 +30,7 @@ End
         epoch: 1291276261,
         revision: 4200,
       }
-      cb.convert_to_json
+      cb.convert_to_td
     }
     assert_equal(<<'End', out)
 @[chkbuild.section_start] {"type":"section_start","secname":"ruby-trunk","start_time":"2010-12-02T16:51:01+09:00","server_id":1,"depsuffixed_name":"ruby-trunk","epoch":1291276261,"revision":4200}

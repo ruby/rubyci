@@ -123,7 +123,7 @@ class Report < ActiveRecord::Base
         epoch: datetime.to_i,
         revision: revision,
       }
-      cb.convert_to_json
+      cb.convert_to_td
     end
     results
   end
@@ -165,7 +165,7 @@ class Report < ActiveRecord::Base
         epoch: datetime.to_i,
         revision: revision,
       }
-      cb.convert_to_json
+      cb.convert_to_td
     end
     results
   end

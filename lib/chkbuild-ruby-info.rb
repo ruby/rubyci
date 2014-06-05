@@ -974,7 +974,6 @@ class ChkBuildRubyInfo
   end
 
   def convert_to_json(out=$stdout)
-    return convert_to_td if @td_common
     @out = out
     output_proc = lambda {|hash| output_json_object hash }
     with_output_proc(output_proc) {
