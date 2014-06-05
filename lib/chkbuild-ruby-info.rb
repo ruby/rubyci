@@ -790,6 +790,20 @@ class ChkBuildRubyInfo
     end
   end
 
+  def scan_exception(secname, section)
+    section.scan(/^(.*)\n(.*:\d+):in `(.*?)'(.*)\((\S+)\)\n\tfrom /) {
+      h = {
+        "type" => "exception",
+        "prev_line" => $1,
+        "location" => $2,
+        "caller_name" => $3,
+        "message" => $4.strip,
+        "error_class" => $5
+      }
+      output_hash h
+    }
+  end
+
   def scan_bug(secname, section)
     section.each_line {|line|
       #sample/test.rb:1873: [BUG] Segmentation fault
@@ -953,6 +967,7 @@ class ChkBuildRubyInfo
         scan_rubyspec(secname, section)
       end
       if secname != 'title-info'
+        scan_exception(secname, section)
         scan_bug(secname, section)
         scan_fatal(secname, section)
       end

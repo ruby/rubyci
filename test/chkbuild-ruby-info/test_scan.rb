@@ -169,6 +169,19 @@ End1
 {"type":"test_all_result","test_suite":"test-all","test_name":"TestIOScanf#test_\" ,10,1.1\"(\" ,%d,%f\")","output":"","elapsed":0.0,"result":"success"},
 End2
 
+defcheck(:exception, <<"End1", <<'End2', 'exception')
+== ruby-trunk # 2010-12-02T16:51:01+09:00
+sample/test.rb:1873: [BUG] Segmentation fault
+/home/akr/chkbuild/tmp/build/ruby-trunk/20110614T005500Z/ruby/test/readline/test_readline_history.rb:280: warning: assigned but unused variable - lines
+/home/akr/chkbuild/tmp/build/ruby-trunk/20110614T005500Z/ruby/test/psych/test_string.rb:31: warning: assigned but unused variable - str
+/home/akr/chkbuild/tmp/build/ruby-trunk/20110614T005500Z/ruby/test/psych/helper.rb:63:in `<top (required)>': psych should define to_yaml (RuntimeError)
+\tfrom /home/akr/chkbuild/tmp/build/ruby-trunk/20110614T005500Z/ruby/lib/rubygems/custom_require.rb:42:in `require'
+\tfrom /home/akr/chkbuild/tmp/build/ruby-trunk/20110614T005500Z/ruby/lib/rubygems/custom_require.rb:42:in `require'
+\tfrom /home/akr/chkbuild/tmp/build/ruby-trunk/20110614T005500Z/ruby/test/psych/test_string.rb:1:in `<top (required)>'
+End1
+{"type":"exception","prev_line":"/home/akr/chkbuild/tmp/build/ruby-trunk/20110614T005500Z/ruby/test/psych/test_string.rb:31: warning: assigned but unused variable - str","location":"/home/akr/chkbuild/tmp/build/ruby-trunk/20110614T005500Z/ruby/test/psych/helper.rb:63","caller_name":"<top (required)>","message":": psych should define to_yaml","error_class":"RuntimeError"},
+End2
+
 defcheck(:bug, <<'End1', <<'End2', 'bug')
 == ruby-trunk # 2010-12-02T16:51:01+09:00
 sample/test.rb:1873: [BUG] Segmentation fault
