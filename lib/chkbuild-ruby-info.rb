@@ -975,10 +975,9 @@ class ChkBuildRubyInfo
 
   def convert_to_json(out=$stdout)
     @out = out
-    output_proc = lambda {|hash| output_json_object hash }
-    with_output_proc(output_proc) {
-      output_json_outermost_array {
-        extract_info(@f)
+    output_json_outermost_array {
+      extract {|hash|
+        output_json_object hash
       }
     }
   end
