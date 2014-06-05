@@ -19,11 +19,11 @@ End
     cb.convert_to_json(out)
     assert_equal(<<'End', out.string)
 [
-{"type":"section_start","secname":"ruby-trunk","start_time":"2010-12-02T16:51:01+09:00","server_id":1,"depsuffixed_name":"ruby-trunk","epoch":1291276261,"revision":4200},
-{"type":"depsuffixed_name","depsuffixed_name":"ruby-trunk","server_id":1,"epoch":1291276261,"revision":4200},
-{"type":"suffixed_name","suffixed_name":"ruby-trunk","server_id":1,"depsuffixed_name":"ruby-trunk","epoch":1291276261,"revision":4200},
-{"type":"target_name","target_name":"ruby","server_id":1,"depsuffixed_name":"ruby-trunk","epoch":1291276261,"revision":4200},
-{"type":"build","depsuffixed_name":"ruby-trunk","suffixed_name":"ruby-trunk","target_name":"ruby","server_id":1,"epoch":1291276261,"revision":4200}
+{"server_id":1,"depsuffixed_name":"ruby-trunk","epoch":1291276261,"revision":4200,"type":"section_start","secname":"ruby-trunk","start_time":"2010-12-02T16:51:01+09:00"},
+{"server_id":1,"depsuffixed_name":"ruby-trunk","epoch":1291276261,"revision":4200,"type":"depsuffixed_name"},
+{"server_id":1,"depsuffixed_name":"ruby-trunk","epoch":1291276261,"revision":4200,"type":"suffixed_name","suffixed_name":"ruby-trunk"},
+{"server_id":1,"depsuffixed_name":"ruby-trunk","epoch":1291276261,"revision":4200,"type":"target_name","target_name":"ruby"},
+{"server_id":1,"depsuffixed_name":"ruby-trunk","epoch":1291276261,"revision":4200,"type":"build","suffixed_name":"ruby-trunk","target_name":"ruby"}
 ]
 End
   end
@@ -42,11 +42,11 @@ End
     }
     cb.convert_to_td(out)
     assert_equal(<<'End', out.string)
-@[chkbuild.section_start] {"type":"section_start","secname":"ruby-trunk","start_time":"2010-12-02T16:51:01+09:00","server_id":1,"depsuffixed_name":"ruby-trunk","epoch":1291276261,"revision":4200}
-@[chkbuild.depsuffixed_name] {"type":"depsuffixed_name","depsuffixed_name":"ruby-trunk","server_id":1,"epoch":1291276261,"revision":4200}
-@[chkbuild.suffixed_name] {"type":"suffixed_name","suffixed_name":"ruby-trunk","server_id":1,"depsuffixed_name":"ruby-trunk","epoch":1291276261,"revision":4200}
-@[chkbuild.target_name] {"type":"target_name","target_name":"ruby","server_id":1,"depsuffixed_name":"ruby-trunk","epoch":1291276261,"revision":4200}
-@[chkbuild.build] {"type":"build","depsuffixed_name":"ruby-trunk","suffixed_name":"ruby-trunk","target_name":"ruby","server_id":1,"epoch":1291276261,"revision":4200}
+@[chkbuild.section_start] {"server_id":1,"depsuffixed_name":"ruby-trunk","epoch":1291276261,"revision":4200,"type":"section_start","secname":"ruby-trunk","start_time":"2010-12-02T16:51:01+09:00"}
+@[chkbuild.depsuffixed_name] {"server_id":1,"depsuffixed_name":"ruby-trunk","epoch":1291276261,"revision":4200,"type":"depsuffixed_name"}
+@[chkbuild.suffixed_name] {"server_id":1,"depsuffixed_name":"ruby-trunk","epoch":1291276261,"revision":4200,"type":"suffixed_name","suffixed_name":"ruby-trunk"}
+@[chkbuild.target_name] {"server_id":1,"depsuffixed_name":"ruby-trunk","epoch":1291276261,"revision":4200,"type":"target_name","target_name":"ruby"}
+@[chkbuild.build] {"server_id":1,"depsuffixed_name":"ruby-trunk","epoch":1291276261,"revision":4200,"type":"build","suffixed_name":"ruby-trunk","target_name":"ruby"}
 End
   end
 end

@@ -974,11 +974,11 @@ class ChkBuildRubyInfo
   def extract
     extract1 {|hash|
       if @common_hash
-        hash = hash.merge(@common_hash) {|k, v1, v2|
+        hash = @common_hash.merge(hash) {|k, v1, v2|
           if v1 != v2
             warn "common hash override #{k.inspect}: #{v1.inspect} v.s. #{v2.inspect}"
           end
-          v2
+          v1
         }
       end
       yield hash
