@@ -5,19 +5,26 @@ require 'time'
 require 'pp'
 
 class ChkBuildRubyInfo
-  attr_accessor :td_common
-
   def initialize(f)
     @f = f
     @unique_hash = {}
     @last_hash = {"type"=>"build"}
     @json_array_first = nil
-    @td_common = nil
+    @common_hash = nil
 
     @current_section_name = nil
     @current_section_start_time = nil
     @output_proc = nil
     @out = $stdout
+  end
+
+  attr_reader :common_hash
+  def common_hash=(hash)
+    h = {}
+    hash.each {|k, v|
+      h[k.to_s]= v
+    }
+    @common_hash = h
   end
 
   def with_output_proc(callable)
@@ -46,13 +53,7 @@ class ChkBuildRubyInfo
         return
       end
     end
-    if @td_common
-      tblname = hash["type"]
-      tblname.tr!('-','_')
-      print "@[chkbuild.#{tblname}] "
-      puts JSON.dump(hash.merge(@td_common))
-      return
-    elsif @json_array_first
+    if @json_array_first
       @out.print "[\n"
       @json_array_first = false
     else
@@ -964,23 +965,41 @@ class ChkBuildRubyInfo
     output_hash(@last_hash)
   end
 
-  def extract(&block)
+  def extract1(&block)
     with_output_proc(block) {
       extract_info(@f)
     }
   end
 
-  def convert_to_json(out=$stdout)
-    @out = out
-    output_proc = lambda {|hash| output_json_object hash }
-    with_output_proc(output_proc) {
-      if @td_common
-        extract_info(@f)
-      else
-        output_json_outermost_array {
-          extract_info(@f)
+  def extract
+    extract1 {|hash|
+      if @common_hash
+        hash = @common_hash.merge(hash) {|k, v1, v2|
+          if v1 != v2
+            warn "common hash override #{k.inspect}: #{v1.inspect} v.s. #{v2.inspect}"
+          end
+          v1
         }
       end
+      yield hash
+    }
+  end
+
+  def convert_to_td(out=$stdout)
+    extract {|hash|
+      tblname = hash["type"]
+      tblname.tr!('-','_')
+      out.print "@[chkbuild.#{tblname}] "
+      out.puts JSON.dump(hash)
+    }
+  end
+
+  def convert_to_json(out=$stdout)
+    @out = out
+    output_json_outermost_array {
+      extract {|hash|
+        output_json_object hash
+      }
     }
   end
 
