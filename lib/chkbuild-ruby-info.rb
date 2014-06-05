@@ -783,6 +783,7 @@ class ChkBuildRubyInfo
     section.scan(/^(.*)\n(.*:\d+):in `(.*?)'(.*)\((\S+)\)\n\tfrom /) {
       h = {
         "type" => "exception",
+        'secname' => secname,
         "prev_line" => $1,
         "location" => $2,
         "caller_name" => $3,

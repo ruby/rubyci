@@ -218,7 +218,7 @@ sample/test.rb:1873: [BUG] Segmentation fault
 \tfrom /home/akr/chkbuild/tmp/build/ruby-trunk/20110614T005500Z/ruby/lib/rubygems/custom_require.rb:42:in `require'
 \tfrom /home/akr/chkbuild/tmp/build/ruby-trunk/20110614T005500Z/ruby/test/psych/test_string.rb:1:in `<top (required)>'
 End1
-{"type":"exception","prev_line":"/home/akr/chkbuild/tmp/build/ruby-trunk/20110614T005500Z/ruby/test/psych/test_string.rb:31: warning: assigned but unused variable - str","location":"/home/akr/chkbuild/tmp/build/ruby-trunk/20110614T005500Z/ruby/test/psych/helper.rb:63","caller_name":"<top (required)>","message":": psych should define to_yaml","error_class":"RuntimeError"},
+{"type":"exception","secname":"ruby-trunk","prev_line":"/home/akr/chkbuild/tmp/build/ruby-trunk/20110614T005500Z/ruby/test/psych/test_string.rb:31: warning: assigned but unused variable - str","location":"/home/akr/chkbuild/tmp/build/ruby-trunk/20110614T005500Z/ruby/test/psych/helper.rb:63","caller_name":"<top (required)>","message":": psych should define to_yaml","error_class":"RuntimeError"},
 End2
 
 defcheck(:bug, <<'End1', <<'End2', 'bug')
