@@ -244,7 +244,7 @@ defcheck(:make_failure, <<'End1', <<'End2', 'make_failure')
 foo
 bar make: *** baz
 End1
-{"type":"make_failure","secname":"ruby-trunk","prev_line":"foo","line_prefix":"bar ","message":"baz"},
+{"type":"make_failure","secname":"ruby-trunk","prev_line":"foo","line_prefix":"bar","message":"baz"},
 End2
 
 defcheck(:glibc_symbol_lookup_error, <<'End1', <<'End2', 'glibc_symbol_lookup_error')

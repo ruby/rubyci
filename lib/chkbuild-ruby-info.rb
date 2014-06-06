@@ -805,8 +805,8 @@ class ChkBuildRubyInfo
         'type' => 'bug',
         'secname' => secname,
         'prev_line' => prev_line,
-        'line_prefix' => line_prefix.strip,
-        'message' => message.strip
+        'line_prefix' => line_prefix,
+        'message' => message
       }
       output_hash h
     }
@@ -818,7 +818,7 @@ class ChkBuildRubyInfo
         'type' => 'fatal',
         'secname' => secname,
         'prev_line' => $1,
-        'line_prefix' => $2,
+        'line_prefix' => $2.strip,
         'message' => $3.strip
       }
       output_hash h
@@ -831,8 +831,8 @@ class ChkBuildRubyInfo
         "type" => "make_failure",
         "secname" => secname,
         "prev_line" => $1,
-        "line_prefix" => $2,
-        "message" => $3
+        "line_prefix" => $2.strip,
+        "message" => $3.strip
       }
       output_hash h
     }
@@ -882,7 +882,7 @@ class ChkBuildRubyInfo
         "type" => "section_failure",
         "secname" => secname,
         "prev_line" => $1,
-        "message" => $2
+        "message" => $2.strip
       }
       output_hash h
     end
