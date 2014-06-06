@@ -302,4 +302,24 @@ End1
 {"type":"section_failure","secname":"rubyspec","prev_line":"signal SIGKILL (9)","message":"rubyspec"},
 End2
 
+defcheck(:status_success, <<'End1', <<'End2', 'build')
+== ruby-trunk # 2014-05-30T08:56:01+09:00
+== success # 2014-05-30T09:34:33+09:00
+End1
+{"type":"build","depsuffixed_name":"ruby-trunk","suffixed_name":"ruby-trunk","target_name":"ruby","status":"success"}
+End2
+
+defcheck(:status_failure, <<'End1', <<'End2', 'build')
+== ruby-trunk # 2014-05-28T10:00:01+09:00
+End1
+{"type":"build","depsuffixed_name":"ruby-trunk","suffixed_name":"ruby-trunk","target_name":"ruby","status":"failure"}
+End2
+
+defcheck(:status_netfail, <<'End1', <<'End2', 'build')
+== ruby-trunk # 2014-04-12T01:41:00+09:00
+== neterror # 2014-04-12T02:41:05+09:00
+End1
+{"type":"build","depsuffixed_name":"ruby-trunk","suffixed_name":"ruby-trunk","target_name":"ruby","status":"netfail"}
+End2
+
 end

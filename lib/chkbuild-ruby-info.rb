@@ -891,6 +891,7 @@ class ChkBuildRubyInfo
   def extract_info(f)
     first = true
     has_success_section = false
+    has_neterror_section = false
     f.each_line("\n== ") {|section|
       section.scrub!
       section.sub!(/\n== \z/, '')
@@ -960,6 +961,8 @@ class ChkBuildRubyInfo
         scan_rubyspec(secname, section)
       when "success"
         has_success_section = true
+      when "neterror"
+        has_neterror_section = true
       end
       if secname != 'title-info'
         scan_exception(secname, section)
@@ -972,7 +975,7 @@ class ChkBuildRubyInfo
       detect_section_failure(secname, section)
       first = false
     }
-    update_last_hash({'success'=>has_success_section})
+    update_last_hash({'status'=> has_success_section ? "success" : has_neterror_section ? "netfail" : "failure" })
     output_hash(@last_hash)
   end
 
