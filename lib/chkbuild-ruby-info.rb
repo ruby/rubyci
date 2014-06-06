@@ -780,7 +780,7 @@ class ChkBuildRubyInfo
   end
 
   def scan_exception(secname, section)
-    section.scan(/^(.*)\n(.*:\d+):in `(.*?)'(.*)\((\S+)\)\n\tfrom /) {
+    section.scan(/^(.*)\n(?=(.*:\d+):in `(.*?)'(.*)\((\S+)\)\n\tfrom )/) {
       h = {
         "type" => "exception",
         'secname' => secname,
@@ -795,7 +795,7 @@ class ChkBuildRubyInfo
   end
 
   def scan_bug(secname, section)
-    section.scan(/^(.*)\n(.*)\[BUG\](.*)/) {
+    section.scan(/^(.*)\n(?=(.*)\[BUG\](.*))/) {
       prev_line = $1
       line_prefix = $2.strip
       message = $3.strip
@@ -813,7 +813,7 @@ class ChkBuildRubyInfo
   end
 
   def scan_fatal(secname, section)
-    section.scan(/^(.*)\n(.*)\[FATAL\](.*)/) {
+    section.scan(/^(.*)\n(?=(.*)\[FATAL\](.*))/) {
       h = {
         'type' => 'fatal',
         'secname' => secname,
@@ -826,7 +826,7 @@ class ChkBuildRubyInfo
   end
 
   def scan_make_failure(secname, section)
-    section.scan(/^(.*)\n(.*)make: \*\*\* (.*)\n/) { # GNU make
+    section.scan(/^(.*)\n(?=(.*)make: \*\*\* (.*)\n)/) { # GNU make
       h = {
         "type" => "make_failure",
         "secname" => secname,
@@ -839,7 +839,7 @@ class ChkBuildRubyInfo
   end
 
   def scan_glibc_failure(secname, section)
-    section.scan(/^(.*)\n(.*?)\*\*\* (.*?) \*\*\*(.*)\n/) {
+    section.scan(/^(.*)\n(?=(.*?)\*\*\* (.*?) \*\*\*(.*)\n)/) {
       h = {
         "type" => "glibc_failure",
         "secname" => secname,
@@ -850,7 +850,7 @@ class ChkBuildRubyInfo
       }
       output_hash h
     }
-    section.scan(/^(.*)\n(.*): symbol lookup error: (.*): undefined symbol: (\S+)\n/) {
+    section.scan(/^(.*)\n(?=(.*): symbol lookup error: (.*): undefined symbol: (\S+)\n)/) {
       h = {
         "type" => "glibc_symbol_lookup_error",
         "secname" => secname,
@@ -864,7 +864,7 @@ class ChkBuildRubyInfo
   end
 
   def scan_timeout(secname, section)
-    section.scan(/^(.*)\n(.*)timeout: ((command execution time exceeds|output interval exceeds|too long line\.) .*)\n/) {
+    section.scan(/^(.*)\n(?=(.*)timeout: ((command execution time exceeds|output interval exceeds|too long line\.) .*)\n)/) {
       h = {
         "type" => "timeout",
         "secname" => secname,

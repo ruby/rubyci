@@ -256,6 +256,18 @@ End1
 {"type":"glibc_symbol_lookup_error","secname":"ruby-trunk","prev_line":"TestBasicInstructions#test_string = 0.00 s = .","line_prefix":"TestBasicInstructions#test_xstr = echo","library":"/extdisk/chkbuild/chkbuild/tmp/build/20140325T233501Z/ruby/libruby.so.2.2.0","symbol":"_start"},
 End2
 
+defcheck(:glibc_symbol_lookup_error, <<'End1', <<'End2', 'glibc_symbol_lookup_error')
+== ruby-trunk # 2010-12-02T16:51:01+09:00
+TestProcess#test_system_shell = 0.21 s = .
+TestProcess#test_system_sigpipe = yes: symbol lookup error: /extdisk/chkbuild/chkbuild/tmp/build/20140325T233501Z/ruby/libruby.so.2.2.0: undefined symbol: _start
+ls: symbol lookup error: /extdisk/chkbuild/chkbuild/tmp/build/20140325T233501Z/ruby/libruby.so.2.2.0: undefined symbol: _start
+0.20 s = .
+TestProcess#test_system_wordsplit = 0.11 s = .
+End1
+{"type":"glibc_symbol_lookup_error","secname":"ruby-trunk","prev_line":"TestProcess#test_system_shell = 0.21 s = .","line_prefix":"TestProcess#test_system_sigpipe = yes","library":"/extdisk/chkbuild/chkbuild/tmp/build/20140325T233501Z/ruby/libruby.so.2.2.0","symbol":"_start"},
+{"type":"glibc_symbol_lookup_error","secname":"ruby-trunk","prev_line":"TestProcess#test_system_sigpipe = yes: symbol lookup error: /extdisk/chkbuild/chkbuild/tmp/build/20140325T233501Z/ruby/libruby.so.2.2.0: undefined symbol: _start","line_prefix":"ls","library":"/extdisk/chkbuild/chkbuild/tmp/build/20140325T233501Z/ruby/libruby.so.2.2.0","symbol":"_start"},
+End2
+
 defcheck(:timeout, <<'End1', <<'End2', 'timeout')
 == ruby-trunk # 2010-12-02T16:51:01+09:00
 Socket#connect_nonblock
