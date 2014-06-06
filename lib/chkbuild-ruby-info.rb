@@ -795,17 +795,17 @@ class ChkBuildRubyInfo
   end
 
   def scan_bug(secname, section)
-    section.each_line {|line|
-      #sample/test.rb:1873: [BUG] Segmentation fault
-      next if /\[BUG\]/ !~ line
-      prefix = $`
-      message = $'
+    section.scan(/^(.*)\n(.*)\[BUG\](.*)/) {
+      prev_line = $1
+      line_prefix = $2.strip
+      message = $3.strip
       #Expected /#<Bogus:/ to match "-e:3: [BUG] Segmentation fault\nruby ...
-      next if /\\n/ =~ line
+      next if /\\n/ =~ line_prefix || /\\n/ =~ message
       h = {
         'type' => 'bug',
         'secname' => secname,
-        'line_prefix' => prefix.strip,
+        'prev_line' => prev_line,
+        'line_prefix' => line_prefix.strip,
         'message' => message.strip
       }
       output_hash h
@@ -813,16 +813,13 @@ class ChkBuildRubyInfo
   end
 
   def scan_fatal(secname, section)
-    section.each_line {|line|
-      #[FATAL] failed to allocate memory
-      next if /\[FATAL\]/ !~ line
-      prefix = $`
-      message = $'
+    section.scan(/^(.*)\n(.*)\[FATAL\](.*)/) {
       h = {
         'type' => 'fatal',
         'secname' => secname,
-        'line_prefix' => prefix.strip,
-        'message' => message.strip
+        'prev_line' => $1,
+        'line_prefix' => $2,
+        'message' => $3.strip
       }
       output_hash h
     }
@@ -842,34 +839,38 @@ class ChkBuildRubyInfo
   end
 
   def scan_glibc_failure(secname, section)
-    section.scan(/^(.*)\*\*\* (.*) \*\*\*(.*)\n/) {
+    section.scan(/^(.*)\n(.*?)\*\*\* (.*?) \*\*\*(.*)\n/) {
       h = {
         "type" => "glibc_failure",
         "secname" => secname,
-        "line_prefix" => $1,
-        "message1" => $2,
-        "message2" => $3.strip
+        "prev_line" => $1,
+        "line_prefix" => $2.strip,
+        "message1" => $3.strip,
+        "message2" => $4.strip
       }
       output_hash h
     }
-    section.scan(/^(.*): symbol lookup error: (.*)\n/) {
+    section.scan(/^(.*)\n(.*): symbol lookup error: (.*): undefined symbol: (\S+)\n/) {
       h = {
         "type" => "glibc_symbol_lookup_error",
         "secname" => secname,
-        "line_prefix" => $1,
-        "message" => $2.strip
+        "prev_line" => $1,
+        "line_prefix" => $2.strip,
+        "library" => $3.strip,
+        "symbol" => $4.strip
       }
       output_hash h
     }
   end
 
   def scan_timeout(secname, section)
-    section.scan(/^(.*)timeout: ((command execution time exceeds|output interval exceeds|too long line\.) .*)\n/) {
+    section.scan(/^(.*)\n(.*)timeout: ((command execution time exceeds|output interval exceeds|too long line\.) .*)\n/) {
       h = {
         "type" => "timeout",
         "secname" => secname,
-        "line_prefix" => $1,
-        "message" => $2
+        "prev_line" => $1,
+        "line_prefix" => $2.strip,
+        "message" => $3.strip
       }
       output_hash h
     }

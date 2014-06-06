@@ -223,16 +223,20 @@ End2
 
 defcheck(:bug, <<'End1', <<'End2', 'bug')
 == ruby-trunk # 2010-12-02T16:51:01+09:00
-sample/test.rb:1873: [BUG] Segmentation fault
+TestRand#test_rand_0x100000000 = 0.00 s = .
+TestRand#test_rand_reseed_on_fork = [BUG] Segmentation fault
+ruby 2.1.0dev (2013-06-29 trunk 41693) [i686-linux]
 End1
-{"type":"bug","secname":"ruby-trunk","line_prefix":"sample/test.rb:1873:","message":"Segmentation fault"},
+{"type":"bug","secname":"ruby-trunk","prev_line":"TestRand#test_rand_0x100000000 = 0.00 s = .","line_prefix":"TestRand#test_rand_reseed_on_fork =","message":"Segmentation fault"},
 End2
 
 defcheck(:fatal, <<'End1', <<'End2', 'fatal')
 == ruby-trunk # 2010-12-02T16:51:01+09:00
+#943 test_thread.rb:268 F
+stderr output is not empty
 [FATAL] failed to allocate memory
 End1
-{"type":"fatal","secname":"ruby-trunk","line_prefix":"","message":"failed to allocate memory"},
+{"type":"fatal","secname":"ruby-trunk","prev_line":"stderr output is not empty","line_prefix":"","message":"failed to allocate memory"},
 End2
 
 defcheck(:make_failure, <<'End1', <<'End2', 'make_failure')
@@ -245,23 +249,28 @@ End2
 
 defcheck(:glibc_symbol_lookup_error, <<'End1', <<'End2', 'glibc_symbol_lookup_error')
 == ruby-trunk # 2010-12-02T16:51:01+09:00
-bar: symbol lookup error: baz
+TestBasicInstructions#test_string = 0.00 s = .
+TestBasicInstructions#test_xstr = echo: symbol lookup error: /extdisk/chkbuild/chkbuild/tmp/build/20140325T233501Z/ruby/libruby.so.2.2.0: undefined symbol: _start
+0.06 s = F
 End1
-{"type":"glibc_symbol_lookup_error","secname":"ruby-trunk","line_prefix":"bar","message":"baz"},
+{"type":"glibc_symbol_lookup_error","secname":"ruby-trunk","prev_line":"TestBasicInstructions#test_string = 0.00 s = .","line_prefix":"TestBasicInstructions#test_xstr = echo","library":"/extdisk/chkbuild/chkbuild/tmp/build/20140325T233501Z/ruby/libruby.so.2.2.0","symbol":"_start"},
 End2
 
 defcheck(:timeout, <<'End1', <<'End2', 'timeout')
 == ruby-trunk # 2010-12-02T16:51:01+09:00
-foo timeout: command execution time exceeds 1800s
+Socket#connect_nonblock
+- connects the socket to the remote sidetimeout: output interval exceeds 1800.0 seconds.
+timeout: the process group 17750 is alive.
 End1
-{"type":"timeout","secname":"ruby-trunk","line_prefix":"foo ","message":"command execution time exceeds 1800s"},
+{"type":"timeout","secname":"ruby-trunk","prev_line":"Socket#connect_nonblock","line_prefix":"- connects the socket to the remote side","message":"output interval exceeds 1800.0 seconds."},
 End2
 
 defcheck(:glibc_failure, <<'End1', <<'End2', 'glibc_failure')
 == ruby-trunk # 2010-12-02T16:51:01+09:00
-bar *** baz *** qux
+TestArray#test_sort_with_callcc: 0.02 s: .
+TestArray#test_sort_with_replace: *** glibc detected *** ./ruby: free(): invalid pointer: 0x088b6dd4 ***
 End1
-{"type":"glibc_failure","secname":"ruby-trunk","line_prefix":"bar ","message1":"baz","message2":"qux"},
+{"type":"glibc_failure","secname":"ruby-trunk","prev_line":"TestArray#test_sort_with_callcc: 0.02 s: .","line_prefix":"TestArray#test_sort_with_replace:","message1":"glibc detected","message2":"./ruby: free(): invalid pointer: 0x088b6dd4 ***"},
 End2
 
 defcheck(:section_failure, <<'End1', <<'End2', 'section_failure')
