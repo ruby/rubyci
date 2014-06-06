@@ -247,6 +247,14 @@ End1
 {"type":"make_failure","secname":"ruby-trunk","prev_line":"foo","line_prefix":"bar","message":"baz"},
 End2
 
+defcheck(:make_failure_gmake, <<'End1', <<'End2', 'make_failure')
+== ruby-trunk # 2010-12-02T16:51:01+09:00
+foo
+bar gmake: *** baz
+End1
+{"type":"make_failure","secname":"ruby-trunk","prev_line":"foo","line_prefix":"bar","message":"baz"},
+End2
+
 defcheck(:glibc_symbol_lookup_error, <<'End1', <<'End2', 'glibc_symbol_lookup_error')
 == ruby-trunk # 2010-12-02T16:51:01+09:00
 TestBasicInstructions#test_string = 0.00 s = .
