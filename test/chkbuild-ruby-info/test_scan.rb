@@ -171,8 +171,6 @@ End2
 
 defcheck(:test_all_error_detail, <<'End1', <<'End2', 'test_all_error_detail')
 == test-all # 2010-12-02T16:51:01+09:00
-Finished tests in 1054.102372s, 12.5794 tests/s, 2135.9595 assertions/s.
-
   1) Error:
 TestSymbol#test_gc_attrset:
 NameError: cannot make unknown type anonymous ID 4:838aed5 attrset
@@ -184,8 +182,6 @@ End2
 
 defcheck(:test_all_error_detail, <<'End1', <<'End2', 'test_all_error_detail')
 == test-all # 2010-12-02T16:51:01+09:00
-Finished tests in 1054.102372s, 12.5794 tests/s, 2135.9595 assertions/s.
-
  16) Error:
 test_make_socket_ipv6_multicast(Rinda::TestRingServer):
 Errno::EINVAL: Invalid argument - bind(2) for [ff02::1]:7647
@@ -198,8 +194,6 @@ End2
 
 defcheck(:test_all_failure_detail, <<'End1', <<'End2', 'test_all_failure_detail')
 == test-all # 2010-12-02T16:51:01+09:00
-Finished tests in 1054.102372s, 12.5794 tests/s, 2135.9595 assertions/s.
-
   1) Failure:
 TestThread#test_handle_interrupt [/extdisk/chkbuild/chkbuild/tmp/build/20140502T161600Z/ruby/test/ruby/test_thread.rb:551]:
 <[:on_blocking, :c1]> expected but was
