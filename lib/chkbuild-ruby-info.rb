@@ -5,7 +5,17 @@ require 'time'
 require 'pp'
 
 class ChkBuildRubyInfo
-  def initialize(f)
+  DefaultOption = {
+    :type => nil,
+    :enable_sole_record => true,
+  }.freeze
+
+  DefaultOption.each {|k, v|
+    define_method("opt_#{k}") { @opts[k] }
+    define_method("opt_#{k}=") {|v| @opts[k] = v }
+  }
+
+  def initialize(f, opts=DefaultOption.dup)
     @f = f
     @unique_hash = {}
     @last_hash = {"type"=>"build"}
@@ -16,6 +26,8 @@ class ChkBuildRubyInfo
     @current_section_start_time = nil
     @output_proc = nil
     @out = $stdout
+
+    @opts = opts;
   end
 
   attr_reader :common_hash
@@ -48,8 +60,8 @@ class ChkBuildRubyInfo
   end
 
   def output_json_object(hash)
-    if self.class.opt_type
-      unless self.class.opt_type.include? hash["type"]
+    if @opts.fetch(:type)
+      unless @opts.fetch(:type).include? hash["type"]
         return
       end
     end
@@ -63,7 +75,7 @@ class ChkBuildRubyInfo
   end
 
   def output_unique_hash(hash)
-    return unless self.class.opt_enable_sole_record
+    return unless @opts.fetch(:enable_sole_record)
     hash = hash.dup.freeze
     if !@unique_hash.has_key?(hash)
       output_hash(hash)
@@ -92,7 +104,7 @@ class ChkBuildRubyInfo
   end
 
   def output_sole_hash(hash)
-    return unless self.class.opt_enable_sole_record
+    return unless @opts.fetch(:enable_sole_record)
     output_hash(hash)
   end
 
@@ -1025,21 +1037,14 @@ class ChkBuildRubyInfo
     }
   end
 
-  class << self
-    attr_reader :opt_type
-    attr_reader :opt_enable_sole_record
-  end
-  @opt_type = nil
-  @opt_enable_sole_record = true
-
   def self.optionparser
     o = OptionParser.new
     o.def_option('-h', 'show this message') { puts o; exit }
     o.def_option('--type TYPE,...', 'show only specified types') {|val|
-      @opt_type = val.split(/,/)
+      yield :type, val.split(/,/)
     }
     o.def_option('--disable-sole-record', 'disable sole records') {
-      @opt_enable_sole_record = false
+      yield :enable_sole_record, false
     }
     o
   end
@@ -1083,9 +1088,10 @@ class ChkBuildRubyInfo
   end
 
   def self.main(argv)
-    optionparser.parse!(argv)
+    opts = DefaultOption.dup
+    optionparser {|k,v| opts[k] = v}.parse!(argv)
     each_argfile(argv) {|f|
-      ChkBuildRubyInfo.new(f).convert_to_json
+      ChkBuildRubyInfo.new(f, opts).convert_to_json
     }
   end
 
