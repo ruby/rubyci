@@ -195,10 +195,10 @@ class ChkBuildRubyInfo
     end
 
     lsb = { "type" => "lsb" } # lsb_release
-    lsb["distributor"] = $1 if /^Distributor ID:\s*(\S+)$/ =~ section
-    lsb["description"] = $1 if /^Description:\s*(\S+)$/ =~ section
-    lsb["release"] = $1 if /^Release:\s*(\S+)$/ =~ section
-    lsb["codename"] = $1 if /^Codename:\s*(\S+)$/ =~ section
+    lsb["distributor"] = $1.strip if /^Distributor ID:\s*(\S.*)$/ =~ section
+    lsb["description"] = $1.strip if /^Description:\s*(\S.*)$/ =~ section
+    lsb["release"] = $1.strip if /^Release:\s*(\S.*)$/ =~ section
+    lsb["codename"] = $1.strip if /^Codename:\s*(\S.*)$/ =~ section
     if 1 < lsb.size
       output_sole_hash(lsb)
       update_last_hash(lsb, 'lsb')
@@ -939,7 +939,7 @@ class ChkBuildRubyInfo
     end
   end
 
-  def finish_last_hash(num_sections)
+  def finish_last_hash_for_status(num_sections)
     h = {}
     if 0 < num_sections["success"]
       h['status'] = "success"
@@ -949,6 +949,56 @@ class ChkBuildRubyInfo
       h['status'] = "failure"
     end
     update_last_hash(h)
+  end
+
+  def finish_last_hash_for_os
+    h = { 'type' => 'os' }
+    uname_s = @last_hash['uname_sysname']
+    uname_r = @last_hash['uname_release']
+    uname_v = @last_hash['uname_version']
+    uname_m = @last_hash['uname_machine']
+    uname_p = @last_hash['uname_processor']
+    if uname_s == 'GNU' && @last_hash['lsb_release'] &&
+       @last_hash['lsb_codename'] &&
+       @last_hash['debian_architecture'] == 'hurd-i386'
+      h['os'] = "Debian GNU/Hurd #{@last_hash['lsb_release']} (#{@last_hash['lsb_codename']})"
+      h['arch'] = 'i386'
+    elsif @last_hash['lsb_description']
+      h['os'] = @last_hash['lsb_description']
+      h['arch'] = uname_m if uname_m
+    elsif uname_s == 'FreeBSD' && uname_r
+      h['os'] = "#{uname_s} #{uname_r}"
+      h['arch'] = uname_m if uname_m
+    elsif uname_s == 'NetBSD' && uname_r
+      h['os'] = "#{uname_s} #{uname_r}"
+      h['arch'] = uname_m if uname_m
+    elsif uname_s == 'OpenBSD' && uname_r
+      h['os'] = "#{uname_s} #{uname_r}"
+      h['arch'] = uname_m if uname_m
+    elsif uname_s == 'DragonFly' && uname_r
+      h['os'] = "#{uname_s} #{uname_r}"
+      h['arch'] = uname_m if uname_m
+    elsif @last_hash['mac_product_name'] && @last_hash['mac_product_version']
+      h['os'] = "#{@last_hash['mac_product_name']} #{@last_hash['mac_product_version']}"
+      h['arch'] = uname_m if uname_m
+    elsif @last_hash['sunos_release'] && /\AOpenIndiana / =~ @last_hash['sunos_release'] &&
+          uname_v && /\Aoi_/ =~ uname_v
+      h['os'] = "OpenIndiana #{$'}"
+      h['arch'] = uname_p if uname_p
+    elsif uname_s == 'AIX' && @last_hash["aix_oslevel_s"] &&
+          /\A(\d)(\d)/ =~ @last_hash["aix_oslevel_s"]
+      h['os'] = "AIX #{$1}.#{$2}"
+      h['arch'] = uname_p if uname_p
+    end
+    if 1 < h.size
+      output_hash h
+      update_last_hash h
+    end
+  end
+
+  def finish_last_hash(num_sections)
+    finish_last_hash_for_status(num_sections)
+    finish_last_hash_for_os
   end
 
   def extract_info(f)
