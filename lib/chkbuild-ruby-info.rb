@@ -174,13 +174,13 @@ class ChkBuildRubyInfo
     end
 
     uname = { "type" => "uname" }
-    uname["sysname"] = $1 if /^uname_s: (.+)$/ =~ section
-    uname["release"] = $1 if /^uname_r: (.+)$/ =~ section
-    uname["version"] = $1 if /^uname_v: (.+)$/ =~ section
-    uname["machine"] = $1 if /^uname_m: (.+)$/ =~ section
-    uname["processor"] = $1 if /^uname_p: (.+)$/ =~ section
-    uname["hardware_platform"] = $1 if /^uname_i: (.+)$/ =~ section
-    uname["operating_system"] = $1 if /^uname_o: (.+)$/ =~ section
+    uname["sysname"] = $1.strip if /^uname_s:\s+(\S.*)$/ =~ section
+    uname["release"] = $1.strip if /^uname_r:\s+(\S.*)$/ =~ section
+    uname["version"] = $1.strip if /^uname_v:\s+(\S.*)$/ =~ section
+    uname["machine"] = $1.strip if /^uname_m:\s+(\S.*)$/ =~ section
+    uname["processor"] = $1.strip if /^uname_p:\s+(\S.*)$/ =~ section
+    uname["hardware_platform"] = $1.strip if /^uname_i:\s+(\S.*)$/ =~ section
+    uname["operating_system"] = $1.strip if /^uname_o:\s+(\S.*)$/ =~ section
     if 1 < uname.size
       output_sole_hash(uname)
       update_last_hash(uname, 'uname')

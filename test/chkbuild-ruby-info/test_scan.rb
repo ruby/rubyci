@@ -92,6 +92,24 @@ defcheck(:test_lsb, debian_gnu_linux_first_section, <<'End2', 'lsb')
 {"type":"lsb","distributor":"Debian","release":"7.5","codename":"wheezy"},
 End2
 
+# FreeBSD's "uname -v" produces a space at line end.
+freebsd_first_section = <<'End'.gsub(/\$$/, '')
+== ruby-trunk # 2014-06-07T20:33:01+09:00$
+Nickname: freebsd82-64$
+uname_srvm: FreeBSD 10.0-RELEASE-p3 FreeBSD 10.0-RELEASE-p3 #0: Tue May 13 18:31:10 UTC 2014     root@amd64-builder.daemonology.net:/usr/obj/usr/src/sys/GENERIC  amd64$
+uname_s: FreeBSD$
+uname_r: 10.0-RELEASE-p3$
+uname_v: FreeBSD 10.0-RELEASE-p3 #0: Tue May 13 18:31:10 UTC 2014     root@amd64-builder.daemonology.net:/usr/obj/usr/src/sys/GENERIC $
+uname_m: amd64$
+uname_p: amd64$
+uname_i: GENERIC$
+uname_o: FreeBSD$
+End
+
+defcheck(:test_uname_freebsd, freebsd_first_section, <<'End2', 'uname')
+{"type":"uname","sysname":"FreeBSD","release":"10.0-RELEASE-p3","version":"FreeBSD 10.0-RELEASE-p3 #0: Tue May 13 18:31:10 UTC 2014     root@amd64-builder.daemonology.net:/usr/obj/usr/src/sys/GENERIC","machine":"amd64","processor":"amd64","hardware_platform":"GENERIC","operating_system":"FreeBSD"},
+End2
+
 mac_first_section = <<'End'
 == ruby-trunk-m64-o0 # 2014-06-07T10:15:19+02:00
 Nickname: P524
