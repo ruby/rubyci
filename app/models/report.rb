@@ -171,7 +171,7 @@ class Report < ActiveRecord::Base
     end
     results.concat ary
   rescue RuntimeError => e # It seems not a chkbuild log
-    p [e, server, path, "failed to scan_reports"]
+    p [e, server.uri, path, "failed to scan_reports"]
   end
 
   def self.get_reports(server)
