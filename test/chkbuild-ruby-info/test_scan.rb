@@ -95,6 +95,22 @@ End1
 End2
 end
 
+defcheck(:test_mac, <<'End1', <<'End2', 'mac')
+== ruby-trunk # 2010-12-02T16:51:01+09:00
+Nickname: P524
+uname_srvm: Darwin 13.2.0 Darwin Kernel Version 13.2.0: Thu Apr 17 23:03:13 PDT 2014; root:xnu-2422.100.13~1/RELEASE_X86_64 x86_64
+uname_s: Darwin
+uname_r: 13.2.0
+uname_v: Darwin Kernel Version 13.2.0: Thu Apr 17 23:03:13 PDT 2014; root:xnu-2422.100.13~1/RELEASE_X86_64
+uname_m: x86_64
+uname_p: i386
+ProductName:    Mac OS X
+ProductVersion: 10.9.3
+BuildVersion:   13D65
+End1
+{"type":"mac","product_name":"Mac OS X","product_version":"10.9.3","build_version":"13D65"},
+End2
+
 defcheck(:start, <<'End1', <<'End2', %w[start_time build_dir])
 == start # 2014-05-28T21:05:12+09:00
 start-time: 20140528T120400Z

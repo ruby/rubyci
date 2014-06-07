@@ -203,6 +203,16 @@ class ChkBuildRubyInfo
       output_sole_hash(lsb)
       update_last_hash(lsb, 'lsb')
     end
+
+    if uname["sysname"] == "Darwin"
+      mac = { "type" => "mac" } # Mac OS X
+      mac["product_name"] = $1 if /^ProductName:\s*(\S.*)$/ =~ section
+      mac["product_version"] = $1 if /^ProductVersion:\s*(\S+)$/ =~ section
+      mac["build_version"] = $1 if /^BuildVersion:\s*(\S+)$/ =~ section
+      output_sole_hash(mac)
+      update_last_hash(mac, 'mac')
+    end
+
   end
 
   def scan_start(section)
