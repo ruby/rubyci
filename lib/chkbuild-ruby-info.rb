@@ -665,12 +665,10 @@ class ChkBuildRubyInfo
   def scan_test_all(secname, section)
     if /^Finished tests in / =~ section
       list = $`
-      detailed_failures = $'
     else
       # test-all not finished properly?
       list = section
     end
-
     list.scan(/^(\S+\#.+?) = ([\s\S]*?)(\d+\.\d+) s = ([EFS.])$/) {
       h = {
         "type" => "test_all_result",
@@ -683,35 +681,28 @@ class ChkBuildRubyInfo
       output_hash h
     }
 
-    if detailed_failures
-      ary = detailed_failures.split(/^ *(\d+)\) /)
-      ary.slice_before(/\A\d+\z/).each {|num, body|
-        next if /\A\d+\z/ !~ num || !body
-
-        if /\AError:\n(\S+):\n(\S+): (.*)\n/ =~ body
-          h = {
-            "type" => "test_all_error_detail",
-            "test_suite" => secname,
-            "test_name" => $1,
-            "error_class" => $2,
-            "error_message" => $3,
-            "backtrace" => gsub_path_to_time(first_paragraph($'))
-          }
-          output_hash h
-        end
-
-        if /\AFailure:\n(\S+) \[(.*)\]:\n/ =~ body
-          h = {
-            "type" => "test_all_failure_detail",
-            "test_suite" => secname,
-            "test_name" => $1,
-            "failure_location" => path_after_time($2),
-            "detail" => first_paragraph($')
-          }
-          output_hash h
-        end
+    section.scan(/^ *\d+\) Failure:\n(\S+) \[(.*)\]:\n((?:.+\n)*)/) {
+      h = {
+        "type" => "test_all_failure_detail",
+        "test_suite" => secname,
+        "test_name" => $1,
+        "failure_location" => path_after_time($2),
+        "detail" => first_paragraph($3)
       }
-    end
+      output_hash h
+    }
+
+    section.scan(/^ *\d+\) Error:\n(\S+):\n(\S+): (.*)\n((?:.+\n)*)/) {
+      h = {
+        "type" => "test_all_error_detail",
+        "test_suite" => secname,
+        "test_name" => $1,
+        "error_class" => $2,
+        "error_message" => $3,
+        "backtrace" => gsub_path_to_time(first_paragraph($4))
+      }
+      output_hash h
+    }
 
     if /^(\d+) tests, (\d+) assertions, (\d+) failures, (\d+) errors(?:, (\d+) skips)?$/m =~ section
       h = {
