@@ -63,6 +63,7 @@ class ChkBuildRubyInfo
   end
 
   def output_unique_hash(hash)
+    return unless self.class.opt_enable_sole_record
     hash = hash.dup.freeze
     if !@unique_hash.has_key?(hash)
       output_hash(hash)
@@ -88,6 +89,11 @@ class ChkBuildRubyInfo
       end
     }
     @output_proc.call hash
+  end
+
+  def output_sole_hash(hash)
+    return unless self.class.opt_enable_sole_record
+    output_hash(hash)
   end
 
   def update_last_hash(hash, prefix=nil)
@@ -135,23 +141,23 @@ class ChkBuildRubyInfo
   def scan_first_section(secname, section)
     #== ruby-trunk # 2014-05-24T22:36:01+09:00
     h = { "type" => "depsuffixed_name", "depsuffixed_name" => secname }
-    output_hash h
+    output_sole_hash h
     update_last_hash(h)
 
     suffixed_name = secname[/\A[^_]+/]
     h = { "type" => "suffixed_name", "suffixed_name" => suffixed_name }
-    output_hash h
+    output_sole_hash h
     update_last_hash(h)
 
     target_name = suffixed_name[/\A[^-]+/]
     h = { "type" => "target_name", "target_name" => target_name }
-    output_hash h
+    output_sole_hash h
     update_last_hash(h)
 
     #Nickname: boron
     if /^Nickname: (\S+)/ =~ section
       h = {"type"=>"nickname", "nickname"=>$1 }
-      output_hash(h)
+      output_sole_hash(h)
       update_last_hash(h)
     end
 
@@ -164,7 +170,7 @@ class ChkBuildRubyInfo
     uname["hardware_platform"] = $1 if /^uname_i: (.+)$/ =~ section
     uname["operating_system"] = $1 if /^uname_o: (.+)$/ =~ section
     if 1 < uname.size
-      output_hash(uname)
+      output_sole_hash(uname)
       update_last_hash(uname, 'uname')
     end
 
@@ -172,7 +178,7 @@ class ChkBuildRubyInfo
     debian["version"] = $1 if /^debian_version: (\S+)$/ =~ section
     debian["architecture"] = $1 if /^Debian Architecture: (\S+)$/ =~ section
     if 1 < debian.size
-      output_hash(debian)
+      output_sole_hash(debian)
       update_last_hash(debian, 'debian')
     end
 
@@ -182,7 +188,7 @@ class ChkBuildRubyInfo
     lsb["release"] = $1 if /^Release:\s*(\S+)$/ =~ section
     lsb["codename"] = $1 if /^Codename:\s*(\S+)$/ =~ section
     if 1 < lsb.size
-      output_hash(lsb)
+      output_sole_hash(lsb)
       update_last_hash(lsb, 'lsb')
     end
   end
@@ -205,7 +211,7 @@ class ChkBuildRubyInfo
     #autoconf (GNU Autoconf) 2.67
     if /^autoconf \(GNU Autoconf\) (\S+)/ =~ section
       h = {"type"=>"autoconf_version", "version"=>$1 }
-      output_hash(h)
+      output_sole_hash(h)
       update_last_hash(h, 'autoconf')
     end
   end
@@ -214,7 +220,7 @@ class ChkBuildRubyInfo
     #bison (GNU Bison) 2.4.1
     if /^bison \(GNU Bison\) (\S+)/ =~ section
       h = {"type"=>"bison_version", "version"=>$1 }
-      output_hash(h)
+      output_sole_hash(h)
       update_last_hash(h, 'bison')
     end
   end
@@ -236,7 +242,7 @@ class ChkBuildRubyInfo
     h["release_month"] = $1.to_i if /^\#define RUBY_RELEASE_MONTH (\S+)/ =~ section
     h["release_day"] = $1.to_i if /^\#define RUBY_RELEASE_DAY (\S+)/ =~ section
     if 1 < h.size
-      output_hash(h)
+      output_sole_hash(h)
       h1 = h.reject {|k, v| /\Arelease_/ =~ k }
       h2 = h.reject {|k, v| /\Arelease_/ !~ k }
       update_last_hash(h1, 'ruby_release')
@@ -259,7 +265,7 @@ class ChkBuildRubyInfo
     ##define RUBY_PLATFORM "i686-linux"
     if /^\#define RUBY_PLATFORM "(\S+)"/ =~ section
       h = {"type"=>"ruby_platform", "platform"=>$1 }
-      output_hash(h)
+      output_sole_hash(h)
       update_last_hash(h, 'ruby')
     end
   end
@@ -271,7 +277,7 @@ class ChkBuildRubyInfo
     h["config_guess"] = $1 if /^config\.guess: (\S+)/ =~ section
     h["config_sub"] = $1 if /^config\.sub: (\S+)/ =~ section
     if 1 < h.size
-      output_hash(h)
+      output_sole_hash(h)
       update_last_hash(h)
     end
   end
@@ -280,7 +286,7 @@ class ChkBuildRubyInfo
     #gcc (GCC) 4.8.0
     if /^gcc \(GCC\) (\S+)/ =~ section
       h = {"type"=>"cc_version", "cc"=>"gcc", "version"=>$1 }
-      output_hash(h)
+      output_sole_hash(h)
       update_last_hash({ "cc"=>"gcc", "cc_version"=>h["version"] })
     end
   end
@@ -289,7 +295,7 @@ class ChkBuildRubyInfo
     #GNU C Library (Debian EGLIBC 2.11.3-4) stable release version 2.11.3, by Roland McGrath et al.
     if /^(GNU C Library .*), by/ =~ section
       h = {"type"=>"libc_version", "version"=>$1 }
-      output_hash(h)
+      output_sole_hash(h)
       update_last_hash(h, 'libc')
     end
   end
@@ -410,7 +416,7 @@ class ChkBuildRubyInfo
     h["dldflags"] = $1.strip if /^[ \t]+DLDFLAGS = (.+)\n/ =~ section
     h["solibs"] = $1.strip if /^[ \t]+SOLIBS = (.+)\n/ =~ section
     h["target"] = $1.strip if /^Target: (.+)\n/ =~ section
-    output_hash h
+    output_sole_hash h
     update_last_hash(h, 'make_flag')
   end
 
@@ -418,7 +424,7 @@ class ChkBuildRubyInfo
     #ruby 2.2.0dev (2014-05-24 trunk 46082) [i686-linux]
     if /^ruby .*/ =~ section
       h = {"type"=>"ruby_version", "version"=>$& }
-      output_hash(h)
+      output_sole_hash(h)
       update_last_hash(h, 'ruby')
     end
   end
@@ -437,7 +443,7 @@ class ChkBuildRubyInfo
     ].each {|lib|
       if /^#{Regexp.escape lib}: (.*)\n/ =~ section
         h = { 'type' => "ruby_lib_version", "lib" => lib, "version" => $1 }
-        output_hash h
+        output_sole_hash h
         update_last_hash({ "used_#{lib}_version" => h["version"] })
       end
     }
@@ -456,7 +462,7 @@ class ChkBuildRubyInfo
       "medium" => medium,
       "low" => low
     }
-    output_hash h
+    output_sole_hash h
     update_last_hash(h, 'abi_check_summary')
   end
 
@@ -1021,14 +1027,19 @@ class ChkBuildRubyInfo
 
   class << self
     attr_reader :opt_type
+    attr_reader :opt_enable_sole_record
   end
   @opt_type = nil
+  @opt_enable_sole_record = true
 
   def self.optionparser
     o = OptionParser.new
     o.def_option('-h', 'show this message') { puts o; exit }
     o.def_option('--type TYPE,...', 'show only specified types') {|val|
       @opt_type = val.split(/,/)
+    }
+    o.def_option('--disable-sole-record', 'disable sole records') {
+      @opt_enable_sole_record = false
     }
     o
   end
