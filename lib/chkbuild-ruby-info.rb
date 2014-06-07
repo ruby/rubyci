@@ -209,8 +209,10 @@ class ChkBuildRubyInfo
       mac["product_name"] = $1 if /^ProductName:\s*(\S.*)$/ =~ section
       mac["product_version"] = $1 if /^ProductVersion:\s*(\S+)$/ =~ section
       mac["build_version"] = $1 if /^BuildVersion:\s*(\S+)$/ =~ section
-      output_sole_hash(mac)
-      update_last_hash(mac, 'mac')
+      if 1 < mac.size
+        output_sole_hash(mac)
+        update_last_hash(mac, 'mac')
+      end
     end
 
   end
