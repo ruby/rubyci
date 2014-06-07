@@ -70,10 +70,6 @@ class ChkBuildRubyInfo
     end
   end
 
-  def first_paragraph(str)
-    str.sub(/\n\n[\s\S]*\z/, '')
-  end
-
   def path_after_time(str)
     if %r{/\d{8,}T\d{6}Z/} =~ str
       $'
@@ -710,7 +706,7 @@ class ChkBuildRubyInfo
         "test_suite" => secname,
         "test_name" => $1,
         "failure_location" => path_after_time($2),
-        "detail" => first_paragraph($3)
+        "detail" => $3
       }
       output_hash h
     }
@@ -722,7 +718,7 @@ class ChkBuildRubyInfo
         "test_name" => $1,
         "error_class" => $2,
         "error_message" => $3,
-        "backtrace" => gsub_path_to_time(first_paragraph($4))
+        "backtrace" => gsub_path_to_time($4)
       }
       output_hash h
     }
