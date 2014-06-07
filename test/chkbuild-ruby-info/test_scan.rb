@@ -208,6 +208,29 @@ End1
 {"type":"test_all_failure_detail","test_suite":"test-all","test_name":"TestThread#test_handle_interrupt","failure_location":"ruby/test/ruby/test_thread.rb:551","detail":"<[:on_blocking, :c1]> expected but was\n<[:on_blocking, :c2]>.\n"}
 End2
 
+defcheck(:rubyspec_detail, <<'End1', <<'End2', 'rubyspec_detail')
+== rubyspec # 2010-12-02T16:51:01+09:00
+1)
+Process::Status#exited? for a terminated child returns false FAILED
+Expected true to be false
+/extdisk/chkbuild/chkbuild/tmp/build/20140511T004100Z/rubyspec/core/process/status/exited_spec.rb:25:in `block (4 levels) in <top (required)>'
+/extdisk/chkbuild/chkbuild/tmp/build/20140511T004100Z/rubyspec/core/process/status/exited_spec.rb:3:in `<top (required)>'
+End1
+{"type":"rubyspec_detail","test_suite":"rubyspec","description":"Process::Status#exited? for a terminated child returns false","outcome":"FAILED","detail":"Expected true to be false\nrubyspec/core/process/status/exited_spec.rb:25:in `block (4 levels) in <top (required)>'\nrubyspec/core/process/status/exited_spec.rb:3:in `<top (required)>'\n"}
+End2
+
+defcheck(:rubyspec_detail, <<'End1', <<'End2', 'rubyspec_detail')
+== rubyspec # 2010-12-02T16:51:01+09:00
+2)
+An exception occurred during: Mock.verify_count
+Digest::MD5#== equals the appropriate object that responds to to_str FAILED
+Mock 'd41d8cd98f00b204e9800998ecf8427e' expected to receive 'to_str' exactly 1 times
+but received it 2 times
+/extdisk/chkbuild/chkbuild/tmp/build/20140606T222802Z/rubyspec/library/digest/md5/equal_spec.rb:4:in `<top (required)>'
+End1
+{"type":"rubyspec_detail","test_suite":"rubyspec","description":"An exception occurred during: Mock.verify_count\nDigest::MD5#== equals the appropriate object that responds to to_str","outcome":"FAILED","detail":"Mock 'd41d8cd98f00b204e9800998ecf8427e' expected to receive 'to_str' exactly 1 times\nbut received it 2 times\nrubyspec/library/digest/md5/equal_spec.rb:4:in `<top (required)>'\n"}
+End2
+
 defcheck(:exception, <<"End1", <<'End2', 'exception')
 == ruby-trunk # 2010-12-02T16:51:01+09:00
 sample/test.rb:1873: [BUG] Segmentation fault

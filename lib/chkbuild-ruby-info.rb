@@ -732,34 +732,16 @@ class ChkBuildRubyInfo
   end
 
   def scan_rubyspec(secname, section)
-    if /^1\)\n/ =~ section
-      list = $`
-      detailed_failures = $& + $'
-    else
-      # rubyspec not finished properly?
-      list = section
-    end
-
-    if detailed_failures
-
-      #1)
-      #Process::Status#exited? for a terminated child returns false FAILED
-      #Expected true to be false
-      #/extdisk/chkbuild/chkbuild/tmp/build/20140511T004100Z/rubyspec/core/process/status/exited_spec.rb:25:in `block (4 levels) in <top (required)>'
-      #/extdisk/chkbuild/chkbuild/tmp/build/20140511T004100Z/rubyspec/core/process/status/exited_spec.rb:3:in `<top (required)>'
-
-      detailed_failures.split(/^\d+\)\n/).each {|body|
-        body = first_paragraph(body)
-        next if /\n/ !~ body
-        h = {
-          "type" => "rubyspec_detail",
-          "test_suite" => secname,
-          "description" => gsub_path_to_time($`),
-          "detail" => gsub_path_to_time($')
-        }
-        output_hash h
+    section.scan(/^\d+\)\n((?:.+\n)*.*) (FAILED|ERROR)\n((?:.+\n)*)/) {
+      h = {
+        "type" => "rubyspec_detail",
+        "test_suite" => secname,
+        "description" => gsub_path_to_time($1),
+        "outcome" => $2,
+        "detail" => gsub_path_to_time($3)
       }
-    end
+      output_hash h
+    }
 
     if /^(\d+) files?, (\d+) examples?, (\d+) expectations?, (\d+) failures?, (\d+) errors?$/m =~ section
       h = {
