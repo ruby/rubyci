@@ -92,7 +92,7 @@ defcheck(:test_lsb, debian_gnu_linux_first_section, <<'End2', 'lsb')
 {"type":"lsb","distributor":"Debian","release":"7.5","codename":"wheezy"},
 End2
 
-defcheck(:test_mac, <<'End1', <<'End2', 'mac')
+mac_first_section = <<'End'
 == ruby-trunk-m64-o0 # 2014-06-07T10:15:19+02:00
 Nickname: P524
 uname_srvm: Darwin 13.2.0 Darwin Kernel Version 13.2.0: Thu Apr 17 23:03:13 PDT 2014; root:xnu-2422.100.13~1/RELEASE_X86_64 x86_64
@@ -104,11 +104,13 @@ uname_p: i386
 ProductName:    Mac OS X
 ProductVersion: 10.9.3
 BuildVersion:   13D65
-End1
+End
+
+defcheck(:test_mac, mac_first_section, <<'End2', 'mac')
 {"type":"mac","product_name":"Mac OS X","product_version":"10.9.3","build_version":"13D65"},
 End2
 
-defcheck(:test_sunos, <<'End1', <<'End2', 'sunos')
+sunos_first_section = <<'End'
 == echo # 2014-06-07T21:54:40+09:00
 Nickname: sunos
 uname_srvm: SunOS 5.11 oi_151a7 i86pc
@@ -119,11 +121,13 @@ uname_m: i86pc
 uname_p: i386
 uname_i: i86pc
 release: OpenIndiana Development oi_151.1.7 X86 (powered by illumos)
-End1
+End
+
+defcheck(:test_sunos, sunos_first_section, <<'End2', 'sunos')
 {"type":"sunos","release":"OpenIndiana Development oi_151.1.7 X86 (powered by illumos)"},
 End2
 
-defcheck(:test_aix, <<'End1', <<'End2', 'aix')
+aix_first_section = <<'End'
 == echo # 2014-06-07T05:53:20-07:00
 Nickname: power-aix
 uname_srvm: AIX 1 7 00F84C0C4C00
@@ -134,7 +138,9 @@ uname_m: 00F84C0C4C00
 uname_p: powerpc
 oslevel: 7.1.0.0
 oslevel_s: 7100-02-02-1316
-End1
+End
+
+defcheck(:test_aix, aix_first_section, <<'End2', 'aix')
 {"type":"aix","oslevel":"7.1.0.0","oslevel_s":"7100-02-02-1316"},
 End2
 
