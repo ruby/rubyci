@@ -723,6 +723,16 @@ class ChkBuildRubyInfo
   end
 
   def scan_rubyspec(secname, section)
+
+    # mspec/lib/mspec/runner/formatters/dotted.rb:
+    #
+    #   outcome = exc.failure? ? "FAILED" : "ERROR"
+    #   print "\n#{count += 1})\n#{exc.description} #{outcome}\n"
+    #   print exc.message, "\n"
+    #   print exc.backtrace, "\n"
+    #
+    # exc.message may contain newlines.
+
     section.scan(/^\d+\)\n((?:.+\n)*.*) (FAILED|ERROR)\n((?:.+\n)*)/) {
       h = {
         "type" => "rubyspec_detail",
