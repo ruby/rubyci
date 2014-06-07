@@ -681,6 +681,29 @@ class ChkBuildRubyInfo
       output_hash h
     }
 
+    # test/lib/minitest/unit.rb :
+    #
+    #   e = case e
+    #       when MiniTest::Skip then
+    #         @skips += 1
+    #         return "S" unless @verbose
+    #         "Skipped:\n#{klass}##{meth} [#{location e}]:\n#{e.message}\n"
+    #       when MiniTest::Assertion then
+    #         @failures += 1
+    #         "Failure:\n#{klass}##{meth} [#{location e}]:\n#{e.message}\n"
+    #       else
+    #         @errors += 1
+    #         bt = MiniTest::filter_backtrace(e.backtrace).join "\n    "
+    #         "Error:\n#{klass}##{meth}:\n#{e.class}: #{e.message}\n    #{bt}\n"
+    #       end
+    #   @report << e
+    #
+    # ...
+    #
+    #   report.each_with_index do |msg, i|
+    #     puts "\n%3d) %s" % [i + 1, msg]
+    #   end
+
     section.scan(/^ *\d+\) Failure:\n(\S+) \[(.*)\]:\n((?:.+\n)*)/) {
       h = {
         "type" => "test_all_failure_detail",
