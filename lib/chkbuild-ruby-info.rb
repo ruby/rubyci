@@ -917,12 +917,10 @@ class ChkBuildRubyInfo
       section.sub!(/\n== \z/, '')
       if first
         if /\A<html>/ =~ section
-          $stderr.puts "chkbuild-ruby-info needs text log (not HTML log)."
-          exit false
+          raise RuntimeError, "chkbuild-ruby-info needs text log (not HTML log)."
         end
         if /\A== / !~ section
-          $stderr.puts "It seems not a chkbuild log."
-          exit false
+          raise RuntimeError, "It seems not a chkbuild log."
         end
       else
         section = '== ' + section
@@ -1093,6 +1091,9 @@ class ChkBuildRubyInfo
     each_argfile(argv) {|f|
       ChkBuildRubyInfo.new(f, opts).convert_to_json
     }
+  rescue RuntimeError
+    $stderr.puts $!.message
+    exit false
   end
 
 end

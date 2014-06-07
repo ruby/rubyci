@@ -30,46 +30,17 @@ class TestChkBuildRubyInfo < Test::Unit::TestCase
     assert_equal(expected, result)
   end
 
-  def capture_stdout_stderr
-    orig_stdout = $stdout
-    orig_stderr = $stderr
-    $stdout = out = StringIO.new
-    $stderr = err = StringIO.new
-    begin
-      yield
-    ensure
-      $stdout = orig_stdout
-      $stderr = orig_stderr
-    end
-    return out.string, err.string
-  end
-
   def test_unexpected_format
     exc = nil
-    out, err = capture_stdout_stderr {
-      begin
-        ChkBuildRubyInfo.new("foo").convert_to_json
-      rescue SystemExit => exc
-      end
+    assert_raise(RuntimeError) {
+      ChkBuildRubyInfo.new("foo").convert_to_json
     }
-    assert_raise(SystemExit) {
-      raise exc
-    }
-    assert_equal('', out)
   end
 
   def test_unexpected_format_html
-    exc = nil
-    out, err = capture_stdout_stderr {
-      begin
-        ChkBuildRubyInfo.new("<html>").convert_to_json
-      rescue SystemExit => exc
-      end
+    assert_raise(RuntimeError) {
+      ChkBuildRubyInfo.new("<html>").convert_to_json
     }
-    assert_raise(SystemExit) {
-      raise exc
-    }
-    assert_equal('', out)
   end
 
 # Following tests are not indented because here documents are used extensively.
