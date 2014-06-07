@@ -985,7 +985,7 @@ class ChkBuildRubyInfo
       h['arch'] = uname_p if uname_p
     end
     if 1 < h.size
-      output_hash h
+      output_sole_hash h
       update_last_hash h
     end
   end
