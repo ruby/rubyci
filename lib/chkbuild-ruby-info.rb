@@ -1006,7 +1006,7 @@ class ChkBuildRubyInfo
           raise RuntimeError, "chkbuild-ruby-info needs text log (not HTML log)."
         end
         if /\A== / !~ section
-          raise RuntimeError, "It seems not a chkbuild log. '#{section[0, 100]}'"
+          raise RuntimeError, "It seems not a chkbuild log. '#{section[0, 100].dump}'"
         end
       else
         section = '== ' + section
