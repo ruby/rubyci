@@ -61,42 +61,39 @@ End1
 {"type":"nickname","nickname":"boron"},
 End2
 
-defcheck(:uname, <<'End1', <<'End2', 'uname')
-== ruby-trunk # 2010-12-02T16:51:01+09:00
-uname_srvm: Linux 2.6.18-6-xen-686 #1 SMP Thu Nov 5 19:54:42 UTC 2009 i686
+debian_gnu_linux_first_section = <<'End'
+== echo # 2014-06-07T22:14:02+09:00
+Nickname: boron
+uname_srvm: Linux 2.6.26-2-xen-686 #1 SMP Thu Jan 27 05:44:37 UTC 2011 i686
 uname_s: Linux
-uname_r: 2.6.18-6-xen-686
-uname_v: #1 SMP Thu Nov 5 19:54:42 UTC 2009
+uname_r: 2.6.26-2-xen-686
+uname_v: #1 SMP Thu Jan 27 05:44:37 UTC 2011
 uname_m: i686
 uname_p: unknown
 uname_i: unknown
 uname_o: GNU/Linux
-End1
-{"type":"uname","sysname":"Linux","release":"2.6.18-6-xen-686","version":"#1 SMP Thu Nov 5 19:54:42 UTC 2009","machine":"i686","processor":"unknown","hardware_platform":"unknown","operating_system":"GNU/Linux"},
-End2
-
-defcheck(:test_debian, <<'End1', <<'End2', 'debian')
-== ruby-trunk # 2010-12-02T16:51:01+09:00
-debian_version: 6.0.9
+debian_version: 7.5
 Debian Architecture: i386
-End1
-{"type":"debian","version":"6.0.9","architecture":"i386"},
+Distributor ID: Debian
+Description:    Debian GNU/Linux 7.5 (wheezy)
+Release:        7.5
+Codename:       wheezy
+End
+
+defcheck(:uname, debian_gnu_linux_first_section, <<'End2', 'uname')
+{"type":"uname","sysname":"Linux","release":"2.6.26-2-xen-686","version":"#1 SMP Thu Jan 27 05:44:37 UTC 2011","machine":"i686","processor":"unknown","hardware_platform":"unknown","operating_system":"GNU/Linux"},
 End2
 
-def test_lsb
-check(<<'End1', <<'End2', 'lsb')
-== ruby-trunk # 2010-12-02T16:51:01+09:00
-Distributor ID: Debian
-Description:    Debian GNU/Linux 6.0.9 (squeeze)
-Release:        6.0.9
-Codename:       squeeze
-End1
-{"type":"lsb","distributor":"Debian","release":"6.0.9","codename":"squeeze"},
+defcheck(:test_debian, debian_gnu_linux_first_section, <<'End2', 'debian')
+{"type":"debian","version":"7.5","architecture":"i386"},
 End2
-end
+
+defcheck(:test_lsb, debian_gnu_linux_first_section, <<'End2', 'lsb')
+{"type":"lsb","distributor":"Debian","release":"7.5","codename":"wheezy"},
+End2
 
 defcheck(:test_mac, <<'End1', <<'End2', 'mac')
-== ruby-trunk # 2010-12-02T16:51:01+09:00
+== ruby-trunk-m64-o0 # 2014-06-07T10:15:19+02:00
 Nickname: P524
 uname_srvm: Darwin 13.2.0 Darwin Kernel Version 13.2.0: Thu Apr 17 23:03:13 PDT 2014; root:xnu-2422.100.13~1/RELEASE_X86_64 x86_64
 uname_s: Darwin
