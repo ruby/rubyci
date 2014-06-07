@@ -132,7 +132,9 @@ class Report < ActiveRecord::Base
     return unless /\Aruby-([0-9a-z\.]+)(?:-(.*))?\z/ =~ depsuffixed_name
     branch = $1
     option = $2
+    path = nil
     latest = Report.where(server_id: server.id, branch: branch, option: option).last
+    ary = []
     body.each_line do |line|
       line.chomp!
       h = line.split("\t").map{|x|x.split(":", 2)}.to_h
@@ -145,7 +147,7 @@ class Report < ActiveRecord::Base
       break if latest and datetime <= latest.datetime
       puts "reporting #{server.name} #{depsuffixed_name} #{dt} ..."
       revision = h["ruby_rev"].to_s[1,100].to_i
-      results.push(
+      ary.push(
         server_id: server.id,
         datetime: datetime,
         branch: branch,
@@ -167,7 +169,9 @@ class Report < ActiveRecord::Base
       }
       cb.convert_to_td
     end
-    results
+    results.concat ary
+  rescue RuntimeError => e # It seems not a chkbuild log
+    p [e, server, path, "failed to scan_reports"]
   end
 
   def self.get_reports(server)
