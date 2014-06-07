@@ -215,6 +215,25 @@ class ChkBuildRubyInfo
       end
     end
 
+    if uname["sysname"] == "SunOS"
+      sunos = { "type" => "sunos" }
+      sunos["release"] = $1 if /^release:\s*(\S.*)$/ =~ section
+      if 1 < sunos.size
+        output_sole_hash(sunos)
+        update_last_hash(sunos, 'sunos')
+      end
+    end
+
+    if uname["sysname"] == "AIX"
+      aix = { "type" => "aix" }
+      aix["oslevel"] = $1 if /^oslevel:\s*(\S+)$/ =~ section
+      aix["oslevel_s"] = $1 if /^oslevel_s:\s*(\S+)$/ =~ section
+      if 1 < aix.size
+        output_sole_hash(aix)
+        update_last_hash(aix, 'aix')
+      end
+    end
+
   end
 
   def scan_start(section)

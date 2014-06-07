@@ -111,6 +111,36 @@ End1
 {"type":"mac","product_name":"Mac OS X","product_version":"10.9.3","build_version":"13D65"},
 End2
 
+defcheck(:test_sunos, <<'End1', <<'End2', 'sunos')
+== echo # 2014-06-07T21:54:40+09:00
+Nickname: sunos
+uname_srvm: SunOS 5.11 oi_151a7 i86pc
+uname_s: SunOS
+uname_r: 5.11
+uname_v: oi_151a7
+uname_m: i86pc
+uname_p: i386
+uname_i: i86pc
+release: OpenIndiana Development oi_151.1.7 X86 (powered by illumos)
+End1
+{"type":"sunos","release":"OpenIndiana Development oi_151.1.7 X86 (powered by illumos)"},
+End2
+
+defcheck(:test_aix, <<'End1', <<'End2', 'aix')
+== echo # 2014-06-07T05:53:20-07:00
+Nickname: power-aix
+uname_srvm: AIX 1 7 00F84C0C4C00
+uname_s: AIX
+uname_r: 1
+uname_v: 7
+uname_m: 00F84C0C4C00
+uname_p: powerpc
+oslevel: 7.1.0.0
+oslevel_s: 7100-02-02-1316
+End1
+{"type":"aix","oslevel":"7.1.0.0","oslevel_s":"7100-02-02-1316"},
+End2
+
 defcheck(:start, <<'End1', <<'End2', %w[start_time build_dir])
 == start # 2014-05-28T21:05:12+09:00
 start-time: 20140528T120400Z
