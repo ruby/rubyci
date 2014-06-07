@@ -25,7 +25,6 @@ class ChkBuildRubyInfo
     @current_section_name = nil
     @current_section_start_time = nil
     @output_proc = nil
-    @out = $stdout
 
     @opts = opts;
   end
@@ -49,29 +48,29 @@ class ChkBuildRubyInfo
     end
   end
 
-  def output_json_outermost_array
+  def output_json_outermost_array(out)
     @json_array_first = true
     yield
     if @json_array_first
-      @out.print "[]\n"
+      out.print "[]\n"
     else
-      @out.print "\n]\n"
+      out.print "\n]\n"
     end
   end
 
-  def output_json_object(hash)
+  def output_json_object(hash, out)
     if @opts.fetch(:type)
       unless @opts.fetch(:type).include? hash["type"]
         return
       end
     end
     if @json_array_first
-      @out.print "[\n"
+      out.print "[\n"
       @json_array_first = false
     else
-      @out.print ",\n"
+      out.print ",\n"
     end
-    @out.print JSON.dump(hash)
+    out.print JSON.dump(hash)
   end
 
   def output_unique_hash(hash)
@@ -1117,10 +1116,9 @@ class ChkBuildRubyInfo
   end
 
   def convert_to_json(out=$stdout)
-    @out = out
-    output_json_outermost_array {
+    output_json_outermost_array(out) {
       extract {|hash|
-        output_json_object hash
+        output_json_object hash, out
       }
     }
   end
