@@ -59,11 +59,6 @@ class ChkBuildRubyInfo
   end
 
   def output_json_object(hash, out)
-    if @opts.fetch(:type)
-      unless @opts.fetch(:type).include? hash["type"]
-        return
-      end
-    end
     if @json_array_first
       out.print "[\n"
       @json_array_first = false
@@ -1091,7 +1086,7 @@ class ChkBuildRubyInfo
     }
   end
 
-  def extract
+  def extract2
     extract1 {|hash|
       if @common_hash
         hash = @common_hash.merge(hash) {|k, v1, v2|
@@ -1100,6 +1095,17 @@ class ChkBuildRubyInfo
           end
           v1
         }
+      end
+      yield hash
+    }
+  end
+
+  def extract
+    extract2 {|hash|
+      if @opts.fetch(:type)
+        unless @opts.fetch(:type).include? hash["type"]
+          next
+        end
       end
       yield hash
     }
