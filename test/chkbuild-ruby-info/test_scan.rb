@@ -314,11 +314,11 @@ defcheck(:start, <<'End1', <<'End2', %w[start_time build_dir ruby_branch])
 == start # 2014-05-28T21:05:12+09:00
 start-time: 20140528T120400Z
 build-dir: /extdisk/chkbuild/chkbuild/tmp/build/20140528T120400Z
-option :ruby_branch => "trunk"
+option :ruby_branch => "branches/ruby_2_0_0"
 End1
 {"type":"start_time","start_time":"20140528T120400Z"},
 {"type":"build_dir","dir":"/extdisk/chkbuild/chkbuild/tmp/build/20140528T120400Z"},
-{"type":"ruby_branch","ruby_branch":"trunk"},
+{"type":"ruby_branch","ruby_branch":"branches/ruby_2_0_0"},
 End2
 
 ["", " optflags=-O0"].each {|str|
