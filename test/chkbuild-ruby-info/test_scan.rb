@@ -310,13 +310,15 @@ defcheck(:os_aix, aix_first_section, <<'End2' , 'os')
 {"type":"os","os":"AIX 7.1","arch":"powerpc"}
 End2
 
-defcheck(:start, <<'End1', <<'End2', %w[start_time build_dir])
+defcheck(:start, <<'End1', <<'End2', %w[start_time build_dir ruby_branch])
 == start # 2014-05-28T21:05:12+09:00
 start-time: 20140528T120400Z
 build-dir: /extdisk/chkbuild/chkbuild/tmp/build/20140528T120400Z
+option :ruby_branch => "trunk"
 End1
 {"type":"start_time","start_time":"20140528T120400Z"},
 {"type":"build_dir","dir":"/extdisk/chkbuild/chkbuild/tmp/build/20140528T120400Z"},
+{"type":"ruby_branch","ruby_branch":"trunk"},
 End2
 
 ["", " optflags=-O0"].each {|str|

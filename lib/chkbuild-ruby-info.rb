@@ -242,6 +242,13 @@ class ChkBuildRubyInfo
       output_unique_hash(h)
       update_last_hash(h, 'build')
     end
+
+    if /^option :ruby_branch => "(\S+)"/ =~ section
+      h = {"type"=>"ruby_branch", "ruby_branch"=>$1 }
+      output_unique_hash(h)
+      update_last_hash(h)
+    end
+
   end
 
   def scan_autoconf_version(section)
