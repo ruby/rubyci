@@ -604,7 +604,7 @@ class ChkBuildRubyInfo
           "test_suite" => "testrb",
           "what" => what,
           "testnum" => $2.to_i,
-          "location" => $3,
+          "loc" => $3,
           "result" => "success",
         }
         output_hash h
@@ -614,7 +614,7 @@ class ChkBuildRubyInfo
           "test_suite" => "testrb",
           "what" => $4,
           "testnum" => $5.to_i,
-          "location" => $6,
+          "loc" => $6,
           "result" => "failure",
         }
         output_hash h
@@ -697,7 +697,7 @@ class ChkBuildRubyInfo
         "type" => "test_all_failure_detail",
         "test_suite" => secname,
         "test_name" => $1,
-        "failure_location" => path_after_time($2),
+        "failure_loc" => path_after_time($2),
         "detail" => $3
       }
       output_hash h
@@ -779,7 +779,7 @@ class ChkBuildRubyInfo
         "type" => "exception",
         'secname' => secname,
         "prev_line" => $1,
-        "location" => $2,
+        "loc" => $2,
         "caller_name" => $3,
         "message" => $4.strip,
         "error_class" => $5

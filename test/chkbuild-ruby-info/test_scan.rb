@@ -494,7 +494,7 @@ TestThread#test_handle_interrupt [/extdisk/chkbuild/chkbuild/tmp/build/20140502T
 <[:on_blocking, :c1]> expected but was
 <[:on_blocking, :c2]>.
 End1
-{"type":"test_all_failure_detail","test_suite":"test-all","test_name":"TestThread#test_handle_interrupt","failure_location":"ruby/test/ruby/test_thread.rb:551","detail":"<[:on_blocking, :c1]> expected but was\n<[:on_blocking, :c2]>.\n"}
+{"type":"test_all_failure_detail","test_suite":"test-all","test_name":"TestThread#test_handle_interrupt","failure_loc":"ruby/test/ruby/test_thread.rb:551","detail":"<[:on_blocking, :c1]> expected but was\n<[:on_blocking, :c2]>.\n"}
 End2
 
 defcheck(:rubyspec_detail, <<'End1', <<'End2', 'rubyspec_detail')
@@ -530,7 +530,7 @@ sample/test.rb:1873: [BUG] Segmentation fault
 \tfrom /home/akr/chkbuild/tmp/build/ruby-trunk/20110614T005500Z/ruby/lib/rubygems/custom_require.rb:42:in `require'
 \tfrom /home/akr/chkbuild/tmp/build/ruby-trunk/20110614T005500Z/ruby/test/psych/test_string.rb:1:in `<top (required)>'
 End1
-{"type":"exception","secname":"ruby-trunk","prev_line":"/home/akr/chkbuild/tmp/build/ruby-trunk/20110614T005500Z/ruby/test/psych/test_string.rb:31: warning: assigned but unused variable - str","location":"/home/akr/chkbuild/tmp/build/ruby-trunk/20110614T005500Z/ruby/test/psych/helper.rb:63","caller_name":"<top (required)>","message":": psych should define to_yaml","error_class":"RuntimeError"},
+{"type":"exception","secname":"ruby-trunk","prev_line":"/home/akr/chkbuild/tmp/build/ruby-trunk/20110614T005500Z/ruby/test/psych/test_string.rb:31: warning: assigned but unused variable - str","loc":"/home/akr/chkbuild/tmp/build/ruby-trunk/20110614T005500Z/ruby/test/psych/helper.rb:63","caller_name":"<top (required)>","message":": psych should define to_yaml","error_class":"RuntimeError"},
 End2
 
 defcheck(:bug, <<'End1', <<'End2', 'bug')
