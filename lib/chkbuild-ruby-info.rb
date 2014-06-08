@@ -480,7 +480,6 @@ class ChkBuildRubyInfo
     ].each {|lib|
       if /^#{Regexp.escape lib}: (.*)\n/ =~ section
         h = { 'type' => "ruby_lib_version", "lib" => lib, "version" => $1 }
-        output_sole_hash h
         update_last_hash({ "used_#{lib}_version" => h["version"] })
       end
     }
