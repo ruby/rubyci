@@ -507,7 +507,7 @@ class ChkBuildRubyInfo
     'F' => 'failure',
   }
   def scan_btest(secname, section)
-    section.scan(/\#(\d+) (\S+):(\d+)(.*)\s([.F])$/) {
+    section.scan(/\#(\d+) (\S+):(\d+)(.*)\s([.F])(?: ([0-9]+\.[0-9]+))?$/) {
       h = {
         "type" => "btest_result",
         "test_suite" => secname,
@@ -517,6 +517,9 @@ class ChkBuildRubyInfo
         "caller" => strip_colon($4),
         "result" => BTEST_RESULT_MAP.fetch($5, $5)
       }
+      if $6
+        h["elapsed"] = $6.to_f
+      end
       output_hash h
     }
 

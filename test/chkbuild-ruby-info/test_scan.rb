@@ -340,14 +340,17 @@ End1
 {"type":"build_dir","dir":"/extdisk/chkbuild/chkbuild/tmp/build/20140528T120400Z"},
 End2
 
+# btest since 2014-06-08
 defcheck(:btest_result_simple_line, <<'End1', <<'End2', %w[btest_result])
 == btest # 2014-05-28T21:05:12+09:00
-test_io.rb
-#259 test_io.rb:34 .
-#260 test_io.rb:44 F
+test_attr.rb 
+#1 test_attr.rb:1:in `<top (required)>' F 0.006
+stderr output is not empty
+   bootstraptest.tmp.rb:2:in `<main>': undefined local variable or method `x' for main:Object (NameError)
+#2 test_attr.rb:28:in `<top (required)>' . 0.007
 End1
-{"type":"btest_result","test_suite":"btest","testnum":259,"file":"test_io.rb","line":34,"caller":"","result":"success"},
-{"type":"btest_result","test_suite":"btest","testnum":260,"file":"test_io.rb","line":44,"caller":"","result":"failure"},
+{"type":"btest_result","test_suite":"btest","testnum":1,"file":"test_attr.rb","line":1,"caller":"in `<top (required)>'","result":"failure","elapsed":0.006},
+{"type":"btest_result","test_suite":"btest","testnum":2,"file":"test_attr.rb","line":28,"caller":"in `<top (required)>'","result":"success","elapsed":0.007},
 End2
 
 defcheck(:btest_result_simple_line, <<'End1', <<'End2', %w[btest_result])
