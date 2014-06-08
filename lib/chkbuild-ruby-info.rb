@@ -507,30 +507,6 @@ class ChkBuildRubyInfo
     'F' => 'failure',
   }
   def scan_btest(secname, section)
-    #test_io.rb
-    ##257 test_io.rb:1 .
-    ##258 test_io.rb:11 .
-    ##259 test_io.rb:34 .
-    ##260 test_io.rb:44 F
-    #stderr output is not empty
-    #   /extdisk/chkbuild/chkbuild/tmp/build/20140424T124800Z/ruby/lib/tmpdir.rb:8:in `require': cannot load such file -- etc.so (LoadError)
-    #           from /extdisk/chkbuild/chkbuild/tmp/build/20140424T124800Z/ruby/lib/tmpdir.rb:8:in `<top (required)>'
-    #           from bootstraptest.tmp.rb:2:in `require'
-    #           from bootstraptest.tmp.rb:2:in `<main>'
-    ##261 test_io.rb:60 F
-    #stderr output is not empty
-    #   /extdisk/chkbuild/chkbuild/tmp/build/20140424T124800Z/ruby/lib/tmpdir.rb:8:in `require': cannot load such file -- etc.so (LoadError)
-    #           from /extdisk/chkbuild/chkbuild/tmp/build/20140424T124800Z/ruby/lib/tmpdir.rb:8:in `<top (required)>'
-    #           from bootstraptest.tmp.rb:2:in `require'
-    #           from bootstraptest.tmp.rb:2:in `<main>'
-    ##262 test_io.rb:77 .
-    ##263 test_io.rb:85 .
-    ##264 test_io.rb:105 .
-    ##265 test_io.rb:112 .
-
-    #KNOWNBUGS.rb #1 KNOWNBUGS.rb:16:in `<top (required)>'
-    #F
-
     section.scan(/\#(\d+) (\S+):(\d+)(.*)\s([.F])$/) {
       h = {
         "type" => "btest_result",
@@ -544,43 +520,7 @@ class ChkBuildRubyInfo
       output_hash h
     }
 
-    ##260 test_io.rb:44:
-    #     require 'tmpdir'
-    #     begin
-    #       tmpname = "#{Dir.tmpdir}/ruby-btest-#{$$}-#{rand(0x100000000).to_s(36)}"
-    #       rw = File.open(tmpname, File::RDWR|File::CREAT|File::EXCL)
-    #     rescue Errno::EEXIST
-    #       retry
-    #     end
-    #     save = STDIN.dup
-    #     STDIN.reopen(rw)
-    #     STDIN.reopen(save)
-    #     rw.close
-    #     File.unlink(tmpname) unless RUBY_PLATFORM['nacl']
-    #     :ok
-    #  #=> "" (expected "ok")
-
-    ##1 KNOWNBUGS.rb:16:in `<top (required)>': 
-    #     open("tst-remove-load.rb", "w") {|f|
-    #       f << <<-'End'
-    #         module Kernel
-    #           remove_method :load
-    #         end
-    #         raise
-    #       End
-    #     }
-    #     load "tst-remove-load.rb"
-    #  #=> killed by SIGSEGV (signal 11)
-    #| tst-remove-load.rb:4: [BUG] Segmentation fault
-    #| ruby 1.9.2dev (2010-02-20 trunk 26717) [i686-linux]
-    #| 
-    #| -- control frame ----------
-    #| c:0006 p:0019 s:0015 b:0015 l:000014 d:000014 TOP    tst-remove-load.rb:4
-    #| c:0005 p:---- s:0013 b:0013 l:000012 d:000012 FINISH
-    #  [ruby-dev:40234] [ruby-core:27959]
-    #FAIL 1/1 tests failed
-
-    section.scan(/^\#(\d+) (\S+):(\d+):(.*) \n((?: {5}.*\n)*)  \#=> (.*)/) {
+    section.scan(/^\#(\d+) (\S+):(\d+):(.*) \n((?: {3}.*\n)*)  \#=> (.*)/) {
       h = {
         "type" => "btest_detail",
         "test_suite" => secname,

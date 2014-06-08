@@ -340,6 +340,110 @@ End1
 {"type":"build_dir","dir":"/extdisk/chkbuild/chkbuild/tmp/build/20140528T120400Z"},
 End2
 
+defcheck(:btest_result_simple_line, <<'End1', <<'End2', %w[btest_result])
+== btest # 2014-05-28T21:05:12+09:00
+test_io.rb
+#259 test_io.rb:34 .
+#260 test_io.rb:44 F
+End1
+{"type":"btest_result","test_suite":"btest","testnum":259,"file":"test_io.rb","line":34,"caller":"","result":"success"},
+{"type":"btest_result","test_suite":"btest","testnum":260,"file":"test_io.rb","line":44,"caller":"","result":"failure"},
+End2
+
+defcheck(:btest_result_simple_line, <<'End1', <<'End2', %w[btest_result])
+== btest # 2014-05-28T21:05:12+09:00
+test_io.rb
+#259 test_io.rb:34 .
+#260 test_io.rb:44 F
+End1
+{"type":"btest_result","test_suite":"btest","testnum":259,"file":"test_io.rb","line":34,"caller":"","result":"success"},
+{"type":"btest_result","test_suite":"btest","testnum":260,"file":"test_io.rb","line":44,"caller":"","result":"failure"},
+End2
+
+defcheck(:btest_result_caller, <<'End1', <<'End2', %w[btest_result])
+== btest # 2014-05-28T21:05:12+09:00
+test_autoload.rb 
+#3 test_autoload.rb:1:in `<top (required)>' .
+#4 test_autoload.rb:13:in `<top (required)>' .
+End1
+{"type":"btest_result","test_suite":"btest","testnum":3,"file":"test_autoload.rb","line":1,"caller":"in `<top (required)>'","result":"success"},
+{"type":"btest_result","test_suite":"btest","testnum":4,"file":"test_autoload.rb","line":13,"caller":"in `<top (required)>'","result":"success"},
+End2
+
+defcheck(:btest_result_ignore_mixed, <<'End1', <<'End2', %w[btest_result])
+== btest # 2014-05-28T21:05:12+09:00
+test_io.rb
+#260 test_io.rb:44 F
+stderr output is not empty
+   /extdisk/chkbuild/chkbuild/tmp/build/20140424T124800Z/ruby/lib/tmpdir.rb:8:in `require': cannot load such file -- etc.so (LoadError)
+           from /extdisk/chkbuild/chkbuild/tmp/build/20140424T124800Z/ruby/lib/tmpdir.rb:8:in `<top (required)>'
+           from bootstraptest.tmp.rb:2:in `require'
+           from bootstraptest.tmp.rb:2:in `<main>'
+#261 test_io.rb:60 F
+End1
+{"type":"btest_result","test_suite":"btest","testnum":260,"file":"test_io.rb","line":44,"caller":"","result":"failure"},
+{"type":"btest_result","test_suite":"btest","testnum":261,"file":"test_io.rb","line":60,"caller":"","result":"failure"},
+End2
+
+btest_detail_log = <<'End'
+== btest # 2010-02-18T04:19:47+09:00
+#260 test_io.rb:44: 
+     require 'tmpdir'
+     begin
+       tmpname = "#{Dir.tmpdir}/ruby-btest-#{$$}-#{rand(0x100000000).to_s(36)}"
+       rw = File.open(tmpname, File::RDWR|File::CREAT|File::EXCL)
+     rescue Errno::EEXIST
+       retry
+     end
+     save = STDIN.dup
+     STDIN.reopen(rw)
+     STDIN.reopen(save)
+     rw.close
+     File.unlink(tmpname) unless RUBY_PLATFORM['nacl']
+     :ok
+  #=> "" (expected "ok")
+End
+
+btest_detail_src = btest_detail_log[/^     require(?:[\s\S]*?):ok\n/]
+btest_detail_msg = btest_detail_log[/"".*/]
+defcheck(:btest_detail_io, btest_detail_log, <<"End2", %w[btest_detail])
+{"type":"btest_detail","test_suite":"btest","testnum":260,"file":"test_io.rb","line":44,"caller":"","code":#{JSON.dump btest_detail_src},"message":#{JSON.dump btest_detail_msg}}
+End2
+
+knownbug_log = <<'End'
+== test-knownbug # 2010-02-18T04:19:47+09:00
+KNOWNBUGS.rb #1 KNOWNBUGS.rb:16:in `<top (required)>'
+F
+#1 KNOWNBUGS.rb:16:in `<top (required)>': 
+     open("tst-remove-load.rb", "w") {|f|
+       f << <<'End'
+   module Kernel
+     remove_method :load
+   end
+   raise
+   End
+     }
+     load "tst-remove-load.rb"
+  #=> killed by SIGSEGV (signal 11)
+| tst-remove-load.rb:4: [BUG] Segmentation fault
+| ruby 1.9.2dev (2010-02-18 trunk 26704) [i686-linux]
+| 
+| -- control frame ----------
+| c:0006 p:0019 s:0015 b:0015 l:000014 d:000014 TOP    tst-remove-load.rb:4
+| c:0005 p:---- s:0013 b:0013 l:000012 d:000012 FINISH
+  [ruby-dev:40234] [ruby-core:27959]
+FAIL 1/1 tests failed
+End
+
+defcheck(:btest_result_knownbugs, knownbug_log, <<'End2', %w[btest_result])
+{"type":"btest_result","test_suite":"test-knownbug","testnum":1,"file":"KNOWNBUGS.rb","line":16,"caller":"in `<top (required)>'","result":"failure"}
+End2
+
+known_bug_src = knownbug_log[/^     open(?:[\s\S]*?)"tst-remove-load.rb"\n/]
+defcheck(:btest_detail_knownbugs, knownbug_log, <<"End2", %w[btest_detail])
+{"type":"btest_detail","test_suite":"test-knownbug","testnum":1,"file":"KNOWNBUGS.rb","line":16,"caller":"in `<top (required)>'","code":#{JSON.dump known_bug_src},"message":"killed by SIGSEGV (signal 11)"}
+End2
+
 defcheck(:all_with_output, <<'End1', <<'End2', 'test_all_result')
 == test-all # 2010-12-02T16:51:01+09:00
 TestVariable#test_global_variable_0 = (eval):1: warning: possibly useless use of a variable in void context
