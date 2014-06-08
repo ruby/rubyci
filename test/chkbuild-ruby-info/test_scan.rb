@@ -494,7 +494,7 @@ TestThread#test_handle_interrupt [/extdisk/chkbuild/chkbuild/tmp/build/20140502T
 <[:on_blocking, :c1]> expected but was
 <[:on_blocking, :c2]>.
 End1
-{"type":"test_all_failure_detail","test_suite":"test-all","test_name":"TestThread#test_handle_interrupt","failure_loc":"ruby/test/ruby/test_thread.rb:551","detail":"<[:on_blocking, :c1]> expected but was\n<[:on_blocking, :c2]>.\n"}
+{"type":"test_all_failure_detail","test_suite":"test-all","test_name":"TestThread#test_handle_interrupt","failure_location":"ruby/test/ruby/test_thread.rb:551","detail":"<[:on_blocking, :c1]> expected but was\n<[:on_blocking, :c2]>.\n"}
 End2
 
 defcheck(:rubyspec_detail, <<'End1', <<'End2', 'rubyspec_detail')

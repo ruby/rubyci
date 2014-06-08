@@ -697,7 +697,7 @@ class ChkBuildRubyInfo
         "type" => "test_all_failure_detail",
         "test_suite" => secname,
         "test_name" => $1,
-        "failure_loc" => path_after_time($2),
+        "failure_location" => path_after_time($2),
         "detail" => $3
       }
       output_hash h
