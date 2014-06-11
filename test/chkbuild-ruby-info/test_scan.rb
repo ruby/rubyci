@@ -5,10 +5,18 @@ require_relative '../../lib/chkbuild-ruby-info'
 
 class TestChkBuildRubyInfo < Test::Unit::TestCase
   @testnum = 0
+
   def self.defcheck(name, src, expected, type=nil)
     @testnum += 1
     define_method("test_#{@testnum}_#{name}") {
       check(src, expected, type)
+    }
+  end
+
+  def self.defcheck_build(name, src, expected_hash)
+    @testnum += 1
+    define_method("test_#{@testnum}_#{name}") {
+      check_build(src, expected_hash)
     }
   end
 
@@ -28,6 +36,21 @@ class TestChkBuildRubyInfo < Test::Unit::TestCase
     end
     expected = expected.gsub(/,$/, '')
     assert_equal(expected, result)
+  end
+
+  def check_build(src, expected_hash)
+    src = StringIO.new(src)
+    build_hash = nil
+    ChkBuildRubyInfo.new(src).extract {|hash|
+      if hash['type'] == 'build'
+        build_hash = hash
+        break
+      end
+    }
+    assert(build_hash != nil)
+    expected_hash.each {|k, v|
+      assert_equal(v, build_hash[k], "key: #{k.inspect}")
+    }
   end
 
   def test_unexpected_format
@@ -96,6 +119,16 @@ defcheck(:os_debian, debian_gnu_linux_first_section, <<'End2' , 'os')
 {"type":"os","os":"Debian GNU/Linux 7.5 (wheezy)","arch":"i686"}
 End2
 
+defcheck_build(:build_debian, debian_gnu_linux_first_section,
+               "debian_version" => "7.5",
+               "debian_architecture" => "i386",
+               "lsb_distributor" => "Debian",
+               "lsb_description" => "Debian GNU/Linux 7.5 (wheezy)",
+               "lsb_release" => "7.5",
+               "lsb_codename" => "wheezy",
+               "os" => "Debian GNU/Linux 7.5 (wheezy)",
+               "arch" => "i686")
+
 debian_gnu_kfreebsd_first_section = <<'End'
 == echo # 2014-06-07T22:49:33+09:00
 Nickname: debian7-kfreebsd
@@ -115,13 +148,23 @@ Release:        7.0
 Codename:       wheezy
 End
 
-defcheck(:test_debian, debian_gnu_kfreebsd_first_section, <<'End2', 'debian')
+defcheck(:test_debian_kfreebsd, debian_gnu_kfreebsd_first_section, <<'End2', 'debian')
 {"type":"debian","version":"7.0","architecture":"kfreebsd-amd64"},
 End2
 
-defcheck(:os_debian, debian_gnu_kfreebsd_first_section, <<'End2' , 'os')
+defcheck(:os_debian_kfreebsd, debian_gnu_kfreebsd_first_section, <<'End2' , 'os')
 {"type":"os","os":"Debian GNU/kFreeBSD 7.0 (wheezy)","arch":"x86_64"}
 End2
+
+defcheck_build(:build_debian_kfreebsd, debian_gnu_kfreebsd_first_section,
+               "debian_version" => "7.0",
+               "debian_architecture" => "kfreebsd-amd64",
+               "lsb_distributor" => "Debian",
+               "lsb_description" => "Debian GNU/kFreeBSD 7.0 (wheezy)",
+               "lsb_release" => "7.0",
+               "lsb_codename" => "wheezy",
+               "os" => "Debian GNU/kFreeBSD 7.0 (wheezy)",
+               "arch" => "x86_64")
 
 debian_gnu_hurd_first_section = <<'End'
 == echo # 2014-06-07T22:50:06+09:00
@@ -142,13 +185,23 @@ Release:        7.0
 Codename:       wheezy
 End
 
-defcheck(:test_debian, debian_gnu_hurd_first_section, <<'End2', 'debian')
+defcheck(:test_debian_hurd, debian_gnu_hurd_first_section, <<'End2', 'debian')
 {"type":"debian","version":"7.0","architecture":"hurd-i386"},
 End2
 
-defcheck(:os_debian, debian_gnu_hurd_first_section, <<'End2' , 'os')
+defcheck(:os_debian_hurd, debian_gnu_hurd_first_section, <<'End2' , 'os')
 {"type":"os","os":"Debian GNU/Hurd 7.0 (wheezy)","arch":"i386"}
 End2
+
+defcheck_build(:build_debian_hurd, debian_gnu_hurd_first_section,
+               "debian_version" => "7.0",
+               "debian_architecture" => "hurd-i386",
+               "lsb_distributor" => "Debian",
+               "lsb_description" => "Debian GNU 7.0 (wheezy)",
+               "lsb_release" => "7.0",
+               "lsb_codename" => "wheezy",
+               "os" => "Debian GNU/Hurd 7.0 (wheezy)",
+               "arch" => "i386")
 
 ubuntu_first_section = <<'End'
 == ruby-trunk # 2014-06-07T21:33:01+09:00
@@ -177,6 +230,16 @@ defcheck(:os_debian, ubuntu_first_section, <<'End2' , 'os')
 {"type":"os","os":"Ubuntu 12.04.4 LTS","arch":"x86_64"}
 End2
 
+defcheck_build(:build_ubuntu, ubuntu_first_section,
+               "debian_version" => "wheezy/sid",
+               "debian_architecture" => "amd64",
+               "lsb_distributor" => "Ubuntu",
+               "lsb_description" => "Ubuntu 12.04.4 LTS",
+               "lsb_release" => "12.04",
+               "lsb_codename" => "precise",
+               "os" => "Ubuntu 12.04.4 LTS",
+               "arch" => "x86_64")
+
 # FreeBSD's "uname -v" produces a space at line end.
 freebsd_first_section = <<'End'.gsub(/\$$/, '')
 == ruby-trunk # 2014-06-07T20:33:01+09:00$
@@ -199,6 +262,10 @@ defcheck(:os_freebsd, freebsd_first_section, <<'End2' , 'os')
 {"type":"os","os":"FreeBSD 10.0-RELEASE-p3","arch":"amd64"}
 End2
 
+defcheck_build(:build_freebsd, freebsd_first_section,
+               "os" => "FreeBSD 10.0-RELEASE-p3",
+               "arch" => "amd64")
+
 netbsd_first_section = <<'End'
 == echo # 2014-06-07T23:07:42+09:00
 Nickname: netbsd61
@@ -214,6 +281,10 @@ defcheck(:os_netbsd, netbsd_first_section, <<'End2' , 'os')
 {"type":"os","os":"NetBSD 6.1.3","arch":"amd64"}
 End2
 
+defcheck_build(:build_netbsd, netbsd_first_section,
+               "os" => "NetBSD 6.1.3",
+               "arch" => "amd64")
+
 openbsd_first_section = <<'End'
 == echo # 2014-06-07T23:07:47+09:00
 Nickname: openbsd55
@@ -228,6 +299,10 @@ End
 defcheck(:os_openbsd, openbsd_first_section, <<'End2' , 'os')
 {"type":"os","os":"OpenBSD 5.5","arch":"amd64"}
 End2
+
+defcheck_build(:build_openbsd, openbsd_first_section,
+               "os" => "OpenBSD 5.5",
+               "arch" => "amd64")
 
 # DragonFly BSD's "uname -v" produces a space at line end.
 dragonfly_first_section = <<'End'.gsub(/\$$/, '')
@@ -245,6 +320,10 @@ End
 defcheck(:os_dragonfly, dragonfly_first_section, <<'End2' , 'os')
 {"type":"os","os":"DragonFly 3.6-RELEASE","arch":"x86_64"}
 End2
+
+defcheck_build(:build_dragonfly, dragonfly_first_section,
+               "os" => "DragonFly 3.6-RELEASE",
+               "arch" => "x86_64")
 
 mac_first_section = <<'End'
 == ruby-trunk-m64-o0 # 2014-06-07T10:15:19+02:00
@@ -268,6 +347,10 @@ defcheck(:os_mac, mac_first_section, <<'End2' , 'os')
 {"type":"os","os":"Mac OS X 10.9.3","arch":"x86_64"}
 End2
 
+defcheck_build(:build_mac, mac_first_section,
+               "os" => "Mac OS X 10.9.3",
+               "arch" => "x86_64")
+
 sunos_first_section = <<'End'
 == echo # 2014-06-07T21:54:40+09:00
 Nickname: sunos
@@ -289,6 +372,10 @@ defcheck(:os_sunos, sunos_first_section, <<'End2' , 'os')
 {"type":"os","os":"OpenIndiana 151a7","arch":"i386"}
 End2
 
+defcheck_build(:build_sunos, sunos_first_section,
+               "os" => "OpenIndiana 151a7",
+               "arch" => "i386")
+
 aix_first_section = <<'End'
 == echo # 2014-06-07T05:53:20-07:00
 Nickname: power-aix
@@ -309,6 +396,10 @@ End2
 defcheck(:os_aix, aix_first_section, <<'End2' , 'os')
 {"type":"os","os":"AIX 7.1","arch":"powerpc"}
 End2
+
+defcheck_build(:build_aix, aix_first_section,
+               "os" => "AIX 7.1",
+               "arch" => "powerpc")
 
 defcheck(:start, <<'End1', <<'End2', %w[start_time build_dir ruby_branch])
 == start # 2014-05-28T21:05:12+09:00
