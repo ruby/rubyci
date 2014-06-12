@@ -167,6 +167,16 @@ class ChkBuildRubyInfo
       update_last_hash(h)
     end
 
+    scan_uname(true, secname, section)
+    scan_debian_version(true, secname, section)
+    scan_dpkg(true, secname, section)
+    scan_lsb_release(true, secname, section)
+    scan_sw_vers(true, secname, section)
+    scan_etc_release(true, secname, section)
+    scan_oslevel(true, secname, section)
+  end
+
+  def scan_uname(first_section, secname, section)
     uname = { "type" => "uname" }
     uname["sysname"] = $1.strip if /^uname_s:\s+(\S.*)$/ =~ section
     uname["release"] = $1.strip if /^uname_r:\s+(\S.*)$/ =~ section
@@ -179,15 +189,41 @@ class ChkBuildRubyInfo
       output_sole_hash(uname)
       update_last_hash(uname, 'uname')
     end
+  end
 
-    debian = { "type" => "debian" }
-    debian["version"] = $1 if /^debian_version: (\S+)$/ =~ section
-    debian["architecture"] = $1 if /^Debian Architecture: (\S+)$/ =~ section
-    if 1 < debian.size
-      output_sole_hash(debian)
-      update_last_hash(debian, 'debian')
+  def scan_debian_version(first_section, secname, section)
+    if first_section
+      if /^debian_version: (\S+)$/ =~ section
+        h = { "type" => "debian_version", "debian_version" => $1 }
+      end
+    else
+      if /\A== .*\n(.*)\n\z/ =~ section
+        h = { "type" => "debian_version", "debian_version" => $1 }
+      end
     end
+    if h
+      output_sole_hash(h)
+      update_last_hash(h)
+    end
+  end
 
+  def scan_dpkg(first_section, secname, section)
+    if first_section
+      if /^Debian Architecture: (\S+)$/ =~ section
+        h = { "type" => "debian_architecture", "debian_architecture" => $1 }
+      end
+    else
+      if /^architecture: (\S+)$/ =~ section
+        h = { "type" => "debian_architecture", "debian_architecture" => $1 }
+      end
+    end
+    if h
+      output_sole_hash(h)
+      update_last_hash(h)
+    end
+  end
+
+  def scan_lsb_release(first_section, secname, section)
     lsb = { "type" => "lsb" } # lsb_release
     lsb["distributor"] = $1.strip if /^Distributor ID:\s*(\S.*)$/ =~ section
     lsb["description"] = $1.strip if /^Description:\s*(\S.*)$/ =~ section
@@ -197,8 +233,11 @@ class ChkBuildRubyInfo
       output_sole_hash(lsb)
       update_last_hash(lsb, 'lsb')
     end
+  end
 
-    if uname["sysname"] == "Darwin"
+  def scan_sw_vers(first_section, secname, section)
+    uname_sysname = @last_hash['uname_sysname']
+    if uname_sysname == "Darwin"
       mac = { "type" => "mac" } # Mac OS X
       mac["product_name"] = $1 if /^ProductName:\s*(\S.*)$/ =~ section
       mac["product_version"] = $1 if /^ProductVersion:\s*(\S+)$/ =~ section
@@ -208,17 +247,27 @@ class ChkBuildRubyInfo
         update_last_hash(mac, 'mac')
       end
     end
+  end
 
-    if uname["sysname"] == "SunOS"
+  def scan_etc_release(first_section, secname, section)
+    uname_sysname = @last_hash['uname_sysname']
+    if uname_sysname == "SunOS"
       sunos = { "type" => "sunos" }
-      sunos["release"] = $1 if /^release:\s*(\S.*)$/ =~ section
+      if first_section
+        sunos["release"] = $1 if /^release:\s*(\S.*)$/ =~ section
+      else
+        sunos["release"] = $1 if /\A== .*\n(.*)\n\z/ =~ section
+      end
       if 1 < sunos.size
         output_sole_hash(sunos)
         update_last_hash(sunos, 'sunos')
       end
     end
+  end
 
-    if uname["sysname"] == "AIX"
+  def scan_oslevel(first_section, secname, section)
+    uname_sysname = @last_hash['uname_sysname']
+    if uname_sysname == "AIX"
       aix = { "type" => "aix" }
       aix["oslevel"] = $1 if /^oslevel:\s*(\S+)$/ =~ section
       aix["oslevel_s"] = $1 if /^oslevel_s:\s*(\S+)$/ =~ section
@@ -227,7 +276,6 @@ class ChkBuildRubyInfo
         update_last_hash(aix, 'aix')
       end
     end
-
   end
 
   def scan_start(section)
@@ -969,6 +1017,20 @@ class ChkBuildRubyInfo
       scan_section_start(secname, rest)
       scan_first_section(secname, section) if first
       case secname
+      when "uname"
+        scan_uname(false, secname, section)
+      when "/etc/debian_version"
+        scan_debian_version(false, secname, section)
+      when "dpkg"
+        scan_dpkg(false, secname, section)
+      when "lsb_release"
+        scan_lsb_release(false, secname, section)
+      when "sw_vers"
+        scan_sw_vers(false, secname, section)
+      when "/etc/release"
+        scan_etc_release(false, secname, section)
+      when "oslevel"
+        scan_oslevel(false, secname, section)
       when "start"
         scan_start(section)
       when "autoconf-version"

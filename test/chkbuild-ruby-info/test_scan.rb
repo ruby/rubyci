@@ -107,8 +107,9 @@ defcheck(:uname, debian_gnu_linux_first_section, <<'End2', 'uname')
 {"type":"uname","sysname":"Linux","release":"2.6.26-2-xen-686","version":"#1 SMP Thu Jan 27 05:44:37 UTC 2011","machine":"i686","processor":"unknown","hardware_platform":"unknown","operating_system":"GNU/Linux"},
 End2
 
-defcheck(:test_debian, debian_gnu_linux_first_section, <<'End2', 'debian')
-{"type":"debian","version":"7.5","architecture":"i386"},
+defcheck(:test_debian, debian_gnu_linux_first_section, <<'End2', %w[debian_version debian_architecture])
+{"type":"debian_version","debian_version":"7.5"},
+{"type":"debian_architecture","debian_architecture":"i386"},
 End2
 
 defcheck(:test_lsb, debian_gnu_linux_first_section, <<'End2', 'lsb')
@@ -129,6 +130,39 @@ defcheck_build(:build_debian, debian_gnu_linux_first_section,
                "os" => "Debian GNU/Linux 7.5 (wheezy)",
                "arch" => "i686")
 
+debian_gnu_linux_first_sections =<<'End'
+== ruby-trunk # 2014-06-11T23:46:38+09:00
+Nickname: dew
+== uname # 2014-06-11T23:46:38+09:00
+uname_srvm: Linux 3.2.0-4-amd64 #1 SMP Debian 3.2.57-3+deb7u2 x86_64
+uname_s: Linux
+uname_r: 3.2.0-4-amd64
+uname_v: #1 SMP Debian 3.2.57-3+deb7u2
+uname_m: x86_64
+uname_p: unknown
+uname_i: unknown
+uname_o: GNU/Linux
+== /etc/debian_version # 2014-06-11T23:46:38+09:00
+7.5
+== dpkg # 2014-06-11T23:46:38+09:00
+architecture: amd64
+== lsb_release # 2014-06-11T23:46:38+09:00
+Distributor ID: Debian
+Description:    Debian GNU/Linux 7.5 (wheezy)
+Release:        7.5
+Codename:       wheezy
+End
+
+defcheck_build(:build_debian, debian_gnu_linux_first_sections,
+               "debian_version" => "7.5",
+               "debian_architecture" => "amd64",
+               "lsb_distributor" => "Debian",
+               "lsb_description" => "Debian GNU/Linux 7.5 (wheezy)",
+               "lsb_release" => "7.5",
+               "lsb_codename" => "wheezy",
+               "os" => "Debian GNU/Linux 7.5 (wheezy)",
+               "arch" => "x86_64")
+
 debian_gnu_kfreebsd_first_section = <<'End'
 == echo # 2014-06-07T22:49:33+09:00
 Nickname: debian7-kfreebsd
@@ -148,8 +182,9 @@ Release:        7.0
 Codename:       wheezy
 End
 
-defcheck(:test_debian_kfreebsd, debian_gnu_kfreebsd_first_section, <<'End2', 'debian')
-{"type":"debian","version":"7.0","architecture":"kfreebsd-amd64"},
+defcheck(:test_debian_kfreebsd, debian_gnu_kfreebsd_first_section, <<'End2', %w[debian_version debian_architecture])
+{"type":"debian_version","debian_version":"7.0"},
+{"type":"debian_architecture","debian_architecture":"kfreebsd-amd64"},
 End2
 
 defcheck(:os_debian_kfreebsd, debian_gnu_kfreebsd_first_section, <<'End2' , 'os')
@@ -157,6 +192,39 @@ defcheck(:os_debian_kfreebsd, debian_gnu_kfreebsd_first_section, <<'End2' , 'os'
 End2
 
 defcheck_build(:build_debian_kfreebsd, debian_gnu_kfreebsd_first_section,
+               "debian_version" => "7.0",
+               "debian_architecture" => "kfreebsd-amd64",
+               "lsb_distributor" => "Debian",
+               "lsb_description" => "Debian GNU/kFreeBSD 7.0 (wheezy)",
+               "lsb_release" => "7.0",
+               "lsb_codename" => "wheezy",
+               "os" => "Debian GNU/kFreeBSD 7.0 (wheezy)",
+               "arch" => "x86_64")
+
+debian_gnu_kfreebsd_first_sections = <<'End'
+== echo # 2014-06-12T21:00:41+09:00
+Nickname: debian7-kfreebsd
+== uname # 2014-06-12T21:00:41+09:00
+uname_srvm: GNU/kFreeBSD 9.0-2-amd64 #0 Sat Nov 24 04:44:27 UTC 2012 x86_64
+uname_s: GNU/kFreeBSD
+uname_r: 9.0-2-amd64
+uname_v: #0 Sat Nov 24 04:44:27 UTC 2012
+uname_m: x86_64
+uname_p: amd64
+uname_i: QEMU Virtual CPU version 1.1.2
+uname_o: GNU/kFreeBSD
+== /etc/debian_version # 2014-06-12T21:00:41+09:00
+7.0
+== dpkg # 2014-06-12T21:00:41+09:00
+architecture: kfreebsd-amd64
+== lsb_release # 2014-06-12T21:00:41+09:00
+Distributor ID: Debian
+Description:    Debian GNU/kFreeBSD 7.0 (wheezy)
+Release:        7.0
+Codename:       wheezy
+End
+
+defcheck_build(:build_debian_kfreebsd, debian_gnu_kfreebsd_first_sections,
                "debian_version" => "7.0",
                "debian_architecture" => "kfreebsd-amd64",
                "lsb_distributor" => "Debian",
@@ -185,8 +253,9 @@ Release:        7.0
 Codename:       wheezy
 End
 
-defcheck(:test_debian_hurd, debian_gnu_hurd_first_section, <<'End2', 'debian')
-{"type":"debian","version":"7.0","architecture":"hurd-i386"},
+defcheck(:test_debian_hurd, debian_gnu_hurd_first_section, <<'End2', %w[debian_version debian_architecture])
+{"type":"debian_version","debian_version":"7.0"},
+{"type":"debian_architecture","debian_architecture":"hurd-i386"},
 End2
 
 defcheck(:os_debian_hurd, debian_gnu_hurd_first_section, <<'End2' , 'os')
@@ -194,6 +263,39 @@ defcheck(:os_debian_hurd, debian_gnu_hurd_first_section, <<'End2' , 'os')
 End2
 
 defcheck_build(:build_debian_hurd, debian_gnu_hurd_first_section,
+               "debian_version" => "7.0",
+               "debian_architecture" => "hurd-i386",
+               "lsb_distributor" => "Debian",
+               "lsb_description" => "Debian GNU 7.0 (wheezy)",
+               "lsb_release" => "7.0",
+               "lsb_codename" => "wheezy",
+               "os" => "Debian GNU/Hurd 7.0 (wheezy)",
+               "arch" => "i386")
+
+debian_gnu_hurd_first_sections = <<'End'
+== echo # 2014-06-12T21:07:28+09:00
+Nickname: hurd
+== uname # 2014-06-12T21:07:28+09:00
+uname_srvm: GNU 0.3 GNU-Mach 1.3.99-486/Hurd-0.3 i686-AT386
+uname_s: GNU
+uname_r: 0.3
+uname_v: GNU-Mach 1.3.99-486/Hurd-0.3
+uname_m: i686-AT386
+uname_p: unknown
+uname_i: unknown
+uname_o: GNU
+== /etc/debian_version # 2014-06-12T21:07:28+09:00
+7.0
+== dpkg # 2014-06-12T21:07:29+09:00
+architecture: hurd-i386
+== lsb_release # 2014-06-12T21:07:32+09:00
+Distributor ID: Debian
+Description:    Debian GNU 7.0 (wheezy)
+Release:        7.0
+Codename:       wheezy
+End
+
+defcheck_build(:build_debian_hurd, debian_gnu_hurd_first_sections,
                "debian_version" => "7.0",
                "debian_architecture" => "hurd-i386",
                "lsb_distributor" => "Debian",
@@ -266,6 +368,24 @@ defcheck_build(:build_freebsd, freebsd_first_section,
                "os" => "FreeBSD 10.0-RELEASE-p3",
                "arch" => "amd64")
 
+freebsd_first_sections = <<'End'.gsub(/\$$/, '')
+== echo # 2014-06-12T21:09:52+09:00
+Nickname: freebsd10
+== uname # 2014-06-12T21:09:52+09:00
+uname_srvm: FreeBSD 10.0-RELEASE FreeBSD 10.0-RELEASE #0 r260789: Thu Jan 16 22:34:59 UTC 2014     root@snap.freebsd.org:/usr/obj/usr/src/sys/GENERIC  amd64
+uname_s: FreeBSD
+uname_r: 10.0-RELEASE
+uname_v: FreeBSD 10.0-RELEASE #0 r260789: Thu Jan 16 22:34:59 UTC 2014     root@snap.freebsd.org:/usr/obj/usr/src/sys/GENERIC 
+uname_m: amd64
+uname_p: amd64
+uname_i: GENERIC
+uname_o: FreeBSD
+End
+
+defcheck_build(:build_freebsd, freebsd_first_sections,
+               "os" => "FreeBSD 10.0-RELEASE",
+               "arch" => "amd64")
+
 netbsd_first_section = <<'End'
 == echo # 2014-06-07T23:07:42+09:00
 Nickname: netbsd61
@@ -282,6 +402,22 @@ defcheck(:os_netbsd, netbsd_first_section, <<'End2' , 'os')
 End2
 
 defcheck_build(:build_netbsd, netbsd_first_section,
+               "os" => "NetBSD 6.1.3",
+               "arch" => "amd64")
+
+netbsd_first_sections = <<'End'
+== echo # 2014-06-12T21:11:42+09:00
+Nickname: netbsd61
+== uname # 2014-06-12T21:11:42+09:00
+uname_srvm: NetBSD 6.1.3 NetBSD 6.1.3 (GENERIC) amd64
+uname_s: NetBSD
+uname_r: 6.1.3
+uname_v: NetBSD 6.1.3 (GENERIC)
+uname_m: amd64
+uname_p: x86_64
+End
+
+defcheck_build(:build_netbsd, netbsd_first_sections,
                "os" => "NetBSD 6.1.3",
                "arch" => "amd64")
 
@@ -304,6 +440,22 @@ defcheck_build(:build_openbsd, openbsd_first_section,
                "os" => "OpenBSD 5.5",
                "arch" => "amd64")
 
+openbsd_first_sections = <<'End'
+== echo # 2014-06-12T21:13:02+09:00
+Nickname: openbsd55
+== uname # 2014-06-12T21:13:02+09:00
+uname_srvm: OpenBSD 5.5 GENERIC#271 amd64
+uname_s: OpenBSD
+uname_r: 5.5
+uname_v: GENERIC#271
+uname_m: amd64
+uname_p: amd64
+End
+
+defcheck_build(:build_openbsd, openbsd_first_sections,
+               "os" => "OpenBSD 5.5",
+               "arch" => "amd64")
+
 # DragonFly BSD's "uname -v" produces a space at line end.
 dragonfly_first_section = <<'End'.gsub(/\$$/, '')
 == echo # 2014-06-07T23:07:44+09:00$
@@ -322,6 +474,23 @@ defcheck(:os_dragonfly, dragonfly_first_section, <<'End2' , 'os')
 End2
 
 defcheck_build(:build_dragonfly, dragonfly_first_section,
+               "os" => "DragonFly 3.6-RELEASE",
+               "arch" => "x86_64")
+
+dragonfly_first_sections = <<'End'.gsub(/\$$/, '')
+== echo # 2014-06-12T21:13:03+09:00
+Nickname: dragonfly362
+== uname # 2014-06-12T21:13:03+09:00
+uname_srvm: DragonFly 3.6-RELEASE DragonFly v3.6.2-RELEASE #11: Wed Apr  9 19:27:24 PDT 2014     root@pkgbox64.dragonflybsd.org:/usr/obj/build/home/justin/src/sys/X86_64_GENERIC  x86_64
+uname_s: DragonFly
+uname_r: 3.6-RELEASE
+uname_v: DragonFly v3.6.2-RELEASE #11: Wed Apr  9 19:27:24 PDT 2014     root@pkgbox64.dragonflybsd.org:/usr/obj/build/home/justin/src/sys/X86_64_GENERIC 
+uname_m: x86_64
+uname_p: x86_64
+uname_i: X86_64_GENERIC
+End
+
+defcheck_build(:build_dragonfly, dragonfly_first_sections,
                "os" => "DragonFly 3.6-RELEASE",
                "arch" => "x86_64")
 
@@ -351,6 +520,26 @@ defcheck_build(:build_mac, mac_first_section,
                "os" => "Mac OS X 10.9.3",
                "arch" => "x86_64")
 
+mac_first_sections = <<'End'
+== ruby-trunk-m64-o0 # 2014-06-07T10:15:19+02:00
+Nickname: P524
+== uname # 2014-06-07T10:15:19+02:00
+uname_srvm: Darwin 13.2.0 Darwin Kernel Version 13.2.0: Thu Apr 17 23:03:13 PDT 2014; root:xnu-2422.100.13~1/RELEASE_X86_64 x86_64
+uname_s: Darwin
+uname_r: 13.2.0
+uname_v: Darwin Kernel Version 13.2.0: Thu Apr 17 23:03:13 PDT 2014; root:xnu-2422.100.13~1/RELEASE_X86_64
+uname_m: x86_64
+uname_p: i386
+== sw_vers # 2014-06-07T10:15:19+02:00
+ProductName:    Mac OS X
+ProductVersion: 10.9.3
+BuildVersion:   13D65
+End
+
+defcheck_build(:build_mac, mac_first_sections,
+               "os" => "Mac OS X 10.9.3",
+               "arch" => "x86_64")
+
 sunos_first_section = <<'End'
 == echo # 2014-06-07T21:54:40+09:00
 Nickname: sunos
@@ -376,6 +565,25 @@ defcheck_build(:build_sunos, sunos_first_section,
                "os" => "OpenIndiana 151a7",
                "arch" => "i386")
 
+sunos_first_sections = <<'End'
+== echo # 2014-06-12T21:17:58+09:00
+Nickname: sunos
+== uname # 2014-06-12T21:17:58+09:00
+uname_srvm: SunOS 5.11 oi_151a7 i86pc
+uname_s: SunOS
+uname_r: 5.11
+uname_v: oi_151a7
+uname_m: i86pc
+uname_p: i386
+uname_i: i86pc
+== /etc/release # 2014-06-12T21:18:02+09:00
+OpenIndiana Development oi_151.1.7 X86 (powered by illumos)
+End
+
+defcheck_build(:build_sunos, sunos_first_sections,
+               "os" => "OpenIndiana 151a7",
+               "arch" => "i386")
+
 aix_first_section = <<'End'
 == echo # 2014-06-07T05:53:20-07:00
 Nickname: power-aix
@@ -398,6 +606,25 @@ defcheck(:os_aix, aix_first_section, <<'End2' , 'os')
 End2
 
 defcheck_build(:build_aix, aix_first_section,
+               "os" => "AIX 7.1",
+               "arch" => "powerpc")
+
+aix_first_sections = <<'End'
+== echo # 2014-06-12T05:20:37-07:00
+Nickname: power-aix
+== uname # 2014-06-12T05:20:37-07:00
+uname_srvm: AIX 1 7 00F84C0C4C00
+uname_s: AIX
+uname_r: 1
+uname_v: 7
+uname_m: 00F84C0C4C00
+uname_p: powerpc
+== oslevel # 2014-06-12T05:20:38-07:00
+oslevel: 7.1.0.0
+oslevel_s: 7100-02-02-1316
+End
+
+defcheck_build(:build_aix, aix_first_sections,
                "os" => "AIX 7.1",
                "arch" => "powerpc")
 
