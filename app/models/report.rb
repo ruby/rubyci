@@ -160,7 +160,7 @@ class Report < ActiveRecord::Base
       path = File.join(recentpath, "../log/#{dt}.log.txt.gz")
       res = http.get(path)
       res.value
-      cb = ChkBuildRubyInfo.new(res.body.force_encoding(Encoding::ASCII_8BIT))
+      cb = ChkBuildRubyInfo.new(res.body.force_encoding(Encoding::UTF_8))
       cb.common_hash = {
         server_id: server.id,
         depsuffixed_name: depsuffixed_name,
