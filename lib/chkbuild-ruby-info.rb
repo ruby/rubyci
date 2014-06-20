@@ -170,6 +170,7 @@ class ChkBuildRubyInfo
     scan_uname(true, secname, section)
     scan_debian_version(true, secname, section)
     scan_dpkg(true, secname, section)
+    scan_redhat_release(true, secname, section)
     scan_lsb_release(true, secname, section)
     scan_sw_vers(true, secname, section)
     scan_etc_release(true, secname, section)
@@ -215,6 +216,22 @@ class ChkBuildRubyInfo
     else
       if /^architecture: (\S+)$/ =~ section
         h = { "type" => "debian_architecture", "debian_architecture" => $1 }
+      end
+    end
+    if h
+      output_sole_hash(h)
+      update_last_hash(h)
+    end
+  end
+
+  def scan_redhat_release(first_section, secname, section)
+    if first_section
+      if /^redhat-release: (.+)$/ =~ section
+        h = { "type" => "redhat_release", "redhat_release" => $1.strip }
+      end
+    else
+      if /\A== .*\n(.*)\n\z/ =~ section
+        h = { "type" => "redhat_release", "redhat_release" => $1.strip }
       end
     end
     if h
@@ -958,6 +975,9 @@ class ChkBuildRubyInfo
     elsif @last_hash['lsb_description']
       h['os'] = @last_hash['lsb_description']
       h['arch'] = uname_m if uname_m
+    elsif @last_hash['redhat_release']
+      h['os'] = @last_hash['redhat_release']
+      h['arch'] = uname_m if uname_m
     elsif uname_s == 'FreeBSD' && uname_r
       h['os'] = "#{uname_s} #{uname_r}"
       h['arch'] = uname_m if uname_m
@@ -1024,6 +1044,8 @@ class ChkBuildRubyInfo
         scan_debian_version(false, secname, section)
       when "dpkg"
         scan_dpkg(false, secname, section)
+      when "/etc/redhat-release"
+        scan_redhat_release(false, secname, section)
       when "lsb_release"
         scan_lsb_release(false, secname, section)
       when "sw_vers"

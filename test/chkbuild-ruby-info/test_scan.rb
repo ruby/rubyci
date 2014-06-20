@@ -342,6 +342,64 @@ defcheck_build(:build_ubuntu, ubuntu_first_section,
                "os" => "Ubuntu 12.04.4 LTS",
                "arch" => "x86_64")
 
+fedora_first_section = <<'End'
+== ruby-trunk # 2014-06-20T00:00:03-07:00
+Nickname: gcc1-power7
+uname_srvm: Linux 3.8.8-202.fc18.ppc64p7 #1 SMP Thu Apr 18 14:11:12 MST 2013 ppc64
+uname_s: Linux
+uname_r: 3.8.8-202.fc18.ppc64p7
+uname_v: #1 SMP Thu Apr 18 14:11:12 MST 2013
+uname_m: ppc64
+uname_p: ppc64
+uname_i: ppc64
+uname_o: GNU/Linux
+redhat-release: Fedora release 18 (Spherical Cow)
+End
+
+defcheck(:test_fedora, fedora_first_section, <<'End2', 'redhat_release')
+{"type":"redhat_release","redhat_release":"Fedora release 18 (Spherical Cow)"},
+End2
+
+defcheck_build(:build_fedora, fedora_first_section,
+               "redhat_release" => "Fedora release 18 (Spherical Cow)",
+               "os" => "Fedora release 18 (Spherical Cow)",
+               "arch" => "ppc64")
+
+fedora_first_sections = <<'End'
+== echo # 2014-06-20T07:30:00-07:00
+Nickname: gcc1-power7
+== uname # 2014-06-20T07:30:00-07:00
+uname_srvm: Linux 3.8.8-202.fc18.ppc64p7 #1 SMP Thu Apr 18 14:11:12 MST 2013 ppc64
+uname_s: Linux
+uname_r: 3.8.8-202.fc18.ppc64p7
+uname_v: #1 SMP Thu Apr 18 14:11:12 MST 2013
+uname_m: ppc64
+uname_p: ppc64
+uname_i: ppc64
+uname_o: GNU/Linux
+== /etc/redhat-release # 2014-06-20T07:30:00-07:00
+Fedora release 18 (Spherical Cow)
+== /etc/system-release # 2014-06-20T07:30:00-07:00
+Fedora release 18 (Spherical Cow)
+== /etc/os-release # 2014-06-20T07:30:00-07:00
+NAME=Fedora
+VERSION="18 (Spherical Cow)"
+ID=fedora
+VERSION_ID=18
+PRETTY_NAME="Fedora 18 (Spherical Cow)"
+ANSI_COLOR="0;34"
+CPE_NAME="cpe:/o:fedoraproject:fedora:18"
+End
+
+defcheck(:test_fedora, fedora_first_sections, <<'End2', 'redhat_release')
+{"type":"redhat_release","redhat_release":"Fedora release 18 (Spherical Cow)"},
+End2
+
+defcheck_build(:build_fedora, fedora_first_sections,
+               "redhat_release" => "Fedora release 18 (Spherical Cow)",
+               "os" => "Fedora release 18 (Spherical Cow)",
+               "arch" => "ppc64")
+
 # FreeBSD's "uname -v" produces a space at line end.
 freebsd_first_section = <<'End'.gsub(/\$$/, '')
 == ruby-trunk # 2014-06-07T20:33:01+09:00$
