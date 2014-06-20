@@ -407,6 +407,47 @@ defcheck_build(:build_fedora, fedora_first_sections,
                "os" => "Fedora 18 (Spherical Cow)",
                "arch" => "ppc64")
 
+slackware_first_sections = <<'End'
+== echo # 2014-06-20T23:41:58+09:00
+Nickname: slack141
+== uname # 2014-06-20T23:41:58+09:00
+uname_srvm: Linux 3.10.17-smp #2 SMP Wed Oct 23 17:13:14 CDT 2013 i686
+uname_s: Linux
+uname_r: 3.10.17-smp
+uname_v: #2 SMP Wed Oct 23 17:13:14 CDT 2013
+uname_m: i686
+uname_p: QEMU Virtual CPU version 1.1.2
+uname_i: GenuineIntel
+uname_o: GNU/Linux
+== /etc/slackware-version # 2014-06-20T23:41:58+09:00
+Slackware 14.1
+== /etc/os-release # 2014-06-20T23:41:58+09:00
+NAME=Slackware
+VERSION="14.1"
+ID=slackware
+VERSION_ID=14.1
+PRETTY_NAME="Slackware 14.1"
+ANSI_COLOR="0;34"
+CPE_NAME="cpe:/o:slackware:slackware_linux:14.1"
+HOME_URL="http://slackware.com/"
+SUPPORT_URL="http://www.linuxquestions.org/questions/slackware-14/"
+BUG_REPORT_URL="http://www.linuxquestions.org/questions/slackware-14/"
+End
+
+defcheck_build(:build_slackware, slackware_first_sections,
+               "os_release_name" => "Slackware",
+               "os_release_version" => "14.1",
+               "os_release_id" => "slackware",
+               "os_release_version_id" => "14.1",
+               "os_release_pretty_name" => "Slackware 14.1",
+               "os_release_ansi_color" => "0;34",
+               "os_release_cpe_name" => "cpe:/o:slackware:slackware_linux:14.1",
+               "os_release_home_url" => "http://slackware.com/",
+               "os_release_support_url" => "http://www.linuxquestions.org/questions/slackware-14/",
+               "os_release_bug_report_url" => "http://www.linuxquestions.org/questions/slackware-14/",
+               "os" => "Slackware 14.1",
+               "arch" => "i686")
+
 # FreeBSD's "uname -v" produces a space at line end.
 freebsd_first_section = <<'End'.gsub(/\$$/, '')
 == ruby-trunk # 2014-06-07T20:33:01+09:00$
