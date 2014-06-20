@@ -252,6 +252,27 @@ class ChkBuildRubyInfo
     end
   end
 
+  def scan_os_release(section)
+    h = { "type" => "os_release" }
+    section.scan(/^([A-Z_][A-Z0-9_]*)=(.*)/) {
+      var = $1
+      val = $2
+      k = var.downcase
+      if /\A'(.*)'\z/ =~ val
+        v = $1
+      elsif /\A"(.*)"\z/ =~ val
+        v = $1.gsub(/\\(.)/) { $1 }
+      else
+        v = val
+      end
+      h[k] = v
+    }
+    if 1 < h.size
+      output_sole_hash(h)
+      update_last_hash(h, 'os_release')
+    end
+  end
+
   def scan_sw_vers(first_section, secname, section)
     uname_sysname = @last_hash['uname_sysname']
     if uname_sysname == "Darwin"
@@ -972,6 +993,9 @@ class ChkBuildRubyInfo
        @last_hash['debian_architecture'] == 'hurd-i386'
       h['os'] = "Debian GNU/Hurd #{@last_hash['lsb_release']} (#{@last_hash['lsb_codename']})"
       h['arch'] = 'i386'
+    elsif @last_hash['os_release_pretty_name']
+      h['os'] = @last_hash['os_release_pretty_name']
+      h['arch'] = uname_m if uname_m
     elsif @last_hash['lsb_description']
       h['os'] = @last_hash['lsb_description']
       h['arch'] = uname_m if uname_m
@@ -1048,6 +1072,8 @@ class ChkBuildRubyInfo
         scan_redhat_release(false, secname, section)
       when "lsb_release"
         scan_lsb_release(false, secname, section)
+      when "/etc/os-release"
+        scan_os_release(section)
       when "sw_vers"
         scan_sw_vers(false, secname, section)
       when "/etc/release"

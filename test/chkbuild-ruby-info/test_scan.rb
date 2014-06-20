@@ -397,7 +397,14 @@ End2
 
 defcheck_build(:build_fedora, fedora_first_sections,
                "redhat_release" => "Fedora release 18 (Spherical Cow)",
-               "os" => "Fedora release 18 (Spherical Cow)",
+               "os_release_name" => "Fedora",
+               "os_release_version" => "18 (Spherical Cow)",
+               "os_release_id" => "fedora",
+               "os_release_version_id" => "18",
+               "os_release_pretty_name" => "Fedora 18 (Spherical Cow)",
+               "os_release_ansi_color" => "0;34",
+               "os_release_cpe_name" => "cpe:/o:fedoraproject:fedora:18",
+               "os" => "Fedora 18 (Spherical Cow)",
                "arch" => "ppc64")
 
 # FreeBSD's "uname -v" produces a space at line end.
