@@ -874,7 +874,7 @@ defcheck(:make_failure, <<'End1', <<'End2', 'make_failure')
 foo
 bar make: *** baz
 End1
-{"type":"make_failure","secname":"ruby-trunk","prev_line":"foo","line_prefix":"bar","message":"baz"},
+{"type":"make_failure","secname":"ruby-trunk","prev_line":"foo","line_prefix":"bar","level":0,"message":"baz"},
 End2
 
 defcheck(:make_failure_gmake, <<'End1', <<'End2', 'make_failure')
@@ -882,7 +882,28 @@ defcheck(:make_failure_gmake, <<'End1', <<'End2', 'make_failure')
 foo
 bar gmake: *** baz
 End1
-{"type":"make_failure","secname":"ruby-trunk","prev_line":"foo","line_prefix":"bar","message":"baz"},
+{"type":"make_failure","secname":"ruby-trunk","prev_line":"foo","line_prefix":"bar","level":0,"message":"baz"},
+End2
+
+defcheck(:make_failure_levels, <<'End1', <<'End2', 'make_failure')
+== dist # 2010-12-02T16:51:01+09:00
+generating ext/ripper/ripper.c
+make[2]: Entering directory `/home/chkbuild/build/20140620T113301Z/tmp/ruby-snapshot20140620-6898-12b8jdy/ruby-2.2.0-r46480/ext/ripper'
+extracting ripper.y from ../../parse.y
+compiling compiler ripper.y
+bison: I/O error
+make[2]: *** [ripper.c] Error 1
+make[2]: Leaving directory `/home/chkbuild/build/20140620T113301Z/tmp/ruby-snapshot20140620-6898-12b8jdy/ruby-2.2.0-r46480/ext/ripper'
+make[1]: *** [ext/ripper/ripper.c] Error 2
+make[1]: Leaving directory `/home/chkbuild/build/20140620T113301Z/tmp/ruby-snapshot20140620-6898-12b8jdy/ruby-2.2.0-r46480'
+prerequisites failed
+gmake: *** [dist] Error 1
+exit 2
+failed(dist)
+End1
+{"type":"make_failure","secname":"dist","prev_line":"bison: I/O error","line_prefix":"","level":2,"message":"[ripper.c] Error 1"},
+{"type":"make_failure","secname":"dist","prev_line":"make[2]: Leaving directory `/home/chkbuild/build/20140620T113301Z/tmp/ruby-snapshot20140620-6898-12b8jdy/ruby-2.2.0-r46480/ext/ripper'","line_prefix":"","level":1,"message":"[ext/ripper/ripper.c] Error 2"},
+{"type":"make_failure","secname":"dist","prev_line":"prerequisites failed","line_prefix":"","level":0,"message":"[dist] Error 1"},
 End2
 
 defcheck(:glibc_symbol_lookup_error, <<'End1', <<'End2', 'glibc_symbol_lookup_error')

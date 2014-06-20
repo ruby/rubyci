@@ -868,13 +868,14 @@ class ChkBuildRubyInfo
   end
 
   def scan_make_failure(secname, section)
-    section.scan(/^(.*)\n(?=(.*?)g?make: \*\*\* (.*)\n)/) { # GNU make
+    section.scan(/^(.*)\n(?=(.*?)g?make(?:\[(\d+)\])?: \*\*\* (.*)\n)/) { # GNU make
       h = {
         "type" => "make_failure",
         "secname" => secname,
         "prev_line" => $1,
         "line_prefix" => $2.strip,
-        "message" => $3.strip
+        "level" => $3 ? $3.to_i : 0,
+        "message" => $4.strip
       }
       output_hash h
     }
