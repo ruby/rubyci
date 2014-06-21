@@ -1079,4 +1079,16 @@ End1
 {"type":"build","depsuffixed_name":"ruby-trunk","suffixed_name":"ruby-trunk","target_name":"ruby","status":"netfail"}
 End2
 
+defcheck(:end, <<'End1', <<'End2', 'total_elapsed')
+== end # 2014-06-20T00:25:55-07:00
+elapsed 1552.5s = 25m 52.5s
+End1
+{"type":"total_elapsed","total_elapsed":1552.5}
+End2
+
+defcheck_build(:end, <<'End', "total_elapsed" => 1552.5)
+== end # 2014-06-20T00:25:55-07:00
+elapsed 1552.5s = 25m 52.5s
+End
+
 end

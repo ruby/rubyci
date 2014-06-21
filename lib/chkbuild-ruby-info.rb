@@ -957,6 +957,14 @@ class ChkBuildRubyInfo
     }
   end
 
+  def scan_end(section)
+    if /^elapsed (\d+\.\d+)s/ =~ section
+      h = { "type" => "total_elapsed", "total_elapsed" => $1.to_f }
+      output_sole_hash h
+      update_last_hash h
+    end
+  end
+
   def detect_section_failure(secname, section)
     if /^(.*)\nfailed\((.*)\)\n\z/ =~ section
       h = {
@@ -1124,6 +1132,8 @@ class ChkBuildRubyInfo
         scan_test_all(secname, section)
       when "rubyspec", %r{\Arubyspec/}
         scan_rubyspec(secname, section)
+      when "end"
+        scan_end(section)
       end
       if secname != 'title-info'
         scan_exception(secname, section)
