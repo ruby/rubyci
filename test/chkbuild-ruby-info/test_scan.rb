@@ -234,6 +234,49 @@ defcheck_build(:build_debian_kfreebsd, debian_gnu_kfreebsd_first_sections,
                "os" => "Debian GNU/kFreeBSD 7.0 (wheezy)",
                "arch" => "x86_64")
 
+debian_gnu_kfreebsd_first_sections2 = <<'End'
+== echo # 2014-06-22T00:34:25+09:00
+Nickname: debian7-kfreebsd
+== uname # 2014-06-22T00:34:25+09:00
+uname_srvm: GNU/kFreeBSD 9.0-2-amd64 #0 Sat Nov 24 04:44:27 UTC 2012 x86_64
+uname_s: GNU/kFreeBSD
+uname_r: 9.0-2-amd64
+uname_v: #0 Sat Nov 24 04:44:27 UTC 2012
+uname_m: x86_64
+uname_p: amd64
+uname_i: QEMU Virtual CPU version 1.1.2
+uname_o: GNU/kFreeBSD
+== /etc/debian_version # 2014-06-22T00:34:26+09:00
+7.0
+== /etc/os-release # 2014-06-22T00:34:26+09:00
+PRETTY_NAME="Debian GNU/kFreeBSD 7.0 (wheezy)"
+NAME="Debian GNU/kFreeBSD"
+VERSION_ID="7.0"
+VERSION="7.0 (wheezy)"
+ID=debian
+ANSI_COLOR="1;31"
+HOME_URL="http://www.debian.org/"
+SUPPORT_URL="http://www.debian.org/support/"
+BUG_REPORT_URL="http://bugs.debian.org/"
+== dpkg # 2014-06-22T00:34:26+09:00
+architecture: kfreebsd-amd64
+== lsb_release # 2014-06-22T00:34:26+09:00
+Distributor ID: Debian
+Description:    Debian GNU/kFreeBSD 7.0 (wheezy)
+Release:        7.0
+Codename:       wheezy
+End
+
+defcheck_build(:build_debian_kfreebsd, debian_gnu_kfreebsd_first_sections2,
+               "debian_version" => "7.0",
+               "debian_architecture" => "kfreebsd-amd64",
+               "lsb_distributor" => "Debian",
+               "lsb_description" => "Debian GNU/kFreeBSD 7.0 (wheezy)",
+               "lsb_release" => "7.0",
+               "lsb_codename" => "wheezy",
+               "os" => "Debian GNU/kFreeBSD 7.0 (wheezy)",
+               "arch" => "x86_64")
+
 debian_gnu_hurd_first_section = <<'End'
 == echo # 2014-06-07T22:50:06+09:00
 Nickname: hurd
@@ -296,6 +339,49 @@ Codename:       wheezy
 End
 
 defcheck_build(:build_debian_hurd, debian_gnu_hurd_first_sections,
+               "debian_version" => "7.0",
+               "debian_architecture" => "hurd-i386",
+               "lsb_distributor" => "Debian",
+               "lsb_description" => "Debian GNU 7.0 (wheezy)",
+               "lsb_release" => "7.0",
+               "lsb_codename" => "wheezy",
+               "os" => "Debian GNU/Hurd 7.0 (wheezy)",
+               "arch" => "i386")
+
+debian_gnu_hurd_first_sections2 = <<'End'
+== echo # 2014-06-22T00:31:28+09:00
+Nickname: hurd
+== uname # 2014-06-22T00:31:28+09:00
+uname_srvm: GNU 0.3 GNU-Mach 1.3.99-486/Hurd-0.3 i686-AT386
+uname_s: GNU
+uname_r: 0.3
+uname_v: GNU-Mach 1.3.99-486/Hurd-0.3
+uname_m: i686-AT386
+uname_p: unknown
+uname_i: unknown
+uname_o: GNU
+== /etc/debian_version # 2014-06-22T00:31:29+09:00
+7.0
+== /etc/os-release # 2014-06-22T00:31:29+09:00
+PRETTY_NAME="Debian GNU/Hurd 7.0 (wheezy)"
+NAME="Debian GNU/Hurd"
+VERSION_ID="7.0"
+VERSION="7.0 (wheezy)"
+ID=debian
+ANSI_COLOR="1;31"
+HOME_URL="http://www.debian.org/"
+SUPPORT_URL="http://www.debian.org/support/"
+BUG_REPORT_URL="http://bugs.debian.org/"
+== dpkg # 2014-06-22T00:31:29+09:00
+architecture: hurd-i386
+== lsb_release # 2014-06-22T00:31:30+09:00
+Distributor ID: Debian
+Description:    Debian GNU 7.0 (wheezy)
+Release:        7.0
+Codename:       wheezy
+End
+
+defcheck_build(:build_debian_hurd, debian_gnu_hurd_first_sections2,
                "debian_version" => "7.0",
                "debian_architecture" => "hurd-i386",
                "lsb_distributor" => "Debian",
