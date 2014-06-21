@@ -918,7 +918,6 @@ btest_detail_log = <<'End'
      :ok
   #=> "" (expected "ok")
 End
-
 btest_detail_src = btest_detail_log[/^     require(?:[\s\S]*?):ok\n/]
 btest_detail_msg = btest_detail_log[/"".*/]
 defcheck(:btest_detail_io, btest_detail_log, <<"End2", %w[btest_detail])
@@ -947,11 +946,20 @@ btest_detail_log2 = <<'End'
        t2.join
        #=> killed by SIGKILL (signal 9) (timeout)  megacontent-copy_stream
 End
-
 btest_detail_src2 = btest_detail_log2[/^ (?:[\s\S]*?)t2.join\n/]
 btest_detail_msg2 = btest_detail_log2[/killed by.*/]
 defcheck(:btest_detail_io, btest_detail_log2, <<"End2", %w[btest_detail])
 {"type":"btest_detail","test_suite":"btest","testnum":264,"file":"test_io.rb","line":105,"caller":"in `block in <top (required)>'","code":#{JSON.dump btest_detail_src2},"message":#{JSON.dump btest_detail_msg2}}
+End2
+
+btest_detail_log3 = <<'End'
+== btest # 2014-06-21T08:54:12+09:00
+#1 test_literal.rb:2:in `<top (required)>': x  #=> "" (expected "y")  
+End
+btest_detail_src3 = btest_detail_log3[/(?<=: ).*(?=  \#=>)/]
+btest_detail_msg3 = btest_detail_log3[/(?<=  #=> ).*/]
+defcheck(:btest_detail_io, btest_detail_log3, <<"End2", %w[btest_detail])
+{"type":"btest_detail","test_suite":"btest","testnum":1,"file":"test_literal.rb","line":2,"caller":"in `<top (required)>'","code":#{JSON.dump btest_detail_src3},"message":#{JSON.dump btest_detail_msg3}}
 End2
 
 knownbug_log = <<'End'

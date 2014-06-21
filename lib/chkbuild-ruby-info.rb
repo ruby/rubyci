@@ -620,7 +620,7 @@ class ChkBuildRubyInfo
       output_hash h
     }
 
-    section.scan(/^\#(\d+) (\S+):(\d+):(.*) \n((?: {3}.*\n)*)   *\#=> (.*)/) {
+    section.scan(/^\#(\d+) (\S+):(\d+):(.*) (?:\n((?: {3}.*\n)*)|(.*))   *\#=> (.*)/) {
       h = {
         "type" => "btest_detail",
         "test_suite" => secname,
@@ -628,8 +628,8 @@ class ChkBuildRubyInfo
         "file" => $2,
         "line" => $3.to_i,
         "caller" => strip_colon($4),
-        "code" => $5,
-        "message" => $6,
+        "code" => $5 || $6,
+        "message" => $7,
       }
       output_hash h
     }
