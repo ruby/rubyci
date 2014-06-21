@@ -1091,4 +1091,17 @@ defcheck_build(:end, <<'End', "total_elapsed" => 1552.5)
 elapsed 1552.5s = 25m 52.5s
 End
 
+# "elapsed" line is not produced before 2009-10-14
+defcheck(:end, <<'End1', <<'End2', 'total_elapsed')
+== ruby-trunk # 2009-01-01T07:12:01+09:00
+== end # 2009-01-01T08:06:41+09:00
+End1
+{"type":"total_elapsed","total_elapsed":3280.0}
+End2
+
+defcheck_build(:end, <<'End', "total_elapsed" => 3280.0)
+== ruby-trunk # 2009-01-01T07:12:01+09:00
+== end # 2009-01-01T08:06:41+09:00
+End
+
 end

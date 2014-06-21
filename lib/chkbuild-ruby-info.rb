@@ -122,7 +122,7 @@ class ChkBuildRubyInfo
     str.gsub(/\A:|:\z/, '')
   end
 
-  def scan_section_start(secname, rest)
+  def scan_section_start(first, secname, rest)
     if /\d{4,}-\d\d-\d\dT\d\d:\d\d:\d\d[+-]\d\d:\d\d/ =~ rest
       t = $&
     end
@@ -142,6 +142,10 @@ class ChkBuildRubyInfo
 
     @current_section_name = secname
     @current_section_start_time = t
+
+    if first
+      @first_section_start_time = t
+    end
   end
 
   def scan_first_section(secname, section)
@@ -957,11 +961,19 @@ class ChkBuildRubyInfo
     }
   end
 
-  def scan_end(section)
+  def scan_end(secname, rest, section)
     if /^elapsed (\d+\.\d+)s/ =~ section
       h = { "type" => "total_elapsed", "total_elapsed" => $1.to_f }
       output_sole_hash h
       update_last_hash h
+    else
+      if /\d{4,}-\d\d-\d\dT\d\d:\d\d:\d\d[+-]\d\d:\d\d/ =~ rest
+        end_time = $&
+        @first_section_start_time
+        h = { "type" => "total_elapsed", "total_elapsed" => Time.iso8601(end_time) - Time.iso8601(@first_section_start_time) }
+        output_sole_hash h
+        update_last_hash h
+      end
     end
   end
 
@@ -1067,7 +1079,7 @@ class ChkBuildRubyInfo
       section_line = section.lines.first
       _, secname, rest =  section_line.split(/\s+/, 3)
       num_sections[secname] += 1
-      scan_section_start(secname, rest)
+      scan_section_start(first, secname, rest)
       scan_first_section(secname, section) if first
       case secname
       when "uname"
@@ -1133,7 +1145,7 @@ class ChkBuildRubyInfo
       when "rubyspec", %r{\Arubyspec/}
         scan_rubyspec(secname, section)
       when "end"
-        scan_end(section)
+        scan_end(secname, rest, section)
       end
       if secname != 'title-info'
         scan_exception(secname, section)
