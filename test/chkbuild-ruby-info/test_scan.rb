@@ -925,6 +925,35 @@ defcheck(:btest_detail_io, btest_detail_log, <<"End2", %w[btest_detail])
 {"type":"btest_detail","test_suite":"btest","testnum":260,"file":"test_io.rb","line":44,"caller":"","code":#{JSON.dump btest_detail_src},"message":#{JSON.dump btest_detail_msg}}
 End2
 
+btest_detail_log2 = <<'End'
+== btest # 2014-06-21T08:54:12+09:00
+#264 test_io.rb:105:in `block in <top (required)>': 
+       at_exit { p :foo }
+   
+       megacontent = "abc" * 12345678
+       #File.open("megasrc", "w") {|f| f << megacontent }
+   
+       t0 = Thread.main
+       Thread.new { sleep 0.001 until t0.stop?; Process.kill(:INT, $$) }
+   
+       r1, w1 = IO.pipe
+       r2, w2 = IO.pipe
+       t1 = Thread.new { w1 << megacontent; w1.close }
+       t2 = Thread.new { r2.read; r2.close }
+       IO.copy_stream(r1, w2) rescue nil
+       w2.close
+       r1.close
+       t1.join
+       t2.join
+       #=> killed by SIGKILL (signal 9) (timeout)  megacontent-copy_stream
+End
+
+btest_detail_src2 = btest_detail_log2[/^ (?:[\s\S]*?)t2.join\n/]
+btest_detail_msg2 = btest_detail_log2[/killed by.*/]
+defcheck(:btest_detail_io, btest_detail_log2, <<"End2", %w[btest_detail])
+{"type":"btest_detail","test_suite":"btest","testnum":264,"file":"test_io.rb","line":105,"caller":"in `block in <top (required)>'","code":#{JSON.dump btest_detail_src2},"message":#{JSON.dump btest_detail_msg2}}
+End2
+
 knownbug_log = <<'End'
 == test-knownbug # 2010-02-18T04:19:47+09:00
 KNOWNBUGS.rb #1 KNOWNBUGS.rb:16:in `<top (required)>'
