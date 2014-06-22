@@ -1268,6 +1268,7 @@ class ChkBuildRubyInfo
 
   def convert_to_td(out=$stdout)
     @opts[:enable_sole_record] = false
+    @opts[:expand_fields] = [['branch', nil]]
     extract {|hash|
       tblname = hash["type"]
       tblname.tr!('-','_')
