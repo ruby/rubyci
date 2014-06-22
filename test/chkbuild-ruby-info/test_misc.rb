@@ -110,6 +110,8 @@ End
     out = StringIO.new
     cb = ChkBuildRubyInfo.new(<<'End')
 == ruby-trunk # 2010-12-02T16:51:01+09:00
+== start # 2014-06-21T06:05:42+09:00
+option :ruby_branch => "trunk"
 End
     cb.common_hash = {
       server_id: 1,
@@ -119,8 +121,10 @@ End
     }
     cb.convert_to_td(out)
     assert_equal(<<'End', out.string)
-@[chkbuild.section_start] {"server_id":1,"depsuffixed_name":"ruby-trunk","epoch":1291276261,"revision":4200,"type":"section_start","secname":"ruby-trunk","start_time":"2010-12-02T16:51:01+09:00"}
-@[chkbuild.build] {"server_id":1,"depsuffixed_name":"ruby-trunk","epoch":1291276261,"revision":4200,"type":"build","suffixed_name":"ruby-trunk","target_name":"ruby","status":"failure"}
+@[chkbuild.section_start] {"server_id":1,"depsuffixed_name":"ruby-trunk","epoch":1291276261,"revision":4200,"branch":"trunk","type":"section_start","secname":"ruby-trunk","start_time":"2010-12-02T16:51:01+09:00"}
+@[chkbuild.section_end] {"server_id":1,"depsuffixed_name":"ruby-trunk","epoch":1291276261,"revision":4200,"branch":"trunk","type":"section_end","secname":"ruby-trunk","end_time":"2014-06-21T06:05:42+09:00","elapsed":112022081.0}
+@[chkbuild.section_start] {"server_id":1,"depsuffixed_name":"ruby-trunk","epoch":1291276261,"revision":4200,"branch":"trunk","type":"section_start","secname":"start","start_time":"2014-06-21T06:05:42+09:00"}
+@[chkbuild.build] {"server_id":1,"depsuffixed_name":"ruby-trunk","epoch":1291276261,"revision":4200,"type":"build","suffixed_name":"ruby-trunk","target_name":"ruby","ruby_branch":"trunk","branch":"trunk","status":"failure"}
 End
   end
 end
