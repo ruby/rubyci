@@ -1171,34 +1171,33 @@ class ChkBuildRubyInfo
 
   def extract2
     expand_fields = {}
-    field_prefix_hash = {}
     if @opts[:expand_fields]
       @opts[:expand_fields].each {|field, prefix|
-        expand_fields[field] = true
-        field_prefix_hash[field] = prefix
+        expand_fields[field] = prefix
       }
     end
     expanded_all = expand_fields.empty?
+    last_hash_numpairs = 0
     expanded = {}
     buf = []
     extract1 {|hash|
-      type = hash['type']
       if !expanded_all
         buf << hash
-        expand_fields.each {|k, b|
-          if @last_hash.has_key? k
-            if b
-              expand_fields[k] = false
-              v = @last_hash[k]
-              if field_prefix_hash[k]
-                k = "#{field_prefix_hash[k]}_#{k}"
-              end
-              expanded[k] = v
+        if last_hash_numpairs < @last_hash.size
+          last_hash_numpairs = @last_hash.size
+          expand_fields.each {|k, prefix|
+            next unless @last_hash.has_key? k
+            v = @last_hash[k]
+            if prefix
+              k = "#{prefix}_#{k}"
             end
+            expanded[k] = v
+          }
+          if expanded.size == expand_fields.size
+            expanded_all = true
           end
-        }
-        if expand_fields.all? {|k, v| v == false }
-          expanded_all = true
+        end
+        if expanded_all
           buf.each {|h|
             yield expanded, h
           }
