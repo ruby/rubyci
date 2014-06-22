@@ -1186,19 +1186,17 @@ class ChkBuildRubyInfo
           last_hash_numpairs = @last_hash.size
           expand_fields.each {|k, renamed_field|
             next unless @last_hash.has_key? k
-            v = @last_hash[k]
             renamed_field = k if !renamed_field
-            expanded[renamed_field] = v
+            next if expanded.has_key? renamed_field
+            expanded[renamed_field] = @last_hash[k]
           }
           if expanded.size == expand_fields.size
             expanded_all = true
+            buf.each {|h|
+              yield expanded, h
+            }
+            buf = nil
           end
-        end
-        if expanded_all
-          buf.each {|h|
-            yield expanded, h
-          }
-          buf = nil
         end
       else
         yield expanded, hash
