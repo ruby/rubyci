@@ -34,7 +34,6 @@ End
   end
 
   def test_expand_field_ruby_branch
-    exc = nil
     out = StringIO.new
     cb = ChkBuildRubyInfo.new(<<'End')
 == ruby-trunk # 2010-12-02T16:51:01+09:00
@@ -59,7 +58,6 @@ End
   end
 
   def test_expand_field_ruby_branch_with_prefix
-    exc = nil
     out = StringIO.new
     cb = ChkBuildRubyInfo.new(<<'End')
 == ruby-trunk # 2010-12-02T16:51:01+09:00
@@ -84,7 +82,6 @@ End
   end
 
   def test_common
-    exc = nil
     out = StringIO.new
     cb = ChkBuildRubyInfo.new(<<'End')
 == ruby-trunk # 2010-12-02T16:51:01+09:00
@@ -108,7 +105,6 @@ End
   end
 
   def test_td
-    exc = nil
     out = StringIO.new
     cb = ChkBuildRubyInfo.new(<<'End')
 == ruby-trunk # 2010-12-02T16:51:01+09:00

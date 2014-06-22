@@ -54,7 +54,6 @@ class TestChkBuildRubyInfo < Test::Unit::TestCase
   end
 
   def test_unexpected_format
-    exc = nil
     assert_raise(RuntimeError) {
       ChkBuildRubyInfo.new("foo").convert_to_json
     }

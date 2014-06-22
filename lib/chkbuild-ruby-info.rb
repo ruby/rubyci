@@ -13,7 +13,7 @@ class ChkBuildRubyInfo
 
   DefaultOption.each {|k, v|
     define_method("opt_#{k}") { @opts[k] }
-    define_method("opt_#{k}=") {|v| @opts[k] = v }
+    define_method("opt_#{k}=") {|arg| @opts[k] = arg }
   }
 
   def initialize(f, opts=DefaultOption.dup)
@@ -970,7 +970,6 @@ class ChkBuildRubyInfo
     else
       if /\d{4,}-\d\d-\d\dT\d\d:\d\d:\d\d[+-]\d\d:\d\d/ =~ rest
         end_time = $&
-        @first_section_start_time
         h = { "type" => "total_elapsed", "total_elapsed" => Time.iso8601(end_time) - Time.iso8601(@first_section_start_time) }
         output_sole_hash h
         update_last_hash h
