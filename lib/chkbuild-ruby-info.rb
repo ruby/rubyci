@@ -1171,9 +1171,11 @@ class ChkBuildRubyInfo
 
   def extract2
     expand_types = {}
+    prefix_hash = {}
     if @opts[:expand_types]
-      @opts[:expand_types].each {|type|
+      @opts[:expand_types].each {|type, prefix|
         expand_types[type] = true
+        prefix_hash[type] = prefix
       }
     end
     expanded_all = expand_types.empty?
@@ -1185,7 +1187,13 @@ class ChkBuildRubyInfo
         if expand_types.has_key? type
           if expand_types[type]
             # first hash
-            expanded.merge!(hash.reject {|k,v| k == "type" })
+            hash.each {|k,v|
+              next if k == "type"
+              if prefix_hash[type]
+                k = "#{prefix_hash[type]}_#{k}"
+              end
+              expanded[k] = v
+            }
             expand_types[type] = false
             if expand_types.all? {|k,v| v == false }
               expanded_all = true
@@ -1282,8 +1290,8 @@ class ChkBuildRubyInfo
     o.def_option('--disable-sole-record', 'disable sole records') {
       yield :enable_sole_record, false
     }
-    o.def_option('--expand-types=TYPES', 'comma separated types to expand') {|val|
-      yield :expand_types, val.split(/,/)
+    o.def_option('--expand-type=TYPE[,PREFIX]', 'type to expand') {|val|
+      yield :expand_type, val.split(/,/)
     }
     o
   end
@@ -1328,7 +1336,14 @@ class ChkBuildRubyInfo
 
   def self.main(argv)
     opts = DefaultOption.dup
-    optionparser {|k,v| opts[k] = v}.parse!(argv)
+    optionparser {|k,v|
+      if k == :expand_type
+        opts[:expand_types] ||= []
+        opts[:expand_types] << v
+      else
+        opts[k] = v
+      end
+    }.parse!(argv)
     each_argfile(argv) {|f|
       ChkBuildRubyInfo.new(f, opts).convert_to_json
     }
