@@ -53,7 +53,7 @@ End
 {"branch":"trunk","type":"section_start","secname":"start","start_time":"2014-06-21T06:05:42+09:00"},
 {"branch":"trunk","type":"ruby_branch","ruby_branch":"trunk"},
 {"branch":"trunk","type":"branch"},
-{"type":"build","depsuffixed_name":"ruby-trunk","suffixed_name":"ruby-trunk","target_name":"ruby","ruby_branch":"trunk","status":"failure","branch":"trunk"}
+{"type":"build","depsuffixed_name":"ruby-trunk","suffixed_name":"ruby-trunk","target_name":"ruby","ruby_branch":"trunk","branch":"trunk","status":"failure"}
 ]
 End
   end
@@ -78,7 +78,7 @@ End
 {"foo":"trunk","type":"section_start","secname":"start","start_time":"2014-06-21T06:05:42+09:00"},
 {"foo":"trunk","type":"ruby_branch","ruby_branch":"trunk"},
 {"foo":"trunk","type":"branch","branch":"trunk"},
-{"type":"build","depsuffixed_name":"ruby-trunk","suffixed_name":"ruby-trunk","target_name":"ruby","ruby_branch":"trunk","status":"failure","branch":"trunk"}
+{"type":"build","depsuffixed_name":"ruby-trunk","suffixed_name":"ruby-trunk","target_name":"ruby","ruby_branch":"trunk","branch":"trunk","status":"failure"}
 ]
 End
   end
