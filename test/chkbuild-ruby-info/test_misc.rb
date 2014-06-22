@@ -40,19 +40,20 @@ End
 == start # 2014-06-21T06:05:42+09:00
 option :ruby_branch => "trunk"
 End
-    cb.opt_expand_fields = [['ruby_branch', nil]]
+    cb.opt_expand_fields = [['branch', nil]]
     cb.convert_to_json(out)
     #puts out.string
     assert_equal(<<'End', out.string)
 [
-{"ruby_branch":"trunk","type":"section_start","secname":"ruby-trunk","start_time":"2010-12-02T16:51:01+09:00"},
-{"ruby_branch":"trunk","type":"depsuffixed_name","depsuffixed_name":"ruby-trunk"},
-{"ruby_branch":"trunk","type":"suffixed_name","suffixed_name":"ruby-trunk"},
-{"ruby_branch":"trunk","type":"target_name","target_name":"ruby"},
-{"ruby_branch":"trunk","type":"section_end","secname":"ruby-trunk","end_time":"2014-06-21T06:05:42+09:00","elapsed":112022081.0},
-{"ruby_branch":"trunk","type":"section_start","secname":"start","start_time":"2014-06-21T06:05:42+09:00"},
-{"ruby_branch":"trunk","type":"ruby_branch"},
-{"type":"build","depsuffixed_name":"ruby-trunk","suffixed_name":"ruby-trunk","target_name":"ruby","ruby_branch":"trunk","status":"failure"}
+{"branch":"trunk","type":"section_start","secname":"ruby-trunk","start_time":"2010-12-02T16:51:01+09:00"},
+{"branch":"trunk","type":"depsuffixed_name","depsuffixed_name":"ruby-trunk"},
+{"branch":"trunk","type":"suffixed_name","suffixed_name":"ruby-trunk"},
+{"branch":"trunk","type":"target_name","target_name":"ruby"},
+{"branch":"trunk","type":"section_end","secname":"ruby-trunk","end_time":"2014-06-21T06:05:42+09:00","elapsed":112022081.0},
+{"branch":"trunk","type":"section_start","secname":"start","start_time":"2014-06-21T06:05:42+09:00"},
+{"branch":"trunk","type":"ruby_branch","ruby_branch":"trunk"},
+{"branch":"trunk","type":"branch"},
+{"type":"build","depsuffixed_name":"ruby-trunk","suffixed_name":"ruby-trunk","target_name":"ruby","ruby_branch":"trunk","status":"failure","branch":"trunk"}
 ]
 End
   end
@@ -64,7 +65,7 @@ End
 == start # 2014-06-21T06:05:42+09:00
 option :ruby_branch => "trunk"
 End
-    cb.opt_expand_fields = [['ruby_branch', 'foo']]
+    cb.opt_expand_fields = [['branch', 'foo']]
     cb.convert_to_json(out)
     #puts out.string
     assert_equal(<<'End', out.string)
@@ -76,7 +77,8 @@ End
 {"foo":"trunk","type":"section_end","secname":"ruby-trunk","end_time":"2014-06-21T06:05:42+09:00","elapsed":112022081.0},
 {"foo":"trunk","type":"section_start","secname":"start","start_time":"2014-06-21T06:05:42+09:00"},
 {"foo":"trunk","type":"ruby_branch","ruby_branch":"trunk"},
-{"type":"build","depsuffixed_name":"ruby-trunk","suffixed_name":"ruby-trunk","target_name":"ruby","ruby_branch":"trunk","status":"failure"}
+{"foo":"trunk","type":"branch","branch":"trunk"},
+{"type":"build","depsuffixed_name":"ruby-trunk","suffixed_name":"ruby-trunk","target_name":"ruby","ruby_branch":"trunk","status":"failure","branch":"trunk"}
 ]
 End
   end

@@ -1052,9 +1052,30 @@ class ChkBuildRubyInfo
     end
   end
 
+  def finish_last_hash_for_branch
+    h = { 'type' => 'branch' }
+    if @last_hash["ruby_branch"]
+      case @last_hash["ruby_branch"]
+      when /\Atrunk\z/
+        h['branch'] = 'trunk'
+      when %r{\Abranches/ruby_(\d+)_(\d+)_(\d+)\z}
+        h['branch'] = "#{$1}.#{$2}.#{$3}"
+      when %r{\Abranches/ruby_(\d+)_(\d+)\z}
+        h['branch'] = "#{$1}.#{$2}"
+      else
+        h['branch'] = "svn:#{@last_hash["ruby_branch"]}"
+      end
+    end
+    if 1 < h.size
+      output_sole_hash h
+      update_last_hash h
+    end
+  end
+
   def finish_last_hash(num_sections)
     finish_last_hash_for_status(num_sections)
     finish_last_hash_for_os
+    finish_last_hash_for_branch
   end
 
   def extract_info(f)

@@ -819,7 +819,7 @@ defcheck_build(:build_aix, aix_first_sections,
                "os" => "AIX 7.1",
                "arch" => "powerpc")
 
-defcheck(:start, <<'End1', <<'End2', %w[start_time build_dir ruby_branch])
+defcheck(:start, <<'End1', <<'End2', %w[start_time build_dir ruby_branch branch])
 == start # 2014-05-28T21:05:12+09:00
 start-time: 20140528T120400Z
 build-dir: /extdisk/chkbuild/chkbuild/tmp/build/20140528T120400Z
@@ -828,6 +828,15 @@ End1
 {"type":"start_time","start_time":"20140528T120400Z"},
 {"type":"build_dir","dir":"/extdisk/chkbuild/chkbuild/tmp/build/20140528T120400Z"},
 {"type":"ruby_branch","ruby_branch":"branches/ruby_2_0_0"},
+{"type":"branch","branch":"2.0.0"},
+End2
+
+defcheck(:start, <<'End1', <<'End2', %w[ruby_branch branch])
+== start # 2014-06-22T01:44:35+09:00
+option :ruby_branch => "branches/ruby_2_1"
+End1
+{"type":"ruby_branch","ruby_branch":"branches/ruby_2_1"},
+{"type":"branch","branch":"2.1"},
 End2
 
 ["", " optflags=-O0"].each {|str|
