@@ -69,13 +69,13 @@ End
     #puts out.string
     assert_equal(<<'End', out.string)
 [
-{"foo_ruby_branch":"trunk","type":"section_start","secname":"ruby-trunk","start_time":"2010-12-02T16:51:01+09:00"},
-{"foo_ruby_branch":"trunk","type":"depsuffixed_name","depsuffixed_name":"ruby-trunk"},
-{"foo_ruby_branch":"trunk","type":"suffixed_name","suffixed_name":"ruby-trunk"},
-{"foo_ruby_branch":"trunk","type":"target_name","target_name":"ruby"},
-{"foo_ruby_branch":"trunk","type":"section_end","secname":"ruby-trunk","end_time":"2014-06-21T06:05:42+09:00","elapsed":112022081.0},
-{"foo_ruby_branch":"trunk","type":"section_start","secname":"start","start_time":"2014-06-21T06:05:42+09:00"},
-{"foo_ruby_branch":"trunk","type":"ruby_branch","ruby_branch":"trunk"},
+{"foo":"trunk","type":"section_start","secname":"ruby-trunk","start_time":"2010-12-02T16:51:01+09:00"},
+{"foo":"trunk","type":"depsuffixed_name","depsuffixed_name":"ruby-trunk"},
+{"foo":"trunk","type":"suffixed_name","suffixed_name":"ruby-trunk"},
+{"foo":"trunk","type":"target_name","target_name":"ruby"},
+{"foo":"trunk","type":"section_end","secname":"ruby-trunk","end_time":"2014-06-21T06:05:42+09:00","elapsed":112022081.0},
+{"foo":"trunk","type":"section_start","secname":"start","start_time":"2014-06-21T06:05:42+09:00"},
+{"foo":"trunk","type":"ruby_branch","ruby_branch":"trunk"},
 {"type":"build","depsuffixed_name":"ruby-trunk","suffixed_name":"ruby-trunk","target_name":"ruby","ruby_branch":"trunk","status":"failure"}
 ]
 End

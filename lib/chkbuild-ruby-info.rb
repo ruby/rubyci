@@ -1171,8 +1171,8 @@ class ChkBuildRubyInfo
   def extract2
     expand_fields = {}
     if @opts[:expand_fields]
-      @opts[:expand_fields].each {|field, prefix|
-        expand_fields[field] = prefix
+      @opts[:expand_fields].each {|field, renamed_field|
+        expand_fields[field] = renamed_field
       }
     end
     expanded_all = expand_fields.empty?
@@ -1184,13 +1184,11 @@ class ChkBuildRubyInfo
         buf << hash
         if last_hash_numpairs < @last_hash.size
           last_hash_numpairs = @last_hash.size
-          expand_fields.each {|k, prefix|
+          expand_fields.each {|k, renamed_field|
             next unless @last_hash.has_key? k
             v = @last_hash[k]
-            if prefix
-              k = "#{prefix}_#{k}"
-            end
-            expanded[k] = v
+            renamed_field = k if !renamed_field
+            expanded[renamed_field] = v
           }
           if expanded.size == expand_fields.size
             expanded_all = true
@@ -1280,7 +1278,7 @@ class ChkBuildRubyInfo
     o.def_option('--disable-sole-record', 'disable sole records') {
       yield :enable_sole_record, false
     }
-    o.def_option('--expand-field=TYPE[,PREFIX]', 'build field to expand') {|val|
+    o.def_option('--expand-field=FIELD[,RENAMED_FIELD]', 'build field to expand') {|val|
       yield :expand_fields, val.split(/,/)
     }
     o
