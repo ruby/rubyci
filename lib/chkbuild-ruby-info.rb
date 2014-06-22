@@ -9,6 +9,7 @@ class ChkBuildRubyInfo
     :type => nil,
     :enable_sole_record => true,
     :expand_types => nil,
+    :expand_fields => nil,
   }.freeze
 
   DefaultOption.each {|k, v|
@@ -1171,14 +1172,22 @@ class ChkBuildRubyInfo
 
   def extract2
     expand_types = {}
-    prefix_hash = {}
+    type_prefix_hash = {}
     if @opts[:expand_types]
       @opts[:expand_types].each {|type, prefix|
         expand_types[type] = true
-        prefix_hash[type] = prefix
+        type_prefix_hash[type] = prefix
       }
     end
-    expanded_all = expand_types.empty?
+    expand_fields = {}
+    field_prefix_hash = {}
+    if @opts[:expand_fields]
+      @opts[:expand_fields].each {|field, prefix|
+        expand_fields[field] = true
+        field_prefix_hash[field] = prefix
+      }
+    end
+    expanded_all = expand_types.empty? && expand_fields.empty?
     expanded = {}
     buf = []
     extract1 {|hash|
@@ -1189,24 +1198,36 @@ class ChkBuildRubyInfo
             # first hash
             hash.each {|k,v|
               next if k == "type"
-              if prefix_hash[type]
-                k = "#{prefix_hash[type]}_#{k}"
+              if type_prefix_hash[type]
+                k = "#{type_prefix_hash[type]}_#{k}"
               end
               expanded[k] = v
             }
             expand_types[type] = false
-            if expand_types.all? {|k,v| v == false }
-              expanded_all = true
-              buf.each {|h|
-                yield expanded, h
-              }
-              buf = nil
-            end
           else
             warn "expand-types for multiple records: #{type}"
           end
         else
           buf << hash
+        end
+        expand_fields.each {|k, b|
+          if @last_hash.has_key? k
+            if b
+              expand_fields[k] = false
+              v = @last_hash[k]
+              if field_prefix_hash[k]
+                k = "#{field_prefix_hash[k]}_#{k}"
+              end
+              expanded[k] = v
+            end
+          end
+        }
+        if expand_types.all? {|k,v| v == false } && expand_fields.all? {|k, v| v == false }
+          expanded_all = true
+          buf.each {|h|
+            yield expanded, h
+          }
+          buf = nil
         end
       else
         if expand_types.has_key? type
@@ -1291,7 +1312,10 @@ class ChkBuildRubyInfo
       yield :enable_sole_record, false
     }
     o.def_option('--expand-type=TYPE[,PREFIX]', 'type to expand') {|val|
-      yield :expand_type, val.split(/,/)
+      yield :expand_types, val.split(/,/)
+    }
+    o.def_option('--expand-field=TYPE[,PREFIX]', 'build field to expand') {|val|
+      yield :expand_fields, val.split(/,/)
     }
     o
   end
@@ -1337,9 +1361,9 @@ class ChkBuildRubyInfo
   def self.main(argv)
     opts = DefaultOption.dup
     optionparser {|k,v|
-      if k == :expand_type
-        opts[:expand_types] ||= []
-        opts[:expand_types] << v
+      if k == :expand_types || k == :expand_fields
+        opts[k] ||= []
+        opts[k] << v
       else
         opts[k] = v
       end
