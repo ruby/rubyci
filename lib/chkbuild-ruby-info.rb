@@ -8,6 +8,7 @@ class ChkBuildRubyInfo
   DefaultOption = {
     :type => nil,
     :enable_sole_record => true,
+    :expand_types => nil,
   }.freeze
 
   DefaultOption.each {|k, v|
@@ -1169,7 +1170,68 @@ class ChkBuildRubyInfo
   end
 
   def extract2
+    expand_types = {}
+    if @opts[:expand_types]
+      @opts[:expand_types].each {|type|
+        expand_types[type] = true
+      }
+    end
+    expanded_all = expand_types.empty?
+    expanded = {}
+    buf = []
     extract1 {|hash|
+      type = hash['type']
+      if !expanded_all
+        if expand_types.has_key? type
+          if expand_types[type]
+            # first hash
+            expanded.merge!(hash.reject {|k,v| k == "type" })
+            expand_types[type] = false
+            if expand_types.all? {|k,v| v == false }
+              expanded_all = true
+              buf.each {|h|
+                yield expanded, h
+              }
+              buf = nil
+            end
+          else
+            warn "expand-types for multiple records: #{type}"
+          end
+        else
+          buf << hash
+        end
+      else
+        if expand_types.has_key? type
+          warn "expand-types for multiple records: #{type}"
+        else
+          yield expanded, hash
+        end
+      end
+    }
+    if buf
+      buf.each {|h|
+        yield expanded, h
+      }
+    end
+  end
+
+  def extract3
+    extract2 {|expanded, hash|
+      if hash['type'] != 'build'
+        yield expanded.dup.merge(hash) {|k, v1, v2|
+          if v1 != v2
+            warn "expand-type override #{k.inspect}: #{v1.inspect} v.s. #{v2.inspect}"
+          end
+          v1
+        }
+      else
+        yield hash
+      end
+    }
+  end
+
+  def extract4
+    extract3 {|hash|
       if @common_hash
         hash = @common_hash.merge(hash) {|k, v1, v2|
           if v1 != v2
@@ -1183,7 +1245,7 @@ class ChkBuildRubyInfo
   end
 
   def extract
-    extract2 {|hash|
+    extract4 {|hash|
       if @opts.fetch(:type)
         unless @opts.fetch(:type).include? hash["type"]
           next
@@ -1219,6 +1281,9 @@ class ChkBuildRubyInfo
     }
     o.def_option('--disable-sole-record', 'disable sole records') {
       yield :enable_sole_record, false
+    }
+    o.def_option('--expand-types=TYPES', 'comma separated types to expand') {|val|
+      yield :expand_types, val.split(/,/)
     }
     o
   end

@@ -33,6 +33,30 @@ End
 End
   end
 
+  def test_expand
+    exc = nil
+    out = StringIO.new
+    cb = ChkBuildRubyInfo.new(<<'End')
+== ruby-trunk # 2010-12-02T16:51:01+09:00
+== start # 2014-06-21T06:05:42+09:00
+option :ruby_branch => "trunk"
+End
+    cb.opt_expand_types = %w[ruby_branch]
+    cb.convert_to_json(out)
+    #puts out.string
+    assert_equal(<<'End', out.string)
+[
+{"ruby_branch":"trunk","type":"section_start","secname":"ruby-trunk","start_time":"2010-12-02T16:51:01+09:00"},
+{"ruby_branch":"trunk","type":"depsuffixed_name","depsuffixed_name":"ruby-trunk"},
+{"ruby_branch":"trunk","type":"suffixed_name","suffixed_name":"ruby-trunk"},
+{"ruby_branch":"trunk","type":"target_name","target_name":"ruby"},
+{"ruby_branch":"trunk","type":"section_end","secname":"ruby-trunk","end_time":"2014-06-21T06:05:42+09:00","elapsed":112022081.0},
+{"ruby_branch":"trunk","type":"section_start","secname":"start","start_time":"2014-06-21T06:05:42+09:00"},
+{"type":"build","depsuffixed_name":"ruby-trunk","suffixed_name":"ruby-trunk","target_name":"ruby","ruby_branch":"trunk","status":"failure"}
+]
+End
+  end
+
   def test_common
     exc = nil
     out = StringIO.new
