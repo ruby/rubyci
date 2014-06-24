@@ -435,11 +435,12 @@ class ChkBuildRubyInfo
   end
 
   def scan_cc_version(section)
-    #gcc (GCC) 4.8.0
-    if /^gcc \(GCC\) (\S+)/ =~ section
-      h = {"type"=>"cc_version", "cc"=>"gcc", "version"=>$1 }
+    if /^gcc \((.*)\) (\S+)/ =~ section
+      h = {"type"=>"cc_version", "cc"=>"gcc", "version"=>$2, "pkgversion" => $1 }
       output_sole_hash(h)
-      update_last_hash({ "cc"=>"gcc", "cc_version"=>h["version"] })
+      h2 = {}
+      h.each {|k,v| k2 = k == "cc" ? k : "cc_#{k}"; h2[k2] = v }
+      update_last_hash(h2)
     end
   end
 

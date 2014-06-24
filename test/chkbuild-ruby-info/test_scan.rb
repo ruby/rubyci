@@ -860,6 +860,25 @@ End1
 {"type":"build_dir","dir":"/extdisk/chkbuild/chkbuild/tmp/build/20140528T120400Z"},
 End2
 
+defcheck(:cc_version, <<'End1', <<'End2', %w[cc_version])
+== cc-version # 2014-06-24T10:50:35+09:00
++ gcc --version
+gcc (GCC) 4.8.0
+End1
+{"type":"cc_version","cc":"gcc","version":"4.8.0","pkgversion":"GCC"},
+End2
+
+defcheck(:cc_version, <<'End1', <<'End2', %w[cc_version])
+== cc-version # 2014-06-24T10:50:35+09:00
++ gcc --version
+gcc (Debian 4.9.0-6) 4.9.0
+Copyright (C) 2014 Free Software Foundation, Inc.
+This is free software; see the source for copying conditions.  There is NO
+warranty; not even for MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+End1
+{"type":"cc_version","cc":"gcc","version":"4.9.0","pkgversion":"Debian 4.9.0-6"},
+End2
+
 # btest since 2014-06-08
 defcheck(:btest_result_simple_line, <<'End1', <<'End2', %w[btest_result])
 == btest # 2014-05-28T21:05:12+09:00
