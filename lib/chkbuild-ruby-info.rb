@@ -1031,11 +1031,11 @@ class ChkBuildRubyInfo
        @last_hash['debian_architecture'] == 'hurd-i386'
       h['os'] = "Debian GNU/Hurd #{@last_hash['lsb_release']} (#{@last_hash['lsb_codename']})"
       h['arch'] = 'i386'
-    elsif @last_hash['os_release_pretty_name']
-      h['os'] = @last_hash['os_release_pretty_name']
-      h['arch'] = uname_m if uname_m
     elsif @last_hash['lsb_description']
       h['os'] = @last_hash['lsb_description']
+      h['arch'] = uname_m if uname_m
+    elsif @last_hash['os_release_pretty_name']
+      h['os'] = @last_hash['os_release_pretty_name']
       h['arch'] = uname_m if uname_m
     elsif @last_hash['redhat_release']
       h['os'] = @last_hash['redhat_release']

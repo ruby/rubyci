@@ -162,6 +162,50 @@ defcheck_build(:build_debian, debian_gnu_linux_first_sections,
                "os" => "Debian GNU/Linux 7.5 (wheezy)",
                "arch" => "x86_64")
 
+debian_gnu_linux_first_sections2 =<<'End'
+== echo # 2014-06-29T00:59:11+09:00
+Nickname: dew
+== uname # 2014-06-29T00:59:11+09:00
+uname_srvm: Linux 3.2.0-4-amd64 #1 SMP Debian 3.2.57-3+deb7u2 x86_64
+uname_s: Linux
+uname_r: 3.2.0-4-amd64
+uname_v: #1 SMP Debian 3.2.57-3+deb7u2
+uname_m: x86_64
+uname_p: unknown
+uname_i: unknown
+uname_o: GNU/Linux
+== /etc/debian_version # 2014-06-29T00:59:11+09:00
+7.5
+== /etc/os-release # 2014-06-29T00:59:11+09:00
+PRETTY_NAME="Debian GNU/Linux 7 (wheezy)"
+NAME="Debian GNU/Linux"
+VERSION_ID="7"
+VERSION="7 (wheezy)"
+ID=debian
+ANSI_COLOR="1;31"
+HOME_URL="http://www.debian.org/"
+SUPPORT_URL="http://www.debian.org/support/"
+BUG_REPORT_URL="http://bugs.debian.org/"
+== dpkg # 2014-06-29T00:59:11+09:00
+architecture: amd64
+== lsb_release # 2014-06-29T00:59:11+09:00
+Distributor ID: Debian
+Description:    Debian GNU/Linux 7.5 (wheezy)
+Release:        7.5
+Codename:       wheezy
+End
+
+defcheck_build(:build_debian, debian_gnu_linux_first_sections2,
+               "debian_version" => "7.5",
+               "debian_architecture" => "amd64",
+               "lsb_distributor" => "Debian",
+               "lsb_description" => "Debian GNU/Linux 7.5 (wheezy)",
+               "lsb_release" => "7.5",
+               "lsb_codename" => "wheezy",
+               "os_release_pretty_name" => "Debian GNU/Linux 7 (wheezy)",
+               "os" => "Debian GNU/Linux 7.5 (wheezy)",
+               "arch" => "x86_64")
+
 debian_gnu_kfreebsd_first_section = <<'End'
 == echo # 2014-06-07T22:49:33+09:00
 Nickname: debian7-kfreebsd
