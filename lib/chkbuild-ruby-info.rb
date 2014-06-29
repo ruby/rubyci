@@ -439,7 +439,10 @@ class ChkBuildRubyInfo
       h = {"type"=>"cc_version", "cc"=>"gcc", "version"=>$2, "pkgversion" => $1 }
       output_sole_hash(h)
       h2 = {}
-      h.each {|k,v| k2 = k == "cc" ? k : "cc_#{k}"; h2[k2] = v }
+      h.each {|k,v|
+        next if k == "type"
+        k2 = k == "cc" ? k : "cc_#{k}"; h2[k2] = v
+      }
       update_last_hash(h2)
     end
   end
