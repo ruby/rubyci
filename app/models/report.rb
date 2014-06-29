@@ -215,15 +215,15 @@ class Report < ActiveRecord::Base
   end
 
   def self.fetch_recent
-    ary = []
     Server.all.each do |server|
-      ary.concat self.get_reports(server)
-    end
-    Report.transaction do
-      ary.each do |item|
-        Report.create! item
+      ary = self.get_reports(server)
+      Report.transaction do
+        ary.each do |item|
+          Report.create! item
+        end
       end
     end
+
     ReportsController.expire_page '/'
     URI('http://rubyci.herokuapp.com/').read('Cache-Control' => 'no-cache')
     URI('http://rubyci.org/').read('Cache-Control' => 'no-cache')
