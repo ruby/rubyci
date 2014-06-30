@@ -168,7 +168,7 @@ class Report < ActiveRecord::Base
       puts "reporting #{server.name} #{depsuffixed_name} #{dt} ..."
       revision = h["ruby_rev"].to_s[1,100].to_i
 
-      store_log(
+      self.store_log(
         server.id,
         http,
         File.join(recentpath, "../log/#{dt}.log.txt.gz"),
