@@ -2,6 +2,7 @@ require 'net/http'
 require 'uri'
 require 'open-uri'
 require 'chkbuild-ruby-info'
+require "tempfile"
 
 class Report < ActiveRecord::Base
   belongs_to :server
@@ -159,16 +160,19 @@ class Report < ActiveRecord::Base
       )
 
       path = File.join(recentpath, "../log/#{dt}.log.txt.gz")
-      res = http.get(path)
-      res.value
-      cb = ChkBuildRubyInfo.new(res.body.force_encoding(Encoding::UTF_8))
-      cb.common_hash = {
-        server_id: server.id,
-        depsuffixed_name: depsuffixed_name,
-        epoch: datetime.to_i,
-        revision: revision,
-      }
-      cb.convert_to_td
+      Tempfile.create("chkbuild-log", encoding: Encoding::UTF_8) do |f|
+        res = http.get(path, nil, f)
+        res.value
+        f.rewind
+        cb = ChkBuildRubyInfo.new(f)
+        cb.common_hash = {
+          server_id: server.id,
+          depsuffixed_name: depsuffixed_name,
+          epoch: datetime.to_i,
+          revision: revision,
+        }
+        cb.convert_to_td
+      end
     end
     results.concat ary
   rescue RuntimeError => e # It seems not a chkbuild log
