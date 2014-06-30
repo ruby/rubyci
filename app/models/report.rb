@@ -208,7 +208,7 @@ class Report < ActiveRecord::Base
         end
         Report.transaction do
           ary.each do |item|
-            Report.create! item
+            Report.create item
           end
         end
       end
