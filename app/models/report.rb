@@ -136,6 +136,7 @@ class Report < ActiveRecord::Base
     latest = Report.where(server_id: server.id, branch: branch, option: option).last
     ary = []
     body.each_line do |line|
+      GC.start
       line.chomp!
       h = line.split("\t").map{|x|x.split(":", 2)}.to_h
       dt = h["start_time"]
@@ -169,7 +170,6 @@ class Report < ActiveRecord::Base
       }
       cb.convert_to_td
     end
-    GC.start
     results.concat ary
   rescue RuntimeError => e # It seems not a chkbuild log
     p [e, server.uri, path, "failed to scan_reports"]
