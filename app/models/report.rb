@@ -91,8 +91,8 @@ class Report < ActiveRecord::Base
     end
   end
 
-  def self.store_log(server_id, http, path, datetime, branch, option, revision, ltsv, summary,
-                depsuffixed_name)
+  def self.store_log(server_id, http, path, datetime, branch, option, revision,
+                     ltsv, summary, depsuffixed_name)
     Tempfile.create("chkbuild-log", encoding: Encoding::UTF_8) do |f|
       res = http.get(path, nil, f)
       res.value
@@ -144,7 +144,6 @@ class Report < ActiveRecord::Base
         nil,
         summary.gsub(/<[^>]*>/, ''),
         depsuffixed_name,
-        datetime.to_i,
       )
     end
   end
@@ -168,7 +167,7 @@ class Report < ActiveRecord::Base
       puts "reporting #{server.name} #{depsuffixed_name} #{dt} ..."
       revision = h["ruby_rev"].to_s[1,100].to_i
 
-      self.store_log(
+      store_log(
         server.id,
         http,
         File.join(recentpath, "../log/#{dt}.log.txt.gz"),
@@ -176,10 +175,9 @@ class Report < ActiveRecord::Base
         branch,
         option,
         revision,
-        nil,
+        line,
         summary.gsub(/<[^>]*>/, ''),
         depsuffixed_name,
-        datetime.to_i,
       )
     end
   rescue RuntimeError => e # It seems not a chkbuild log
