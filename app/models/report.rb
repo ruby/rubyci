@@ -195,21 +195,20 @@ class Report < ActiveRecord::Base
       puts "getting #{uri.host}#{basepath} ..."
       h.get(basepath).body.scan(/(?:href|HREF)="(ruby-[^"\/]+)/) do |depsuffixed_name,_|
         next if /\Aruby-(?:trunk|[1-9])/ !~ depsuffixed_name
-        ary = []
 
         begin # LTSV
           path = File.join(basepath, depsuffixed_name, 'recent.ltsv')
           puts "getting #{uri.host}#{path} ..."
           res = h.get(path)
           res.value
-          self.scan_recent_ltsv(server, depsuffixed_name, res.body, ary, h, path)
+          self.scan_recent_ltsv(server, depsuffixed_name, res.body, h, path)
         rescue Net::HTTPServerException
           begin # HTML
             path = File.join(basepath, depsuffixed_name, 'recent.html')
             puts "getting #{uri.host}#{path} ..."
             res = h.get(path)
             res.value
-            self.scan_recent(server, depsuffixed_name, res.body, ary, h, path)
+            self.scan_recent(server, depsuffixed_name, res.body, h, path)
           rescue Net::HTTPServerException
           end
         end
