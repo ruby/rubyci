@@ -91,7 +91,7 @@ class Report < ActiveRecord::Base
     end
   end
 
-  def store_log(server_id, http, path, datetime, branch, option, revision, ltsv, summary,
+  def self.store_log(server_id, http, path, datetime, branch, option, revision, ltsv, summary,
                 depsuffixed_name)
     Tempfile.create("chkbuild-log", encoding: Encoding::UTF_8) do |f|
       res = http.get(path, nil, f)
