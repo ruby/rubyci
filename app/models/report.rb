@@ -116,7 +116,8 @@ class Report < ActiveRecord::Base
 
       cb.convert_to_td
     end
-  rescue ActiveRecord::RecordInvalid
+  rescue ActiveRecord::RecordInvalid => e
+    warn e.inspect
   end
 
   REG_RCNT = /name="(\d+T\d{6}Z).*?a>\s*(\S.*)<br/
