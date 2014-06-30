@@ -106,12 +106,12 @@ class Report < ActiveRecord::Base
       }
 
       Report.create!(
-        server_id: server.id,
+        server_id: server_id,
         datetime: datetime,
         branch: branch,
         option: option,
         revision: revision,
-        summary: summary.gsub(/<[^>]*>/, '')
+        summary: summary
       )
 
       cb.convert_to_td
