@@ -169,6 +169,7 @@ class Report < ActiveRecord::Base
       }
       cb.convert_to_td
     end
+    GC.start
     results.concat ary
   rescue RuntimeError => e # It seems not a chkbuild log
     p [e, server.uri, path, "failed to scan_reports"]
