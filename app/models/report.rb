@@ -91,9 +91,36 @@ class Report < ActiveRecord::Base
     end
   end
 
+  def store_log(server_id, http, path, datetime, branch, option, revision, ltsv, summary,
+                depsuffixed_name)
+    Tempfile.create("chkbuild-log", encoding: Encoding::UTF_8) do |f|
+      res = http.get(path, nil, f)
+      res.value
+      f.rewind
+      cb = ChkBuildRubyInfo.new(f)
+      cb.common_hash = {
+        server_id: server_id,
+        depsuffixed_name: depsuffixed_name,
+        epoch: datetime.to_i,
+        revision: revision,
+      }
+
+      Report.create!(
+        server_id: server.id,
+        datetime: datetime,
+        branch: branch,
+        option: option,
+        revision: revision,
+        summary: summary.gsub(/<[^>]*>/, '')
+      )
+
+      cb.convert_to_td
+    end
+  end
+
   REG_RCNT = /name="(\d+T\d{6}Z).*?a>\s*(\S.*)<br/
 
-  def self.scan_recent(server, depsuffixed_name, body, results, http, recentpath)
+  def self.scan_recent(server, depsuffixed_name, body, http, recentpath)
     return unless /\Aruby-([0-9a-z\.]+)(?:-(.*))?\z/ =~ depsuffixed_name
     branch = $1
     option = $2
@@ -105,39 +132,30 @@ class Report < ActiveRecord::Base
       revision = (summary[/\br(\d+)\b/, 1] ||
                   summary[/\brev:(\d+)\b/, 1] ||
                   summary[/(?:trunk|revision)\S* (\d+)\x29/, 1]).to_i
-      results.push(
-        server_id: server.id,
-        datetime: datetime,
-        branch: branch,
-        option: option,
-        revision: revision,
-        summary: summary.gsub(/<[^>]*>/, '')
-      )
 
-      path = File.join(recentpath, "../log/#{dt}.log.txt.gz")
-      res = http.get(path)
-      res.value
-      cb = ChkBuildRubyInfo.new(res.body)
-      cb.common_hash = {
-        server_id: server.id,
-        depsuffixed_name: depsuffixed_name,
-        epoch: datetime.to_i,
-        revision: revision,
-      }
-      cb.convert_to_td
+      store_log(
+        server.id,
+        http,
+        File.join(recentpath, "../log/#{dt}.log.txt.gz"),
+        datetime,
+        branch,
+        option,
+        revision,
+        nil,
+        summary.gsub(/<[^>]*>/, ''),
+        depsuffixed_name,
+        datetime.to_i,
+      )
     end
-    results
   end
 
-  def self.scan_recent_ltsv(server, depsuffixed_name, body, results, http, recentpath)
+  def self.scan_recent_ltsv(server, depsuffixed_name, body, http, recentpath)
     return unless /\Aruby-([0-9a-z\.]+)(?:-(.*))?\z/ =~ depsuffixed_name
     branch = $1
     option = $2
     path = nil
     latest = Report.where(server_id: server.id, branch: branch, option: option).last
-    ary = []
     body.each_line do |line|
-      GC.start
       line.chomp!
       h = line.split("\t").map{|x|x.split(":", 2)}.to_h
       dt = h["start_time"]
@@ -149,32 +167,21 @@ class Report < ActiveRecord::Base
       break if latest and datetime <= latest.datetime
       puts "reporting #{server.name} #{depsuffixed_name} #{dt} ..."
       revision = h["ruby_rev"].to_s[1,100].to_i
-      ary.push(
-        server_id: server.id,
-        datetime: datetime,
-        branch: branch,
-        option: option,
-        revision: revision,
-        ltsv: line,
-        summary: summary
-      )
 
-      path = File.join(recentpath, "../log/#{dt}.log.txt.gz")
-      Tempfile.create("chkbuild-log", encoding: Encoding::UTF_8) do |f|
-        res = http.get(path, nil, f)
-        res.value
-        f.rewind
-        cb = ChkBuildRubyInfo.new(f)
-        cb.common_hash = {
-          server_id: server.id,
-          depsuffixed_name: depsuffixed_name,
-          epoch: datetime.to_i,
-          revision: revision,
-        }
-        cb.convert_to_td
-      end
+      store_log(
+        server.id,
+        http,
+        File.join(recentpath, "../log/#{dt}.log.txt.gz"),
+        datetime,
+        branch,
+        option,
+        revision,
+        nil,
+        summary.gsub(/<[^>]*>/, ''),
+        depsuffixed_name,
+        datetime.to_i,
+      )
     end
-    results.concat ary
   rescue RuntimeError => e # It seems not a chkbuild log
     p [e, server.uri, path, "failed to scan_reports"]
   rescue => e
@@ -204,11 +211,6 @@ class Report < ActiveRecord::Base
             res.value
             self.scan_recent(server, depsuffixed_name, res.body, ary, h, path)
           rescue Net::HTTPServerException
-          end
-        end
-        Report.transaction do
-          ary.each do |item|
-            Report.create item
           end
         end
       end
