@@ -118,6 +118,8 @@ class Report < ActiveRecord::Base
     end
   rescue ActiveRecord::RecordInvalid => e
     warn e.inspect
+    warn [server_id, http, path, datetime, branch, option, revision,
+      ltsv, summary, depsuffixed_name].inspect
   end
 
   REG_RCNT = /name="(\d+T\d{6}Z).*?a>\s*(\S.*)<br/
