@@ -182,13 +182,13 @@ class Report < ActiveRecord::Base
   end
 
   def self.get_reports(server)
-    ary = []
     uri = URI(server.uri)
     path = basepath = uri.path # for rescue
     Net::HTTP.start(uri.host, uri.port, open_timeout: 10, read_timeout: 10) do |h|
       puts "getting #{uri.host}#{basepath} ..."
       h.get(basepath).body.scan(/(?:href|HREF)="(ruby-[^"\/]+)/) do |depsuffixed_name,_|
         next if /\Aruby-(?:trunk|[1-9])/ !~ depsuffixed_name
+        ary = []
 
         begin # LTSV
           path = File.join(basepath, depsuffixed_name, 'recent.ltsv')
@@ -206,13 +206,15 @@ class Report < ActiveRecord::Base
           rescue Net::HTTPServerException
           end
         end
+        Report.transaction do
+          ary.each do |item|
+            Report.create! item
+          end
+        end
       end
     end
-    ary.sort_by!{|h|h[:datetime]}
-    return ary
   rescue Net::OpenTimeout => e
     p [e, uri, path, "failed to get_reports"]
-    return []
   rescue Exception => e
     p [e, uri, path]
     puts e.backtrace
@@ -221,12 +223,7 @@ class Report < ActiveRecord::Base
 
   def self.fetch_recent
     Server.all.each do |server|
-      ary = self.get_reports(server)
-      Report.transaction do
-        ary.each do |item|
-          Report.create! item
-        end
-      end
+      self.get_reports(server)
     end
 
     ReportsController.expire_page '/'
