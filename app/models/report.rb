@@ -126,11 +126,20 @@ class Report < ActiveRecord::Base
 
   REG_RCNT = /name="(\d+T\d{6}Z).*?a>\s*(\S.*)<br/
 
+  def self.sql_datetime(col)
+    if defined?(SQLite3)
+      "datetime(#{col})"
+    else # PostgreSQL
+      col
+    end
+  end
+
   def self.scan_recent(server, depsuffixed_name, body, http, recentpath)
     return unless /\Aruby-([0-9a-z\.]+)(?:-(.*))?\z/ =~ depsuffixed_name
     branch = $1
     option = $2
-    latest = Report.where(server_id: server.id, branch: branch, option: option).last
+    latest = Report.where(server_id: server.id, branch: branch, option: option).
+      order("#{sql_datetime("datetime")} ASC").last
     body.scan(REG_RCNT) do |dt, summary|
       datetime = Time.utc(*dt.unpack("A4A2A2xA2A2A2"))
       break if latest and datetime <= latest.datetime
@@ -159,7 +168,8 @@ class Report < ActiveRecord::Base
     branch = $1
     option = $2
     path = nil
-    latest = Report.where(server_id: server.id, branch: branch, option: option).last
+    latest = Report.where(server_id: server.id, branch: branch, option: option).
+      order("#{sql_datetime("datetime")} ASC").last
     body.each_line do |line|
       line.chomp!
       h = line.split("\t").map{|x|x.split(":", 2)}.to_h
