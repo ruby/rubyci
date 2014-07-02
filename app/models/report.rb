@@ -120,8 +120,7 @@ class Report < ActiveRecord::Base
       cb.convert_to_td if ENV.key?('TREASURE_DATA_API_KEY')
     end
   rescue => e
-    warn e.inspect
-    warn [server_id, http, path, datetime, branch, option, revision,
+    warn [e, server_id, http, path, datetime, branch, option, revision,
       ltsv, summary, depsuffixed_name].inspect
   end
 
@@ -188,9 +187,9 @@ class Report < ActiveRecord::Base
       )
     end
   rescue RuntimeError => e # It seems not a chkbuild log
-    p [e, server.uri, path, "failed to scan_reports"]
+    warn [e, server.uri, path, "failed to scan_reports"].inspect
   rescue => e
-    p [e, server.uri, path, "failed to scan_reports", e.backtrace]
+    warn [e, server.uri, path, "failed to scan_reports", e.backtrace].inspect
   end
 
   def self.get_reports(server)
@@ -221,7 +220,7 @@ class Report < ActiveRecord::Base
     end
   rescue Net::OpenTimeout => e
     p [e, uri, path, "failed to get_reports"]
-  rescue Exception => e
+  rescue => e
     p [e, uri, path]
     puts e.backtrace
     return []
