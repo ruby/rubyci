@@ -96,14 +96,17 @@ class Report < ActiveRecord::Base
     Tempfile.create("chkbuild-log", encoding: Encoding::UTF_8) do |f|
       res = http.get(path, nil, f)
       res.value
-      f.rewind
-      cb = ChkBuildRubyInfo.new(f)
-      cb.common_hash = {
-        server_id: server_id,
-        depsuffixed_name: depsuffixed_name,
-        epoch: datetime.to_i,
-        revision: revision,
-      }
+
+      if ENV.key?('TREASURE_DATA_API_KEY')
+        f.rewind
+        cb = ChkBuildRubyInfo.new(f)
+        cb.common_hash = {
+          server_id: server_id,
+          depsuffixed_name: depsuffixed_name,
+          epoch: datetime.to_i,
+          revision: revision,
+        }
+      end
 
       Report.create!(
         server_id: server_id,
@@ -114,7 +117,7 @@ class Report < ActiveRecord::Base
         summary: summary
       )
 
-      cb.convert_to_td
+      cb.convert_to_td if ENV.key?('TREASURE_DATA_API_KEY')
     end
   rescue => e
     warn e.inspect
