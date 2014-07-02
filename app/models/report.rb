@@ -116,12 +116,10 @@ class Report < ActiveRecord::Base
 
       cb.convert_to_td
     end
-  rescue ActiveRecord::RecordInvalid => e
+  rescue => e
     warn e.inspect
     warn [server_id, http, path, datetime, branch, option, revision,
       ltsv, summary, depsuffixed_name].inspect
-  rescue => e
-    warn [e, server.uri, path, "failed to store_log", e.backtrace].inspect
   end
 
   REG_RCNT = /name="(\d+T\d{6}Z).*?a>\s*(\S.*)<br/
