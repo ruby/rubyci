@@ -94,17 +94,19 @@ class Report < ActiveRecord::Base
   def self.store_log(server_id, http, path, datetime, branch, option, revision,
                      ltsv, summary, depsuffixed_name)
     Tempfile.create("chkbuild-log", encoding: Encoding::ASCII_8BIT) do |f|
-      res = http.get(path, nil, f)
-      res.value
-
-      if ENV.key?('TREASURE_DATA_API_KEY')
-        cb = ChkBuildRubyInfo.new(res.body)
-        cb.common_hash = {
-          server_id: server_id,
-          depsuffixed_name: depsuffixed_name,
-          epoch: datetime.to_i,
-          revision: revision,
-        }
+      begin
+        res = http.get(path, nil, f)
+        res.value
+        if ENV.key?('TREASURE_DATA_API_KEY')
+          cb = ChkBuildRubyInfo.new(res.body)
+          cb.common_hash = {
+            server_id: server_id,
+            depsuffixed_name: depsuffixed_name,
+            epoch: datetime.to_i,
+            revision: revision,
+          }
+        end
+      rescue Net::HTTPServerException
       end
 
       Report.create!(
