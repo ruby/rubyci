@@ -93,13 +93,12 @@ class Report < ActiveRecord::Base
 
   def self.store_log(server_id, http, path, datetime, branch, option, revision,
                      ltsv, summary, depsuffixed_name)
-    Tempfile.create("chkbuild-log", encoding: Encoding::UTF_8) do |f|
+    Tempfile.create("chkbuild-log", encoding: Encoding::ASCII_8BIT) do |f|
       res = http.get(path, nil, f)
       res.value
 
       if ENV.key?('TREASURE_DATA_API_KEY')
-        f.rewind
-        cb = ChkBuildRubyInfo.new(f)
+        cb = ChkBuildRubyInfo.new(res.body)
         cb.common_hash = {
           server_id: server_id,
           depsuffixed_name: depsuffixed_name,
@@ -121,7 +120,8 @@ class Report < ActiveRecord::Base
     end
   rescue => e
     warn [e, server_id, http, path, datetime, branch, option, revision,
-      ltsv, summary, depsuffixed_name].inspect
+      ltsv, summary, depsuffixed_name,e.backtrace.join("\n")].inspect
+    exit
   end
 
   REG_RCNT = /name="(\d+T\d{6}Z).*?a>\s*(\S.*)<br/
