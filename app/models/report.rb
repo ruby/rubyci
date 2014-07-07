@@ -118,7 +118,7 @@ class Report < ActiveRecord::Base
         summary: summary
       )
 
-      cb.convert_to_td if ENV.key?('TREASURE_DATA_API_KEY')
+      cb.convert_to_td if cb
     end
   rescue => e
     warn [e, server_id, http, path, datetime, branch, option, revision,
