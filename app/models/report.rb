@@ -115,6 +115,7 @@ class Report < ActiveRecord::Base
         branch: branch,
         option: option,
         revision: revision,
+        ltsv: ltsv,
         summary: summary
       )
 
