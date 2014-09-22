@@ -1,6 +1,7 @@
 source 'https://rubygems.org'
 
-ruby '2.1.2' unless ENV['DEV']
+ruby '2.1.3' unless ENV['DEV']
+
 gem 'rails', '~> 4.1'
 gem 'activeresource', require: 'active_resource'
 gem 'actionpack-page_caching'
