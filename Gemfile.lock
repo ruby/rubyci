@@ -38,8 +38,6 @@ GEM
       builder
       multi_json
     arel (5.0.1.20140414130214)
-    bounscale (0.0.4)
-      json
     builder (3.2.2)
     coffee-rails (4.0.1)
       coffee-script (>= 2.2.0)
@@ -52,12 +50,12 @@ GEM
       dotenv-deployment (~> 0.0.2)
     dotenv-deployment (0.0.2)
     erubis (2.7.0)
-    excon (0.39.5)
+    excon (0.40.0)
     execjs (2.2.1)
     foreman (0.75.0)
       dotenv (~> 0.11.1)
       thor (~> 0.19.1)
-    heroku (3.10.3)
+    heroku (3.12.1)
       heroku-api (~> 0.3.19)
       launchy (>= 0.3.2)
       netrc (~> 0.7.7)
@@ -77,11 +75,11 @@ GEM
       addressable (~> 2.3)
     mail (2.6.1)
       mime-types (>= 1.16, < 3)
-    mime-types (2.3)
-    minitest (5.4.1)
+    mime-types (2.4.1)
+    minitest (5.4.2)
     multi_json (1.10.1)
     netrc (0.7.7)
-    newrelic_rpm (3.9.4.245)
+    newrelic_rpm (3.9.5.251)
     pg (0.17.1)
     rack (1.5.2)
     rack-test (0.6.2)
@@ -137,8 +135,6 @@ GEM
     tilt (1.4.1)
     tzinfo (1.2.2)
       thread_safe (~> 0.1)
-    tzinfo-data (1.2014.7)
-      tzinfo (>= 1.0.0)
     uglifier (2.5.3)
       execjs (>= 0.3.0)
       json (>= 1.8.0)
@@ -154,7 +150,6 @@ DEPENDENCIES
   actionpack-page_caching
   activeresource
   airbrake
-  bounscale
   coffee-rails
   foreman
   heroku
@@ -166,6 +161,5 @@ DEPENDENCIES
   sass-rails
   sass-rails-bootstrap
   sqlite3
-  tzinfo-data
   uglifier
   unicorn
