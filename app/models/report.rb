@@ -207,10 +207,11 @@ class Report < ActiveRecord::Base
 
   def self.get_reports(server)
     uri = URI(server.uri)
-    path = basepath = uri.path # for rescue
+    path = uri.path # for rescue
+    basepath = path.sub(/\?.*/, '')
     Net::HTTP.start(uri.host, uri.port, open_timeout: 10, read_timeout: 10) do |h|
-      puts "getting #{uri.host}#{basepath} ..."
-      h.get(basepath).body.scan(/(?:href|HREF)="(ruby-[^"\/]+)/) do |depsuffixed_name,_|
+      puts "getting #{uri.host}#{path} ..."
+      h.get(path).body.scan(/(?:<Name|(?:href|HREF)=")(ruby-[^"\/]+)/) do |depsuffixed_name,_|
         next if /\Aruby-(?:trunk|[1-9])/ !~ depsuffixed_name
 
         begin # LTSV
