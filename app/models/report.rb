@@ -68,15 +68,15 @@ class Report < ActiveRecord::Base
   end
 
   def loguri
-    server.uri + datetime.strftime("ruby-#{branch_opts}/log/%Y%m%dT%H%M%SZ.log.html.gz")
+    server.uri.chomp('/') + datetime.strftime("/ruby-#{branch_opts}/log/%Y%m%dT%H%M%SZ.log.html.gz")
   end
 
   def diffuri
-    server.uri + datetime.strftime("ruby-#{branch_opts}/log/%Y%m%dT%H%M%SZ.diff.html.gz")
+    server.uri.chomp('/') + datetime.strftime("/ruby-#{branch_opts}/log/%Y%m%dT%H%M%SZ.diff.html.gz")
   end
 
   def failuri
-    meta ? "#{server.uri}ruby-#{branch_opts}/#{meta['compressed_failhtml_relpath']}" : nil
+    meta ? "#{server.uri.chomp('/')}/ruby-#{branch_opts}/#{meta['compressed_failhtml_relpath']}" : nil
   end
 
   def recenturi
