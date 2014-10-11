@@ -207,8 +207,8 @@ class Report < ActiveRecord::Base
 
   def self.get_reports(server)
     uri = URI(server.uri)
-    path = uri.path # for rescue
-    basepath = path.sub(/\?.*/, '')
+    path = uri.request_uri
+    basepath = uri.path
     Net::HTTP.start(uri.host, uri.port, open_timeout: 10, read_timeout: 10) do |h|
       puts "getting #{uri.host}#{path} ..."
       h.get(path).body.scan(/(?:<Name|(?:href|HREF)=")(ruby-[^"\/]+)/) do |depsuffixed_name,_|
