@@ -143,9 +143,15 @@ class Report < ActiveRecord::Base
     option = $2
     latest = Report.where(server_id: server.id, branch: branch, option: option).
       order("#{sql_datetime("datetime")} ASC").last
+
+    ary = []
     body.scan(REG_RCNT) do |dt, summary|
       datetime = Time.utc(*dt.unpack("A4A2A2xA2A2A2"))
       break if latest and datetime <= latest.datetime
+      ary << [dt, summary, datetime]
+    end
+
+    ary.reverse_each do |dt, summary, datetime|
       puts "reporting #{server.name} #{depsuffixed_name} #{dt} ..."
       revision = (summary[/\br(\d+)\b/, 1] ||
                   summary[/\brev:(\d+)\b/, 1] ||
