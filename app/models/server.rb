@@ -8,6 +8,6 @@ class Server < ActiveRecord::Base
   validates :ordinal, :numericality => true, :uniqueness => true
 
   def recent_uri(branch)
-    [uri.sub(/\/$/, ''), 'ruby-' + branch, 'recent.html'].join('/')
+    [uri.sub(/\?.*/,'').sub(/\/$/, ''), 'ruby-' + branch, 'recent.html'].join('/')
   end
 end
