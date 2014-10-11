@@ -211,7 +211,7 @@ class Report < ActiveRecord::Base
     basepath = uri.path
     Net::HTTP.start(uri.host, uri.port, open_timeout: 10, read_timeout: 10) do |h|
       puts "getting #{uri.host}#{path} ..."
-      h.get(path).body.scan(/(?:<Name|(?:href|HREF)=")(ruby-[^"\/]+)/) do |depsuffixed_name,_|
+      h.get(path).body.scan(/(?:<Name>|(?:href|HREF)=")(ruby-[^"\/]+)/) do |depsuffixed_name,_|
         next if /\Aruby-(?:trunk|[1-9])/ !~ depsuffixed_name
 
         begin # LTSV
