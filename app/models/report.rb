@@ -179,18 +179,22 @@ class Report < ActiveRecord::Base
     path = nil
     latest = Report.where(server_id: server.id, branch: branch, option: option).
       order("#{sql_datetime("datetime")} ASC").last
+    ary = []
     body.each_line do |line|
       line.chomp!
       h = line.split("\t").map{|x|x.split(":", 2)}.to_h
       dt = h["start_time"]
-      summary = h["title"]
-      summary << ' success' if h["result"] == 'success'
-      diff = h["different_sections"] 
-      summary << (diff ? " (diff:#{diff})" : " (no diff)")
       datetime = Time.utc(*dt.unpack("A4A2A2xA2A2A2"))
       break if latest and datetime <= latest.datetime
+      ary << [line, h, dt, datetime]
+    end
+    ary.reverse_each do |line, h, dt, datetime|
       puts "reporting #{server.name} #{depsuffixed_name} #{dt} ..."
       revision = h["ruby_rev"].to_s[1,100].to_i
+      summary = h["title"]
+      summary << ' success' if h["result"] == 'success'
+      diff = h["different_sections"]
+      summary << (diff ? " (diff:#{diff})" : " (no diff)")
 
       store_log(
         server.id,
