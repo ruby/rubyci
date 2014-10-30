@@ -257,7 +257,8 @@ class Report < ActiveRecord::Base
 
     ReportsController.expire_page '/'
     URI('http://rubyci.herokuapp.com/').read('Cache-Control' => 'no-cache')
-    URI('http://rubyci.org/').read('Cache-Control' => 'no-cache')
+    # rubyci.org は heroku の router の仕様変更で動かない
+    # URI('http://rubyci.org/').read('Cache-Control' => 'no-cache')
   end
 
   def self.post_recent
