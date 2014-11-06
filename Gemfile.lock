@@ -50,7 +50,7 @@ GEM
       dotenv-deployment (~> 0.0.2)
     dotenv-deployment (0.0.2)
     erubis (2.7.0)
-    excon (0.40.0)
+    excon (0.41.0)
     execjs (2.2.2)
     foreman (0.75.0)
       dotenv (~> 0.11.1)
