@@ -31,7 +31,7 @@ class ReportsController < ApplicationController
         references(:server).
         where("reports.datetime > (now() - interval '14 days')").
         where('reports.id IN (SELECT MAX(R.id) FROM reports R GROUP BY R.server_id, R.branch, R.option)').all
-      @reports.delete_if{|report| report.server.nil? }
+      @reports = @reports.to_a.delete_if{|report| report.server.nil? }
       render 'index'
     end
   end
