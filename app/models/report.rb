@@ -77,8 +77,6 @@ class Report < ActiveRecord::Base
 
   def failuri
     meta ? "#{server.uri.chomp('/')}/ruby-#{branch_opts}/#{meta['compressed_failhtml_relpath']}" : nil
-  rescue
-    ""
   end
 
   def recenturi
