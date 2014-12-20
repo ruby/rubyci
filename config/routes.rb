@@ -1,4 +1,4 @@
-Rubyci::Application.routes.draw do
+Rails.application.routes.draw do
   root :to => 'reports#current'
 
   resources :reports do
