@@ -218,7 +218,7 @@ class Report < ActiveRecord::Base
   def self.get_reports(server)
     uri = URI(server.uri)
     path = basepath = uri.path
-    path += '?restype=container&comp=list&delimiter=%2F' if uri.host.end_with?('.blob.core.windows.net')
+    path += '?restype=container&comp=list&delimiter=%2F&marker=2!116!MDAwMDQzIXJ1YnktMS45LjMvbG9nLzIwMTQwNTI3VDE2NTgwMVouZGlmZi50eHQuZ3ohMDAwMDI4ITE2MDEtMDEtMDFUMDA6MDA6MDAuMDAwMDAwMFoh' if uri.host.end_with?('.blob.core.windows.net')
     Net::HTTP.start(uri.host, uri.port, open_timeout: 10, read_timeout: 10) do |h|
       puts "getting #{uri.host}#{path} ..."
       h.get(path).body.scan(/(?:<Name>|(?:href|HREF)=")(ruby-[^"\/]+)/) do |depsuffixed_name,_|
