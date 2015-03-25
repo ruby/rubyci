@@ -867,7 +867,9 @@ class ChkBuildRubyInfo
       output_hash h
     }
 
-    if /^(\d+) files?, (\d+) examples?, (\d+) expectations?, (\d+) failures?, (\d+) errors?$/m =~ section
+    # 3604 files, 24079 examples, 173399 expectations, 0 failures, 0 errors
+    # 3455 files, 24098 examples, 173444 expectations, 0 failures, 0 errors, 0 tagged
+    if /^(\d+) files?, (\d+) examples?, (\d+) expectations?, (\d+) failures?, (\d+) errors?(?:, (\d+) tagged)?/m =~ section
       h = {
         "type" => "rubyspec_summary",
         "test_suite" => secname,
@@ -877,6 +879,7 @@ class ChkBuildRubyInfo
         "failures" => $4.to_i,
         "errors" => $5.to_i,
       }
+      h["tagged"] = $6.to_i if $6
       output_hash h
       if secname == 'rubyspec'
         h.delete 'test_suite'

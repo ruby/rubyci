@@ -1138,6 +1138,24 @@ End1
 {"type":"rubyspec_detail","test_suite":"rubyspec","description":"An exception occurred during: Mock.verify_count\nDigest::MD5#== equals the appropriate object that responds to to_str","outcome":"FAILED","detail":"Mock 'd41d8cd98f00b204e9800998ecf8427e' expected to receive 'to_str' exactly 1 times\nbut received it 2 times\nrubyspec/library/digest/md5/equal_spec.rb:4:in `<top (required)>'\n"}
 End2
 
+defcheck(:rubyspec_summary, <<'End1', <<'End2', 'rubyspec_summary')
+== rubyspec # 2015-03-24T03:20:29+09:00
+3455 files, 23928 examples, 176251 expectations, 3 failures, 0 errors
+exit 1
+failed(rubyspec)
+End1
+{"type":"rubyspec_summary","test_suite":"rubyspec","files":3455,"examples":23928,"expectations":176251,"failures":3,"errors":0},
+End2
+
+defcheck(:rubyspec_summary, <<'End1', <<'End2', 'rubyspec_summary')
+== rubyspec # 2015-03-25T03:23:42+09:00
+3455 files, 23928 examples, 176251 expectations, 3 failures, 0 errors, 0 tagged
+exit 1
+failed(rubyspec)
+End1
+{"type":"rubyspec_summary","test_suite":"rubyspec","files":3455,"examples":23928,"expectations":176251,"failures":3,"errors":0,"tagged":0},
+End2
+
 defcheck(:exception, <<"End1", <<'End2', 'exception')
 == ruby-trunk # 2010-12-02T16:51:01+09:00
 sample/test.rb:1873: [BUG] Segmentation fault
