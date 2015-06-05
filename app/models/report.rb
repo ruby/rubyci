@@ -122,7 +122,6 @@ class Report < ActiveRecord::Base
   rescue => e
     warn [e, server_id, http, path, datetime, branch, option, revision,
       ltsv, summary, depsuffixed_name,e.backtrace.join("\n")].inspect
-    exit
   end
 
   REG_RCNT = /name="(\d+T\d{6}Z).*?a>\s*(\S.*)<br/
@@ -240,6 +239,8 @@ class Report < ActiveRecord::Base
         end
       end
     end
+  rescue SocketError => e
+    p [e, uri, path, "failed to get_reports"]
   rescue Net::OpenTimeout => e
     p [e, uri, path, "failed to get_reports"]
   rescue => e
