@@ -250,7 +250,7 @@ class Report < ActiveRecord::Base
   end
 
   def self.fetch_recent
-    Server.all.each do |server|
+    Server.order(:id).all.each do |server|
       self.get_reports(server)
     end
 
