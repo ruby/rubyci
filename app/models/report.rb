@@ -214,11 +214,16 @@ class Report < ActiveRecord::Base
 
   def self.get_reports(server)
     uri = URI(server.uri)
-    path = basepath = uri.path
-    path += '?restype=container&comp=list&delimiter=%2F' if uri.host.end_with?('.blob.core.windows.net')
+    if uri.host.end_with?('s3.amazonaws.com')
+      basepath = uri.path
+      path = "?prefix=#{basepath[/\w+/]}%2F&delimiter=%2F"
+    else
+      path = basepath = uri.path
+      path += '?restype=container&comp=list&delimiter=%2F' if uri.host.end_with?('.blob.core.windows.net')
+    end
     Net::HTTP.start(uri.host, uri.port, open_timeout: 10, read_timeout: 10) do |h|
       puts "getting #{uri.host}#{path} ..."
-      h.get(path).body.scan(/(?:<Name>|(?:href|HREF)=")(ruby-[^"\/]+)/) do |depsuffixed_name,_|
+      h.get(path).body.scan(/(?:<Prefix>\w+\/|<Name>|(?:href|HREF)=")(ruby-[^"\/]+)/) do |depsuffixed_name,_|
         next if /\Aruby-(?:trunk|[1-9])/ !~ depsuffixed_name
 
         begin # LTSV
