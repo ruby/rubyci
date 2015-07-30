@@ -216,7 +216,7 @@ class Report < ActiveRecord::Base
     uri = URI(server.uri)
     if uri.host.end_with?('s3.amazonaws.com')
       basepath = uri.path
-      path = "?prefix=#{basepath[/\w+/]}%2F&delimiter=%2F"
+      path = "/?prefix=#{basepath[/\w+/]}%2F&delimiter=%2F"
     else
       path = basepath = uri.path
       path += '?restype=container&comp=list&delimiter=%2F' if uri.host.end_with?('.blob.core.windows.net')
