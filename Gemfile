@@ -1,6 +1,6 @@
 source 'https://rubygems.org'
 
-ruby '2.2.3' unless ENV['DEV']
+ruby ENV['CUSTOM_RUBY_VERSION'] || '2.3.0'
 
 gem 'rails', '~> 4.2.0'
 gem 'activeresource', require: 'active_resource'
