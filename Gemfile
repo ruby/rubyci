@@ -23,5 +23,5 @@ group :production do
   gem 'pg'
   gem 'rails_12factor'
   gem 'newrelic_rpm'
-  gem 'airbrake', '~> 4.0'
+  gem 'airbrake'
 end
