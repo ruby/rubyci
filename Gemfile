@@ -3,8 +3,6 @@ source 'https://rubygems.org'
 ruby ENV['CUSTOM_RUBY_VERSION'] || '2.3.1'
 
 gem 'rails', '~> 4.2.0'
-gem 'activeresource', require: 'active_resource'
-gem 'actionpack-page_caching'
 gem 'unicorn'
 
 gem 'sass-rails'
