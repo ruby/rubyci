@@ -1,4 +1,4 @@
-class Server < ActiveRecord::Base
+class Server < ApplicationRecord
   validates :name, :length => { :in => 3..30 }
   validates :arch, :inclusion => { :in => %w(- x86 x64 ppc64 ppc64le armhf sparc sparc64 aarch64 s390x),
         :message => "%{value} is not a valid arch" }
