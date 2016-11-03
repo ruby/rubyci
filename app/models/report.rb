@@ -268,7 +268,7 @@ class Report < ActiveRecord::Base
   def self.post_recent
     uri = nil
     path = nil
-    
+
     ServerResource.all.each do |server|
       uri = URI(server.uri)
       ary = []
@@ -301,9 +301,4 @@ class Report < ActiveRecord::Base
     puts e.backtrace
     return []
   end
-end
-
-class ServerResource < ActiveResource::Base
-  self.site="http://rubyci.herokuapp.com"
-  self.element_name = "server"
 end
