@@ -4,7 +4,7 @@ require 'open-uri'
 require 'chkbuild-ruby-info'
 require "tempfile"
 
-class Report < ActiveRecord::Base
+class Report < ApplicationRecord
   belongs_to :server
   validates :server_id, :presence => true
   validates :revision, :numericality => { :only_integer => true }

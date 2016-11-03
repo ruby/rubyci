@@ -2,7 +2,7 @@ source 'https://rubygems.org'
 
 ruby ENV['CUSTOM_RUBY_VERSION'] || '2.3.1'
 
-gem 'rails', '~> 4.2.0'
+gem 'rails', '~> 5.0.0'
 gem 'unicorn'
 
 gem 'sass-rails'
@@ -19,7 +19,6 @@ end
 
 group :production do
   gem 'pg'
-  gem 'rails_12factor'
   gem 'newrelic_rpm'
   gem 'airbrake'
 end

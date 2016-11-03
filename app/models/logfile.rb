@@ -1,4 +1,4 @@
-class Logfile < ActiveRecord::Base
+class Logfile < ApplicationRecord
   belongs_to :report
   validates :report_id, :presence => true
   validates :ext,
