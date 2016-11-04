@@ -24,7 +24,8 @@
           if @use_opacity && d > 10000
             style = %[ style="opacity:#{Math.log(Math::E, d/3600)}"]
           end
-          failuri = report.failuri || report.loguri
+          failuri = URI(report.failuri || report.loguri)
+          failuri = log_path("#{failuri.host}/#{failuri.path}")
         %>
         <tr class="<%= 'branch-separator' if curbr != report.branch %>"<%=raw style%>>
           <td class="server"><%= report.server.name %></td>
