@@ -15,5 +15,5 @@ Rails.application.routes.draw do
     end
   end
 
-  get 'logs/:id' => "logs#show", constraints: {id: /.*/}
+  resources :logs, only: [:show], constraints: {id: /.*/}
 end

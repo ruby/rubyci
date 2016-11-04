@@ -25,7 +25,10 @@
             style = %[ style="opacity:#{Math.log(Math::E, d/3600)}"]
           end
           failuri = URI(report.failuri || report.loguri)
-          failuri = log_path("#{failuri.host}/#{failuri.path}")
+          failuri = CGI.unescape(log_path(failuri.host + failuri.path))
+
+          diffuri = URI(report.diffuri)
+          diffuri = CGI.unescape(log_path(diffuri.host + diffuri.path))
         %>
         <tr class="<%= 'branch-separator' if curbr != report.branch %>"<%=raw style%>>
           <td class="server"><%= report.server.name %></td>
@@ -45,7 +48,7 @@
           <% else %>
             <td class="summary failure"><div><%= link_to report.shortsummary, failuri, title: report.shortsummary %></div></td>
           <% end %>
-          <td class="diff"><div><%= link_to report.diffstat, report.diffuri, title: report.diffstat %></div></td>
+          <td class="diff"><div><%= link_to report.diffstat, diffuri, title: report.diffstat %></div></td>
         </tr>
         <% curbr = report.branch %>
       <% end %>
