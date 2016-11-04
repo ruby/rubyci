@@ -1,6 +1,4 @@
 Rails.application.routes.draw do
-  get 'logs/show'
-
   root :to => 'reports#current'
 
   resources :reports do
@@ -15,6 +13,7 @@ Rails.application.routes.draw do
       post 'moveup'
       post 'movedown'
     end
-    resources :logs, only: [:show]
   end
+
+  get 'logs/:id' => "logs#show", constraints: {id: /.*/}
 end
