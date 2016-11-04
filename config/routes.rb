@@ -14,4 +14,6 @@ Rails.application.routes.draw do
       post 'movedown'
     end
   end
+
+  resources :logs, only: [:show], constraints: {id: /.*/}
 end
