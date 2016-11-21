@@ -60,7 +60,7 @@ GEM
       thor (~> 0.19.1)
     globalid (0.3.7)
       activesupport (>= 4.1.0)
-    heroku (3.43.13)
+    heroku (3.43.14)
       heroku-api (= 0.4.2)
       launchy (= 2.4.3)
       multi_json (= 1.11.2)
@@ -93,12 +93,12 @@ GEM
     net-ssh-gateway (1.2.0)
       net-ssh (>= 2.6.5)
     netrc (0.10.3)
-    newrelic_rpm (3.17.0.325)
+    newrelic_rpm (3.17.1.326)
     nio4r (1.2.1)
     nokogiri (1.6.8.1)
       mini_portile2 (~> 2.1.0)
     pg (0.19.0)
-    public_suffix (2.0.3)
+    public_suffix (2.0.4)
     rack (2.0.1)
     rack-test (0.6.3)
       rack (>= 1.0)
@@ -183,7 +183,7 @@ DEPENDENCIES
   unicorn
 
 RUBY VERSION
-   ruby 2.3.1p112
+   ruby 2.3.2p217
 
 BUNDLED WITH
    1.13.6
