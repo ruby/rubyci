@@ -12,7 +12,6 @@ gem 'coffee-rails'
 gem 'uglifier'
 
 group :development do
-  gem 'heroku'
   gem 'foreman'
   gem 'sqlite3'
 end
