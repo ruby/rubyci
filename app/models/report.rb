@@ -94,9 +94,9 @@ class Report < ApplicationRecord
   def self.store_log(server_id, http, path, datetime, branch, option, revision,
                      ltsv, summary, depsuffixed_name)
     begin
-      res = http.get(path)
-      res.value
       if ENV.key?('TREASURE_DATA_API_KEY')
+        res = http.get(path)
+        res.value
         cb = ChkBuildRubyInfo.new(res.body)
         cb.common_hash = {
           server_id: server_id,
