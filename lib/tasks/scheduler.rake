@@ -60,3 +60,28 @@ task :fetch_logfile => :environment do
     end
   end
 end
+
+desc "sync server settings"
+task :sync_servers => :environment do
+  require 'open-uri'
+  data = JSON(URI('http://rubyci.org/servers.json').read)
+  servers = {}
+  Server.all.each do |s|
+    servers[s.uri] = s
+  end
+  data.each do |x|
+    unless s = servers.delete(x['uri'])
+      s = Server.new
+      s.uri = x['uri']
+    end
+    s.name = x['name']
+    s.arch = x['arch']
+    s.os = x['os']
+    s.version = x['version']
+    s.ordinal = x['ordinal']
+    s.save!
+  end
+  servers.each_value do |s|
+    s.destroy
+  end
+end
