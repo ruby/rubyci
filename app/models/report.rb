@@ -174,7 +174,7 @@ class Report < ApplicationRecord
   end
 
   def self.scan_recent_ltsv(server, depsuffixed_name, body, http, recentpath)
-    return unless /\Aruby-([0-9a-z\.]+)(?:-(.*))?\z/ =~ depsuffixed_name
+    return unless /\A(?:cross)?ruby-([0-9a-z\.]+)(?:-(.*))?\z/ =~ depsuffixed_name
     branch = $1
     option = $2
     path = nil
@@ -227,8 +227,8 @@ class Report < ApplicationRecord
     end
     Net::HTTP.start(uri.host, uri.port, open_timeout: 10, read_timeout: 10) do |h|
       puts "getting #{uri.host}#{path} ..."
-      h.get(path).body.scan(/(?:<Prefix>[\w\-]+\/|<Name>|(?:href|HREF)=")(ruby-[^"\/]+)/) do |depsuffixed_name,_|
-        next if /\Aruby-(?:trunk|[1-9])/ !~ depsuffixed_name
+      h.get(path).body.scan(/(?:<Prefix>[\w\-]+\/|<Name>|(?:href|HREF)=")((?:cross)?ruby-[^"\/]+)/) do |depsuffixed_name,_|
+        next if /\Acrossruby-trunk-[a-z0-9]+|\Aruby-(?:trunk|[1-9])/ !~ depsuffixed_name
 
         begin # LTSV
           path = File.join(basepath, depsuffixed_name, 'recent.ltsv')

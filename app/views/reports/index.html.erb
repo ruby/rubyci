@@ -17,7 +17,72 @@
 
     <tbody>
       <% curbr = nil; now = Time.now.to_i %>
+      <% @cross_reports = []%>
       <% @reports.each do |report| %>
+        <%
+          if report.depsuffixed_name.start_with?('cross')
+            @cross_reports << report
+            next
+          end
+          d = now - report.datetime.to_i
+          style = nil
+          if @use_opacity && d > 10000
+            style = %[ style="opacity:#{Math.log(Math::E, d/3600)}"]
+          end
+          failuri = URI(report.failuri || report.loguri)
+          failuri = CGI.unescape(log_path(failuri.host + failuri.path))
+
+          diffuri = URI(report.diffuri)
+          diffuri = CGI.unescape(log_path(diffuri.host + diffuri.path))
+        %>
+        <tr class="<%= 'branch-separator' if curbr != report.branch %>"<%=raw style%>>
+          <td class="server"><%= report.server.name %></td>
+          <td class="datetime"><%= link_to report.sjstdt, report.loguri, title: report.jstdt %></td>
+          <td class="branch"><%= link_to report.branch, report.recenturi %></td>
+          <td class="option"><%= report.option %></td>
+          <td class="revision"><%= report.patchlevel + " " if report.patchlevel %><%= report.revision %></td>
+          <% if report.build %>
+            <td  class="build" colspan="3"><%= report.build %></td>
+          <% else %>
+            <td class="test"><%= report.test %></td>
+            <td class="testall"><%= report.testall %></td>
+            <td class="rubyspecc"><%= report.rubyspec %></td>
+          <% end %>
+          <% if /success / =~ report.summary %>
+            <td class="summary"><div><%= link_to report.shortsummary, failuri, title: report.shortsummary %></div></td>
+          <% else %>
+            <td class="summary failure"><div><%= link_to report.shortsummary, failuri, title: report.shortsummary %></div></td>
+          <% end %>
+          <td class="diff"><div><%= link_to report.diffstat, diffuri, title: report.diffstat %></div></td>
+        </tr>
+        <% curbr = report.branch %>
+      <% end %>
+    </tbody>
+  </table>
+</div>
+
+<h2>crossruby</h2>
+
+<div class="table-responsive table-responsive-border">
+  <table class="reports table table-striped table-bordered">
+    <thead>
+      <tr>
+        <th>Server</th>
+        <th>Datetime</th>
+        <th>Branch</th>
+        <th>Option</th>
+        <th>Revision</th>
+        <th>test</th>
+        <th>test-all</th>
+        <th>rubyspec</th>
+        <th>Summary</th>
+        <th>Diff</th>
+      </tr>
+    </thead>
+
+    <tbody>
+      <% curbr = nil; now = Time.now.to_i %>
+      <% @cross_reports.each do |report| %>
         <%
           d = now - report.datetime.to_i
           style = nil
