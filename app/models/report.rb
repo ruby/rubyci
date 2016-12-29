@@ -63,20 +63,24 @@ class Report < ApplicationRecord
     summary[/((?:no )?diff[^)>]*)/, 1]
   end
 
+  def depsuffixed_name
+    ltsv ? ltsv[/depsuffixed_name:([^\t]+)/, 1] : option ? "#{branch}-#{option}" : branch
+  end
+
   def branch_opts
     option ? "#{branch}-#{option}" : branch
   end
 
   def loguri
-    server.uri.chomp('/') + datetime.strftime("/ruby-#{branch_opts}/log/%Y%m%dT%H%M%SZ.log.html.gz")
+    server.uri.chomp('/') + datetime.strftime("/#{depsuffixed_name}/log/%Y%m%dT%H%M%SZ.log.html.gz")
   end
 
   def diffuri
-    server.uri.chomp('/') + datetime.strftime("/ruby-#{branch_opts}/log/%Y%m%dT%H%M%SZ.diff.html.gz")
+    server.uri.chomp('/') + datetime.strftime("/#{depsuffixed_name}/log/%Y%m%dT%H%M%SZ.diff.html.gz")
   end
 
   def failuri
-    meta ? "#{server.uri.chomp('/')}/ruby-#{branch_opts}/#{meta['compressed_failhtml_relpath']}" : nil
+    meta ? "#{server.uri.chomp('/')}/#{depsuffixed_name}/#{meta['compressed_failhtml_relpath']}" : nil
   end
 
   def recenturi
