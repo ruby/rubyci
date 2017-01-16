@@ -64,7 +64,12 @@ class Report < ApplicationRecord
   end
 
   def depsuffixed_name
-    ltsv ? ltsv[/depsuffixed_name:([^\t]+)/, 1] : option ? "#{branch}-#{option}" : branch
+    if /vc/ =~ server.uri
+      # mswin
+      "ruby-#{branch_opts}"
+    else
+      ltsv ? ltsv[/depsuffixed_name:([^\t]+)/, 1] : option ? "#{branch}-#{option}" : branch
+    end
   end
 
   def branch_opts
