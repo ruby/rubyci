@@ -85,7 +85,7 @@ class Report < ApplicationRecord
   end
 
   def failuri
-    meta ? "#{server.uri.chomp('/')}/#{depsuffixed_name}/#{meta['compressed_failhtml_relpath']}" : nil
+    meta&.[]('compressed_failhtml_relpath') ? "#{server.uri.chomp('/')}/#{depsuffixed_name}/#{meta['compressed_failhtml_relpath']}" : nil
   end
 
   def recenturi
