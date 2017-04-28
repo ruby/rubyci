@@ -1,5 +1,5 @@
 class ServersController < ApplicationController
-  before_filter :auth, except: [:index, :show]
+  before_action :auth, except: [:index, :show]
 
   # GET /servers
   # GET /servers.json
