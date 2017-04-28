@@ -13,6 +13,7 @@ gem 'uglifier'
 
 group :development do
   gem 'foreman'
+  gem 'puma'
   gem 'sqlite3'
 end
 

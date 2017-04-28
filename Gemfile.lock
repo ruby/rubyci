@@ -78,6 +78,7 @@ GEM
     nokogiri (1.7.1)
       mini_portile2 (~> 2.1.0)
     pg (0.20.0)
+    puma (3.8.2)
     rack (2.0.1)
     rack-test (0.6.3)
       rack (>= 1.0)
@@ -148,6 +149,7 @@ DEPENDENCIES
   jquery-rails
   newrelic_rpm
   pg
+  puma
   rails (~> 5.1.0)
   sass-rails
   sass-rails-bootstrap
