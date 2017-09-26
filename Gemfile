@@ -1,6 +1,6 @@
 source 'https://rubygems.org'
 
-ruby ENV['CUSTOM_RUBY_VERSION'] || '~> 2.4.1'
+ruby ENV['CUSTOM_RUBY_VERSION'] || '~> 2.4.2'
 
 gem 'rails', '~> 5.1.0'
 gem 'unicorn'
