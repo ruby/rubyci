@@ -8,7 +8,6 @@ gem 'unicorn'
 gem 'sass-rails'
 gem 'sass-rails-bootstrap'
 gem 'jquery-rails'
-gem 'coffee-rails'
 gem 'uglifier'
 
 group :development do
