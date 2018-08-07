@@ -4,6 +4,7 @@ ruby ENV['CUSTOM_RUBY_VERSION'] || '~> 2.5.1'
 
 gem 'rails', '~> 5.2.0'
 gem 'unicorn'
+gem 'bootsnap'
 
 gem 'sass-rails'
 gem 'sass-rails-bootstrap'
