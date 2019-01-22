@@ -15,5 +15,7 @@ Rails.application.routes.draw do
     end
   end
 
+  get "/coverage" => redirect("https://rubyci.s3.amazonaws.com/debian9-coverage/ruby-trunk/lcov/index.html")
+
   resources :logs, only: [:show], constraints: {id: /.*/}
 end
