@@ -141,7 +141,7 @@ GEM
       sprockets (>= 3.0.0)
     sq_mini_racer (0.2.4.sqreen2)
     sqlite3 (1.4.0)
-    sqreen (1.16.1)
+    sqreen (1.16.2)
       sq_mini_racer (~> 0.2.4.sqreen2)
     tdigest (0.1.1)
       rbtree (~> 0.4.2)
