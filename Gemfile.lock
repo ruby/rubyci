@@ -47,7 +47,7 @@ GEM
     airbrake-ruby (3.2.4)
       rbtree3 (~> 0.5)
     arel (9.0.0)
-    bootsnap (1.4.0)
+    bootsnap (1.4.1)
       msgpack (~> 1.0)
     builder (3.2.3)
     concurrent-ruby (1.1.4)
