@@ -3,7 +3,7 @@ source 'https://rubygems.org'
 ruby ENV['CUSTOM_RUBY_VERSION'] || '~> 2.6.2'
 
 gem 'rails', '~> 5.2.1'
-gem 'unicorn'
+gem 'puma'
 gem 'bootsnap'
 
 gem 'sass-rails'
@@ -13,7 +13,6 @@ gem 'uglifier'
 
 group :development do
   gem 'foreman'
-  gem 'puma'
   gem 'sqlite3'
 end
 
