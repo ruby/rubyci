@@ -13,10 +13,7 @@ class Report < ApplicationRecord
   validates :summary, :presence => true
 
   def revision
-    rev = super
-    # `> 60000` is workaround for migration period (some rows has invalid revision)
-    # can be removed later
-    rev > 60000 ? rev : summary[/\A\h{11}/]
+    ltsv[/ruby_rev:([\t]+)/, 1]
   end
 
   def dt
