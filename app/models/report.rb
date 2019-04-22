@@ -7,7 +7,7 @@ require "tempfile"
 class Report < ApplicationRecord
   belongs_to :server
   validates :server_id, :presence => true
-  validates :revision, :numericality => { :only_integer => true }
+  validates :revision, :numericality => { :only_integer => true }, allow_nil: true
   validates :datetime, :uniqueness => { :scope => [:server_id, :branch] }
   validates :branch, :presence => true
   validates :summary, :presence => true
