@@ -12,6 +12,13 @@ class Report < ApplicationRecord
   validates :branch, :presence => true
   validates :summary, :presence => true
 
+  def revision
+    rev = super
+    # `> 60000` is workaround for migration period (some rows has invalid revision)
+    # can be removed later
+    rev > 60000 ? rev : summary[/\A\h{11}/]
+  end
+
   def dt
     datetime.strftime("%Y%m%dT%H%M%SZ")
   end
@@ -196,7 +203,8 @@ class Report < ApplicationRecord
     end
     ary.reverse_each do |line, h, dt, datetime|
       puts "reporting #{server.name} #{depsuffixed_name} #{dt} ..."
-      revision = h["ruby_rev"].to_s[1,100].to_i
+      # subversion revision of ruby is less than 99999
+      revision = h["ruby_rev"].size <= 5 ? h["ruby_rev"].to_i : nil
       summary = h["title"]
       summary << ' success' if h["result"] == 'success'
       diff = h["different_sections"]
