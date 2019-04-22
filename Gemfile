@@ -14,6 +14,7 @@ gem 'uglifier'
 group :development do
   gem 'foreman'
   gem 'sqlite3'
+  gem 'listen'
 end
 
 group :production do
