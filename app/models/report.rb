@@ -13,7 +13,7 @@ class Report < ApplicationRecord
   validates :summary, :presence => true
 
   def revision
-    ltsv[/ruby_rev:([\t]+)/, 1]
+    ltsv[/ruby_rev:([^\t]+)/, 1]
   end
 
   def dt
