@@ -13,7 +13,38 @@ class Report < ApplicationRecord
   validates :summary, :presence => true
 
   def revision
-    ltsv[/ruby_rev:([^\t]+)/, 1]
+    rev = meta["ruby_rev"]
+    return rev if rev
+    rev = meta[meta_ruby_repo_key]
+    return rev[0, 10] if rev
+    nil
+  end
+
+  def revisionuri
+    if !revision
+      nil
+    elsif revision.start_with?('r')
+      "https://svn.ruby-lang.org/cgi-bin/viewvc.cgi?view=revision&revision=#{revision}"
+    else
+      "https://github.com/ruby/ruby/commit/#{revision}"
+    end
+  end
+
+  def meta_ruby_repo_key
+    svnpath = branch == 'trunk' ? branch : "branches/#{branch}"
+    [
+      %Q["http\\x3A//svn.ruby-lang.org/repos/ruby/#{svnpath}"],
+      %Q[http://svn.ruby-lang.org/repos/ruby/#{svnpath}],
+      %Q["https\\x3A//github.com/ruby/ruby"],
+      %Q[https://github.com/ruby/ruby],
+    ].find do |key|
+      if meta.include?(key)
+        return key
+      end
+    end
+    p meta.keys
+    p attributes
+    nil
   end
 
   def dt
