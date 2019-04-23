@@ -35,15 +35,22 @@
           diffuri = URI(report.diffuri)
           diffuri = CGI.unescape(log_path(diffuri.host + diffuri.path))
 
-          revision = report.revision || report.sha1
-          revision = "#{report.patchlevel} #{revision}" if report.patchlevel
+          if report.revision
+            revision = "r#{report.revision}"
+          elsif report.sha1
+            revision = report.sha1[0, 11]
+          end
+          if revision
+            revision = "#{report.patchlevel} #{revision}" if report.patchlevel
+            revision_link = link_to revision, report.revisionuri
+          end
         %>
         <tr class="<%= 'branch-separator' if curbr != report.branch %>"<%=raw style%>>
           <td class="server"><%= report.server.name %></td>
           <td class="datetime"><%= link_to report.sjstdt, report.loguri, title: report.jstdt %></td>
           <td class="branch"><%= link_to report.branch, report.recenturi %></td>
           <td class="option"><%= report.option %></td>
-          <td class="revision"><%= %><%= link_to revision, report.revisionuri %></td>
+          <td class="revision"><%= revision_link %></td>
           <% if report.build %>
             <td  class="build" colspan="3"><%= report.build %></td>
           <% else %>

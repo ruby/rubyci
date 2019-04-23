@@ -13,25 +13,24 @@ class Report < ApplicationRecord
   validates :summary, :presence => true
 
   def sha1
-    meta[meta_ruby_repo_key]
+    !ltsv ? nil : \
+    ltsv[%r<"https\\x3A//github.com/ruby/ruby":([^\t]+)>, 1] ||
+      ltsv[%r<https://github.com/ruby/ruby:([^\t]+)>, 1]
   end
 
   def revisionuri
     if revision
       "https://svn.ruby-lang.org/cgi-bin/viewvc.cgi?view=revision&revision=#{revision}"
-    else
+    elsif sha1
       "https://github.com/ruby/ruby/commit/#{sha1}"
+    else
+      nil
     end
   end
 
   def meta_ruby_repo_key
     return @meta_ruby_repo_key if @meta_ruby_repo_key
-    svnpath = branch == 'trunk' ? branch : "branches/#{branch.tr('-.', '_')}"
     [
-      %Q["http\\x3A//svn.ruby-lang.org/repos/ruby/#{svnpath}"],
-      %Q[http://svn.ruby-lang.org/repos/ruby/#{svnpath}],
-      %Q["https\\x3A//github.com/ruby/ruby"],
-      %Q[https://github.com/ruby/ruby],
     ].find do |key|
       if meta.include?(key)
         @meta_ruby_repo_key = key
