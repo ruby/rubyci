@@ -58,7 +58,7 @@
             <td class="testall"><%= report.testall %></td>
             <td class="rubyspecc"><%= report.rubyspec %></td>
           <% end %>
-          <% if report.shortsummary.include?("success") && !report.summary.include?("ABI:") %>
+          <% if report.shortsummary.include?("success") && !report.summary&.include?("ABI:") %>
             <td class="summary"><div><%= link_to report.shortsummary, failuri, title: report.shortsummary %></div></td>
           <% else %>
             <td class="summary failure"><div><%= link_to report.shortsummary, failuri, title: report.shortsummary %></div></td>
