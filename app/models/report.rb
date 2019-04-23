@@ -230,7 +230,7 @@ class Report < ApplicationRecord
     ary.reverse_each do |line, h, dt, datetime|
       puts "reporting #{server.name} #{depsuffixed_name} #{dt} ..."
       # subversion revision of ruby is less than 99999
-      revision = h["ruby_rev"]&.size <= 5 ? h["ruby_rev"].to_i : nil
+      revision = h["ruby_rev"] && h["ruby_rev"].size <= 5 ? h["ruby_rev"].to_i : nil
       summary = h["title"]
       summary << ' success' if h["result"] == 'success'
       diff = h["different_sections"]
