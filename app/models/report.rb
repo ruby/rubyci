@@ -31,7 +31,7 @@ class Report < ApplicationRecord
   end
 
   def meta_ruby_repo_key
-    svnpath = branch == 'trunk' ? branch : "branches/#{branch}"
+    svnpath = branch == 'trunk' ? branch : "branches/#{branch.tr('-.', '_')}"
     [
       %Q["http\\x3A//svn.ruby-lang.org/repos/ruby/#{svnpath}"],
       %Q[http://svn.ruby-lang.org/repos/ruby/#{svnpath}],
