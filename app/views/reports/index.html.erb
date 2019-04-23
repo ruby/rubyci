@@ -35,7 +35,7 @@
           diffuri = URI(report.diffuri)
           diffuri = CGI.unescape(log_path(diffuri.host + diffuri.path))
 
-          revision = report.revision
+          revision = report.revision || report.sha1
           revision = "#{report.patchlevel} #{revision}" if report.patchlevel
         %>
         <tr class="<%= 'branch-separator' if curbr != report.branch %>"<%=raw style%>>

@@ -12,25 +12,20 @@ class Report < ApplicationRecord
   validates :branch, :presence => true
   validates :summary, :presence => true
 
-  def revision
-    rev = meta["ruby_rev"]
-    return rev if rev
-    rev = meta[meta_ruby_repo_key]
-    return rev[0, 10] if rev
-    nil
+  def sha1
+    meta[meta_ruby_repo_key]
   end
 
   def revisionuri
-    if !revision
-      nil
-    elsif revision.start_with?('r')
+    if revision
       "https://svn.ruby-lang.org/cgi-bin/viewvc.cgi?view=revision&revision=#{revision}"
     else
-      "https://github.com/ruby/ruby/commit/#{revision}"
+      "https://github.com/ruby/ruby/commit/#{sha1}"
     end
   end
 
   def meta_ruby_repo_key
+    return @meta_ruby_repo_key if @meta_ruby_repo_key
     svnpath = branch == 'trunk' ? branch : "branches/#{branch.tr('-.', '_')}"
     [
       %Q["http\\x3A//svn.ruby-lang.org/repos/ruby/#{svnpath}"],
@@ -39,6 +34,7 @@ class Report < ApplicationRecord
       %Q[https://github.com/ruby/ruby],
     ].find do |key|
       if meta.include?(key)
+        @meta_ruby_repo_key = key
         return key
       end
     end
