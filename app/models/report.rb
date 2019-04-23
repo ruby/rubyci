@@ -42,8 +42,6 @@ class Report < ApplicationRecord
         return key
       end
     end
-    p meta.keys
-    p attributes
     nil
   end
 
