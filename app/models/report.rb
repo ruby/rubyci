@@ -162,8 +162,9 @@ class Report < ApplicationRecord
 
     cb.convert_to_td if cb
   rescue => e
-    warn [e, server_id, http, path, datetime, branch, option, revision,
-      ltsv, summary, depsuffixed_name,e.backtrace.join("\n")].inspect
+    warn [e, e&.record&.errors, server_id, http, path, datetime, branch, option, revision,
+      ltsv, summary, depsuffixed_name].inspect
+    warn e.backtrace
   end
 
   REG_RCNT = /name="(\d+T\d{6}Z).*?a>\s*(\S.*)<br/
@@ -230,7 +231,7 @@ class Report < ApplicationRecord
     ary.reverse_each do |line, h, dt, datetime|
       puts "reporting #{server.name} #{depsuffixed_name} #{dt} ..."
       # subversion revision of ruby is less than 99999
-      revision = h["ruby_rev"] && h["ruby_rev"].size <= 5 ? h["ruby_rev"].to_i : nil
+      revision = h["ruby_rev"] && h["ruby_rev"].size <= 6 ? h["ruby_rev"][1, 5].to_i : nil
       summary = h["title"]
       summary << ' success' if h["result"] == 'success'
       diff = h["different_sections"]
