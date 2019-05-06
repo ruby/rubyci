@@ -13,16 +13,20 @@ table.reports {
 			// width: 150px;
 		}
 		td.datetime {
-			// width: 90px;
+			text-align: center;
+			width: 75px;
 		}
 		td.branch {
 			text-align: center;
-			// width: 70px;
+			width: 45px;
+		}
+		td.option {
+			width: 45px;
 		}
 		td.revision {
-			text-align: right;
 			font-style: Menlo, monospace;
-			// width: 30px;
+			text-align: center;
+			width: 90px;
 		}
 		@for $i from 6 through 9 {
 			td:nth-child(#{$i}) {
