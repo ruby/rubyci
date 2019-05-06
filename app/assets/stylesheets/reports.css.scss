@@ -21,6 +21,7 @@ table.reports {
 		}
 		td.revision {
 			text-align: right;
+			font-style: Menlo, monospace;
 			// width: 30px;
 		}
 		@for $i from 6 through 9 {
