@@ -5,7 +5,7 @@ class ReportsController < ApplicationController
     @use_opacity = false
     @reports = Report.order('datetime DESC').limit(300).includes(:server)
 
-    str = params[:branch].to_s[/\A(?:trunk|[\d.]+)\z/]
+    str = params[:branch].to_s[/\A(?:trunk|master|[\d.]+)\z/]
     @reports = @reports.where(branch: str) if str
 
     str = params[:result].to_s[/\A(?:success|failure)\z/]

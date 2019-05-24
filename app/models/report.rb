@@ -263,7 +263,7 @@ class Report < ApplicationRecord
     Net::HTTP.start(uri.host, uri.port, open_timeout: 10, read_timeout: 10) do |h|
       puts "getting #{uri.host}#{path} ..."
       h.get(path).body.scan(/(?:<Prefix>[\w\-]+\/|<Name>|(?:href|HREF)=")((?:cross)?ruby-[^"\/]+)/) do |depsuffixed_name,_|
-        next if /\Acrossruby-trunk-[a-z0-9]+|\Aruby-(?:trunk|[1-9])/ !~ depsuffixed_name
+        next if /\Acrossruby-(?:trunk|master)-[a-z0-9]+|\Aruby-(?:trunk|master|[1-9])/ !~ depsuffixed_name
 
         begin # LTSV
           path = File.join(basepath, depsuffixed_name, 'recent.ltsv')

@@ -346,8 +346,8 @@ class ChkBuildRubyInfo
   def extract_branch
     h = { 'type' => 'branch' }
     case @last_hash["ruby_branch"]
-    when /\Atrunk\z/
-      h['branch'] = 'trunk'
+    when /\A(?:trunk|master)\z/
+      h['branch'] = 'trunk' # or should it be 'master'?
     when %r{\Abranches/ruby_(\d+)_(\d+)_(\d+)\z}
       h['branch'] = "#{$1}.#{$2}.#{$3}"
     when %r{\Abranches/ruby_(\d+)_(\d+)\z}
