@@ -32,23 +32,6 @@ class ReportsController < ApplicationController
         where("reports.datetime > (now() - interval '14 days')").
         where('reports.id IN (SELECT MAX(R.id) FROM reports R GROUP BY R.server_id, R.branch, R.option)').all
       @reports = @reports.to_a.delete_if{|report| report.server.nil? }
-
-      # A tentative hack for placing master-branch reports into the corresponding trunk ones
-      report_index = {}
-      @reports.each_with_index do |report, i|
-        report_index[[report.server.name, report.branch]] = i
-      end
-      @reports.dup.each_with_index do |report, j|
-        if report.branch == "master"
-          i = report_index[[report.server.name, "trunk"]]
-          if i
-            @reports[i] = report
-            @reports[j] = nil
-          end
-        end
-      end
-      @reports = @reports.compact
-
       render 'index'
     end
   end
