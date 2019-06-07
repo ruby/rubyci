@@ -32,6 +32,10 @@ class ReportsController < ApplicationController
         where("reports.datetime > (now() - interval '14 days')").
         where('reports.id IN (SELECT MAX(R.id) FROM reports R GROUP BY R.server_id, R.branch, R.option)').all
       @reports = @reports.to_a.delete_if{|report| report.server.nil? }
+
+      # Just remove reports for the old "trunk" branch
+      @reports = @reports.delete_if{|report| report.branch == "trunk" }
+
       render 'index'
     end
   end
