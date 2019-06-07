@@ -45,7 +45,7 @@
             revision_link = link_to revision, report.revisionuri
           end
         %>
-        <tr class="<%= 'branch-separator' if curbr != (report.branch == "master" ? "trunk" : report.branch) %>"<%=raw style%>>
+        <tr class="<%= 'branch-separator' if curbr != report.branch %>"<%=raw style%>>
           <td class="server"><%= report.server.name %></td>
           <td class="datetime"><%= link_to report.sjstdt, report.loguri, title: report.jstdt %></td>
           <td class="branch"><%= link_to report.branch, report.recenturi %></td>
@@ -65,7 +65,7 @@
           <% end %>
           <td class="diff"><div><%= link_to report.diffstat, diffuri, title: report.diffstat %></div></td>
         </tr>
-        <% curbr = (report.branch == "master" ? "trunk" : report.branch) %>
+        <% curbr = report.branch %>
       <% end %>
     </tbody>
   </table>
@@ -105,7 +105,7 @@
           diffuri = URI(report.diffuri)
           diffuri = CGI.unescape(log_path(diffuri.host + diffuri.path))
         %>
-        <tr class="<%= 'branch-separator' if curbr != (report.branch == "master" ? "trunk" : report.branch) %>"<%=raw style%>>
+        <tr class="<%= 'branch-separator' if curbr != report.branch %>"<%=raw style%>>
           <td class="server"><%= report.server.name %></td>
           <td class="datetime"><%= link_to report.sjstdt, report.loguri, title: report.jstdt %></td>
           <td class="branch"><%= link_to report.branch, report.recenturi %></td>
@@ -125,7 +125,7 @@
           <% end %>
           <td class="diff"><div><%= link_to report.diffstat, diffuri, title: report.diffstat %></div></td>
         </tr>
-        <% curbr = report.branch == "master" ? "trunk" : report.branch %>
+        <% curbr = report.branch %>
       <% end %>
     </tbody>
   </table>
