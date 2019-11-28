@@ -2,6 +2,14 @@
 
 An antenna for chkbuild servers.
 
+# Development
+
+To run this on local machine, following command can run development server:
+
+```
+% env DATABASE_URL=`heroku config:get -a rubyci DATABASE_URL` rails s
+```
+
 # License
 
 Copyright (C) 2011-2012 NARUSE, Yui. All rights reserved.
