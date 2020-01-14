@@ -55,7 +55,7 @@ GEM
     erubi (1.9.0)
     execjs (2.7.0)
     ffi (1.11.3)
-    foreman (0.86.0)
+    foreman (0.87.0)
     globalid (0.4.2)
       activesupport (>= 4.2.0)
     i18n (1.7.0)
