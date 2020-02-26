@@ -1,4 +1,11 @@
 class ReportsController < ApplicationController
+  # Put server name and branch which you want to hide without waiting for 14 days
+  DEPRECATED_SERVER_BRANCHES = {
+    # report_name => [branch]
+    # ex) 'Debian 8.8 x86_64' => ['master']
+    'CentOS 6.9 x86_64' => ['master'],
+  }
+
   # GET /reports
   # GET /reports.json
   def index
@@ -33,8 +40,7 @@ class ReportsController < ApplicationController
         where('reports.id IN (SELECT MAX(R.id) FROM reports R GROUP BY R.server_id, R.branch, R.option)').all
       @reports = @reports.to_a.delete_if{|report| report.server.nil? }
 
-      # Just remove reports for the old "trunk" branch
-      @reports = @reports.delete_if{|report| report.branch == "trunk" }
+      @reports = filter_deprecated(@reports)
 
       render 'index'
     end
@@ -48,6 +54,15 @@ class ReportsController < ApplicationController
     respond_to do |format|
       format.html # show.html.erb
       format.json { render json: @report }
+    end
+  end
+
+  private
+
+  def filter_deprecated(reports)
+    reports.select do |report|
+      deprecated_branches = DEPRECATED_SERVER_BRANCHES.fetch(report.server&.name, [])
+      report.branch != 'trunk' && deprecated_branches.exclude?(report.branch)
     end
   end
 end
