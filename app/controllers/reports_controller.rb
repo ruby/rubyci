@@ -3,7 +3,13 @@ class ReportsController < ApplicationController
   DEPRECATED_SERVER_BRANCHES = {
     # report_name => [branch]
     # ex) 'Debian 8.8 x86_64' => ['master']
-    'CentOS 6.9 x86_64' => ['master'],
+    'CentOS 6.9 x86_64'    => ['master'],
+    'Fedora 27 x86_64'     => ['master'],
+    'Fedora 28 x86_64'     => ['master'],
+    'Fedora 29 x86_64'     => ['master'],
+    'FreeBSD 11.2 zfs x64' => ['master'],
+    'Gentoo'               => ['master'],
+    'OpenSUSE leap 42.2'   => ['master'],
   }
 
   # GET /reports
