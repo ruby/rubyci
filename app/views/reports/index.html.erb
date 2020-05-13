@@ -29,11 +29,9 @@
           if @use_opacity && d > 10000
             style = %[ style="opacity:#{Math.log(Math::E, d/3600)}"]
           end
-          failuri = URI(report.failuri || report.loguri)
-          failuri = CGI.unescape(log_path(failuri.host + failuri.path))
+          failuri = report.failuri || report.loguri
 
-          diffuri = URI(report.diffuri)
-          diffuri = CGI.unescape(log_path(diffuri.host + diffuri.path))
+          diffuri = report.diffuri
 
           if report.revision
             revision = "r#{report.revision}"
@@ -99,11 +97,9 @@
           if @use_opacity && d > 10000
             style = %[ style="opacity:#{Math.log(Math::E, d/3600)}"]
           end
-          failuri = URI(report.failuri || report.loguri)
-          failuri = CGI.unescape(log_path(failuri.host + failuri.path))
+          failuri = report.failuri || report.loguri
 
-          diffuri = URI(report.diffuri)
-          diffuri = CGI.unescape(log_path(diffuri.host + diffuri.path))
+          diffuri = report.diffuri
         %>
         <tr class="<%= 'branch-separator' if curbr != report.branch %>"<%=raw style%>>
           <td class="server"><%= report.server.name %></td>
