@@ -56,7 +56,7 @@ GEM
       minitest (~> 5.1)
       tzinfo (~> 1.1)
       zeitwerk (~> 2.2, >= 2.2.2)
-    airbrake (10.0.3)
+    airbrake (10.0.4)
       airbrake-ruby (~> 4.13)
     airbrake-ruby (4.14.1)
       rbtree3 (~> 0.5)
