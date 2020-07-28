@@ -87,6 +87,7 @@ class ServersController < ApplicationController
     servers = Server.order(:ordinal).all
     idx = params[:id].to_i
     idx = servers.find_index{|x| x.id == idx }
+    raise ActionController::BadRequest, 'invalid id param' unless idx
     case idx
     when 0
       # nop
@@ -102,7 +103,7 @@ class ServersController < ApplicationController
     end
 
     respond_to do |format|
-      if cur.save
+      if cur&.save
         format.html { redirect_to servers_url }
         format.json { head :ok }
       else
@@ -116,6 +117,7 @@ class ServersController < ApplicationController
     servers = Server.order(:ordinal).all
     idx = params[:id].to_i
     idx = servers.find_index{|x| x.id == idx }
+    raise ActionController::BadRequest, 'invalid id param' unless idx
     case idx - servers.length
     when -1
       # nop
@@ -131,7 +133,7 @@ class ServersController < ApplicationController
     end
 
     respond_to do |format|
-      if cur.save
+      if cur&.save
         format.html { redirect_to servers_url }
         format.json { head :ok }
       else
