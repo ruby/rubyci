@@ -34,11 +34,11 @@ table.reports {
 				// width: 50px;
 			}
 			td:nth-child(#{$i}):empty {
-				background-color: #90FF90;
+				background-color: #F0FFF0;
 			}
 		}
 		td.summary {
-			background-color: #90FF90;
+			background-color: #F0FFF0;
 			div {
 				overflow: hidden;
 				white-space: nowrap;
