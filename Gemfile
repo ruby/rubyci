@@ -6,7 +6,7 @@ gem 'rails', '~> 6.0.3'
 gem 'puma'
 gem 'bootsnap'
 
-gem 'sass-rails', '~> 5.0'
+gem 'sass-rails', '~> 6.0'
 gem 'sass-rails-bootstrap'
 gem 'jquery-rails'
 gem 'uglifier'
