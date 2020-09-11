@@ -151,6 +151,6 @@ class ServersController < ApplicationController
   end
 
   def server_params
-    params.require(:server).permit(:name, :arch, :os, :version, :uri, :ordinal)
+    params.require(:server).permit(:name, :uri, :ordinal)
   end
 end
