@@ -20,6 +20,5 @@ end
 group :production do
   gem 'pg'
   gem 'newrelic_rpm'
-  gem 'sqreen'
   gem 'airbrake'
 end
