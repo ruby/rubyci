@@ -1,7 +1,7 @@
 Rails.application.routes.draw do
   root :to => 'reports#current'
 
-  resources :reports do
+  resources :reports, only: [:show, :index] do
     collection do
       get "current"
       post "receive_recent"
