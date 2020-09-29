@@ -14,19 +14,19 @@ table.reports {
 		}
 		td.datetime {
 			text-align: center;
-			width: 75px;
+			width: 75px !important;
 		}
 		td.branch {
 			text-align: center;
-			width: 45px;
+			width: 45px !important;
 		}
 		td.option {
-			width: 45px;
+			width: 45px !important;
 		}
 		td.revision {
 			font-family: Menlo, monospace;
 			text-align: center;
-			width: 90px;
+			width: 90px !important;
 		}
 		@for $i from 6 through 9 {
 			td:nth-child(#{$i}) {
@@ -43,7 +43,7 @@ table.reports {
 				overflow: hidden;
 				white-space: nowrap;
 				text-overflow: ellipsis;
-				width: 250px;
+				width: 250px !important;
 			}
 		}
 		td.summary.failure {
@@ -54,7 +54,7 @@ table.reports {
 				overflow: hidden;
 				white-space: nowrap;
 				text-overflow: ellipsis;
-				width: 100px;
+				width: 100px !important;
 			}
 		}
 	}
