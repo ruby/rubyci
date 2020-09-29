@@ -18,10 +18,6 @@ body {
   min-height: 40px !important;
 }
 
-.td, th {
-  padding: 0px !important;
-}
-
 .table-responsive-border {
   @media screen and (max-width: 767px) {
     border: 1px solid #ddd;

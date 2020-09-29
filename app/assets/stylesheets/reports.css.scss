@@ -3,7 +3,7 @@
 // You can use Sass (SCSS) here: http://sass-lang.com/
 table.reports {
 	th, td {
-		padding: 1px;
+		padding: 1px !important;
 	}
 	tr.branch-separator td {
 		border-top: solid 1px black;
@@ -14,19 +14,15 @@ table.reports {
 		}
 		td.datetime {
 			text-align: center;
-			width: 75px !important;
 		}
 		td.branch {
 			text-align: center;
-			width: 45px !important;
 		}
 		td.option {
-			width: 45px !important;
 		}
 		td.revision {
 			font-family: Menlo, monospace;
 			text-align: center;
-			width: 90px !important;
 		}
 		@for $i from 6 through 9 {
 			td:nth-child(#{$i}) {
