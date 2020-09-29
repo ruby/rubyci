@@ -1,4 +1,4 @@
-class ChangeSummaryFromReports < ActiveRecord::Migration
+class ChangeSummaryFromReports < ActiveRecord::Migration[4.2]
   def up
     change_column :reports, :summary, :text, limit: nil
   end

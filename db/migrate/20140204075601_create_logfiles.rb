@@ -1,4 +1,4 @@
-class CreateLogfiles < ActiveRecord::Migration
+class CreateLogfiles < ActiveRecord::Migration[4.2]
   def change
     create_table :logfiles do |t|
       t.integer :report_id

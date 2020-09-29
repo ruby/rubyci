@@ -1,4 +1,4 @@
-class AddArchOsVersionToServers < ActiveRecord::Migration
+class AddArchOsVersionToServers < ActiveRecord::Migration[4.2]
   def change
     add_column :servers, :arch, :string
     add_column :servers, :os, :string

@@ -1,4 +1,4 @@
-class AddLtsvToReport < ActiveRecord::Migration
+class AddLtsvToReport < ActiveRecord::Migration[4.2]
   def change
     add_index :reports, [:branch]
     add_index :reports, [:datetime]
