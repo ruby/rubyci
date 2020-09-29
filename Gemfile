@@ -7,7 +7,7 @@ gem 'puma'
 gem 'bootsnap'
 
 gem 'sass-rails'
-gem 'sass-rails-bootstrap'
+gem 'bootstrap-sass'
 gem 'jquery-rails'
 gem 'uglifier'
 

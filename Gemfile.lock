@@ -60,8 +60,13 @@ GEM
       airbrake-ruby (~> 5.0)
     airbrake-ruby (5.0.2)
       rbtree3 (~> 0.5)
+    autoprefixer-rails (10.0.0.2)
+      execjs
     bootsnap (1.4.8)
       msgpack (~> 1.0)
+    bootstrap-sass (3.4.1)
+      autoprefixer-rails (>= 5.2.1)
+      sassc (>= 2.0.0)
     builder (3.2.4)
     concurrent-ruby (1.1.7)
     crass (1.0.6)
@@ -136,9 +141,6 @@ GEM
     rbtree3 (0.6.0)
     sass-rails (6.0.0)
       sassc-rails (~> 2.1, >= 2.1.1)
-    sass-rails-bootstrap (2.2.2.3)
-      rails (>= 3.1)
-      sass-rails (>= 3.2.3)
     sassc (2.4.0)
       ffi (~> 1.9)
     sassc-rails (2.1.2)
@@ -176,6 +178,7 @@ PLATFORMS
 DEPENDENCIES
   airbrake
   bootsnap
+  bootstrap-sass
   foreman
   jquery-rails
   listen
@@ -184,7 +187,6 @@ DEPENDENCIES
   puma
   rails (~> 6.0.3)
   sass-rails
-  sass-rails-bootstrap
   sqlite3
   sqreen (< 1.17.2)
   uglifier
