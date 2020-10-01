@@ -260,7 +260,7 @@ class Report < ApplicationRecord
       path = basepath = uri.path
       path += '?restype=container&comp=list&delimiter=%2F' if uri.host.end_with?('.blob.core.windows.net')
     end
-    Net::HTTP.start(uri.host, uri.port, open_timeout: 10, read_timeout: 10) do |h|
+    Net::HTTP.start(uri.host, uri.port, open_timeout: 10, read_timeout: 10, use_ssl: uri.scheme == "https") do |h|
       puts "getting #{uri.host}#{path} ..."
       h.get(path).body.scan(/(?:<Prefix>[\w\-]+\/|<Name>|(?:href|HREF)=")((?:cross)?ruby-[^"\/]+)/) do |depsuffixed_name,_|
         next if /\Acrossruby-(?:trunk|master)-[a-z0-9]+|\Aruby-(?:trunk|master|[1-9])/ !~ depsuffixed_name
