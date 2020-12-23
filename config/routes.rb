@@ -18,5 +18,5 @@ Rails.application.routes.draw do
   get "/coverage" => redirect("https://rubyci.s3.amazonaws.com/coverage-latest-html/index.html")
   get "/doxygen" => redirect("https://rubyci.s3.amazonaws.com/doxygen-latest-html/index.html")
 
-  resources :logs, only: [:show], constraints: {id: /.*/}
+  # resources :logs, only: [:show], constraints: {id: /.*/} # remove because of cost
 end
