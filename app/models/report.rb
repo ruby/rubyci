@@ -260,22 +260,23 @@ class Report < ApplicationRecord
       path = basepath = uri.path
       path += '?restype=container&comp=list&delimiter=%2F' if uri.host.end_with?('.blob.core.windows.net')
     end
+    options = {'User-Agent' => 'rubyci/1.0 net-http'}
     Net::HTTP.start(uri.host, uri.port, open_timeout: 10, read_timeout: 10, use_ssl: uri.scheme == "https") do |h|
       puts "getting #{uri.host}#{path} ..."
-      h.get(path).body.scan(/(?:<Prefix>[\w\-]+\/|<Name>|(?:href|HREF)=")((?:cross)?ruby-[^"\/]+)/) do |depsuffixed_name,_|
+      h.get(path, options).body.scan(/(?:<Prefix>[\w\-]+\/|<Name>|(?:href|HREF)=")((?:cross)?ruby-[^"\/]+)/) do |depsuffixed_name,_|
         next if /\Acrossruby-(?:trunk|master)-[a-z0-9]+|\Aruby-(?:trunk|master|[1-9])/ !~ depsuffixed_name
 
         begin # LTSV
           path = File.join(basepath, depsuffixed_name, 'recent.ltsv')
           puts "getting #{uri.host}#{path} ..."
-          res = h.get(path)
+          res = h.get(path, options)
           res.value
           self.scan_recent_ltsv(server, depsuffixed_name, res.body, h, path)
         rescue Net::HTTPServerException
           begin # HTML
             path = File.join(basepath, depsuffixed_name, 'recent.html')
             puts "getting #{uri.host}#{path} ..."
-            res = h.get(path)
+            res = h.get(path, options)
             res.value
             self.scan_recent(server, depsuffixed_name, res.body, h, path)
           rescue Net::HTTPServerException
