@@ -1,7 +1,6 @@
 require 'net/http'
 require 'uri'
 require 'open-uri'
-require 'chkbuild-ruby-info'
 require "tempfile"
 
 class Report < ApplicationRecord
@@ -130,21 +129,6 @@ class Report < ApplicationRecord
 
   def self.store_log(server_id, http, path, datetime, branch, option, revision,
                      ltsv, summary, depsuffixed_name)
-    begin
-      if ENV.key?('TREASURE_DATA_API_KEY')
-        res = http.get(path)
-        res.value
-        cb = ChkBuildRubyInfo.new(res.body)
-        cb.common_hash = {
-          server_id: server_id,
-          depsuffixed_name: depsuffixed_name,
-          epoch: datetime.to_i,
-          revision: revision,
-        }
-      end
-    rescue Net::HTTPServerException
-    end
-
     Report.create!(
       server_id: server_id,
       datetime: datetime,
@@ -154,8 +138,6 @@ class Report < ApplicationRecord
       ltsv: ltsv,
       summary: summary
     )
-
-    cb.convert_to_td if cb
   rescue => e
     warn [e, e&.record&.errors, server_id, http, path, datetime, branch, option, revision,
       ltsv, summary, depsuffixed_name].inspect
