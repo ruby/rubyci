@@ -127,23 +127,6 @@ class Report < ApplicationRecord
     end
   end
 
-  def self.store_log(server_id, http, path, datetime, branch, option, revision,
-                     ltsv, summary, depsuffixed_name)
-    Report.create!(
-      server_id: server_id,
-      datetime: datetime,
-      branch: branch,
-      option: option,
-      revision: revision,
-      ltsv: ltsv,
-      summary: summary
-    )
-  rescue => e
-    warn [e, e&.record&.errors, server_id, http, path, datetime, branch, option, revision,
-      ltsv, summary, depsuffixed_name].inspect
-    warn e.backtrace
-  end
-
   REG_RCNT = /name="(\d+T\d{6}Z).*?a>\s*(\S.*)<br/
 
   def self.sql_datetime(col)
@@ -154,42 +137,7 @@ class Report < ApplicationRecord
     end
   end
 
-  def self.scan_recent(server, depsuffixed_name, body, http, recentpath)
-    return unless /\Aruby-([0-9a-z\.]+)(?:-(.*))?\z/ =~ depsuffixed_name
-    branch = $1
-    option = $2
-    latest = Report.where(server_id: server.id, branch: branch, option: option).
-      order("#{sql_datetime("datetime")} ASC").last
-
-    ary = []
-    body.scan(REG_RCNT) do |dt, summary|
-      datetime = Time.utc(*dt.unpack("A4A2A2xA2A2A2"))
-      break if latest and datetime <= latest.datetime
-      ary << [dt, summary, datetime]
-    end
-
-    ary.reverse_each do |dt, summary, datetime|
-      puts "reporting #{server.name} #{depsuffixed_name} #{dt} ..."
-      revision = (summary[/\br(\d+)\b/, 1] ||
-                  summary[/\brev:(\d+)\b/, 1] ||
-                  summary[/(?:trunk|revision)\S* (\d+)\x29/, 1]).to_i
-
-      store_log(
-        server.id,
-        http,
-        File.join(recentpath, "../log/#{dt}.log.txt.gz"),
-        datetime,
-        branch,
-        option,
-        revision,
-        nil,
-        summary.gsub(/<[^>]*>/, ''),
-        depsuffixed_name,
-      )
-    end
-  end
-
-  def self.scan_recent_ltsv(server, depsuffixed_name, body, http, recentpath)
+  def self.scan_recent_ltsv(server, depsuffixed_name, body)
     return unless /\A(?:cross)?ruby-([0-9a-z\.]+)(?:-(.*))?\z/ =~ depsuffixed_name
     branch = $1
     option = $2
@@ -214,17 +162,14 @@ class Report < ApplicationRecord
       diff = h["different_sections"]
       summary << (diff ? " (diff:#{diff})" : " (no diff)")
 
-      store_log(
-        server.id,
-        http,
-        File.join(recentpath, "../log/#{dt}.log.txt.gz"),
-        datetime,
-        branch,
-        option,
-        revision,
-        line,
-        summary.gsub(/<[^>]*>/, ''),
-        depsuffixed_name,
+      Report.create!(
+        server_id: server.id,
+        datetime: datetime,
+        branch: branch,
+        option: option,
+        revision: revision,
+        ltsv: line,
+        summary: summary.gsub(/<[^>]*>/, ''),
       )
     end
   rescue RuntimeError => e # It seems not a chkbuild log
@@ -233,12 +178,15 @@ class Report < ApplicationRecord
     warn [e, server.uri, path, "failed to scan_reports", e.backtrace].inspect
   end
 
-  def self.get_reports(server)
+  def self.get_reports(s3, server)
     uri = URI(server.uri)
-    if uri.host.end_with?('s3.amazonaws.com')
+    if uri.host == 'rubyci.s3.amazonaws.com'
+      return self.get_reports_rubyci_s3(s3, server)
+    elsif uri.host.end_with?('s3.amazonaws.com')
       basepath = uri.path
       path = "/?prefix=#{basepath[/[\w\-]+/]}%2F&delimiter=%2F"
     else
+      return
       path = basepath = uri.path
       path += '?restype=container&comp=list&delimiter=%2F' if uri.host.end_with?('.blob.core.windows.net')
     end
@@ -253,16 +201,8 @@ class Report < ApplicationRecord
           puts "getting #{uri.host}#{path} ..."
           res = h.get(path, options)
           res.value
-          self.scan_recent_ltsv(server, depsuffixed_name, res.body, h, path)
+          self.scan_recent_ltsv(server, depsuffixed_name, res.body)
         rescue Net::HTTPServerException
-          begin # HTML
-            path = File.join(basepath, depsuffixed_name, 'recent.html')
-            puts "getting #{uri.host}#{path} ..."
-            res = h.get(path, options)
-            res.value
-            self.scan_recent(server, depsuffixed_name, res.body, h, path)
-          rescue Net::HTTPServerException
-          end
         end
       end
     end
@@ -276,10 +216,44 @@ class Report < ApplicationRecord
     return []
   end
 
-  def self.fetch_recent
-    Server.order(:id).all.each do |server|
-      self.get_reports(server)
+  def self.get_reports_rubyci_s3(s3, server)
+    return unless %r<https?://rubyci.s3.amazonaws.com/(?<prefix>[^/]+)> =~ server.uri
+    bucket = s3.bucket('rubyci')
+    objects = bucket.objects({
+      delimiter: 'o',
+      prefix: prefix,
+    })
+    count = 0
+    objects.each do |object|
+      count += 1
+      if %r<\A[^/]+/(?<depsuffixed_name>(?:cross)?ruby-[^\/]+)/recent.ltsv\z> =~ object.key
+        puts "#{object.key} #{object.etag}"
+        recent = Recent.find_by(server_id: server.id, name: object.key)
+        if recent
+          next if recent.etag == object.etag
+          recent.etag = recent.etag
+        else
+          recent = Recent.new(server_id: server.id, name: object.key, etag: object.etag)
+        end
+        self.scan_recent_ltsv(server, depsuffixed_name, object.get.body)
+        recent.save!
+      end
     end
+    count
+  end
+
+  def self.fetch_recent
+    s3 = Aws::S3::Resource.new(region: 'ap-northeast-1')
+    ary = []
+    Server.order(:id).all.each do |server|
+      puts server.uri
+      if %r<\Ahttps?://rubyci.s3.amazonaws.com/>.match?(server.uri)
+        t = Time.now
+        n = self.get_reports_rubyci_s3(s3, server)
+        ary << [server.uri, Time.now-t, n]
+      end
+    end
+    pp ary
   end
 
   def self.post_recent

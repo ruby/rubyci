@@ -11,6 +11,8 @@ gem 'bootstrap-sass'
 gem 'jquery-rails'
 gem 'uglifier'
 
+gem 'aws-sdk-s3', '~> 1'
+
 group :development do
   gem 'foreman'
   gem 'sqlite3'
