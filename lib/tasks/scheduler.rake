@@ -75,11 +75,19 @@ task :sync_servers => :environment do
       s.uri = x['uri']
     end
     s.name = x['name']
-    s.arch = x['arch']
-    s.os = x['os']
-    s.version = x['version']
     s.ordinal = x['ordinal']
-    s.save!
+    begin
+      s.save!
+    rescue => e
+      if e.message == "Validation failed: Ordinal has already been taken"
+        STDERR.puts e.message
+        s.ordinal = rand * 100
+        s.save!
+        STDERR.puts "Validation failer repaired"
+      else
+        raise
+      end
+    end
   end
   servers.each_value do |s|
     s.destroy
