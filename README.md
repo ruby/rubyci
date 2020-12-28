@@ -10,6 +10,10 @@ To run this on local machine, following command can run development server:
 % env DATABASE_URL=`heroku config:get -a rubyci DATABASE_URL` rails s
 ```
 
+# Storage note
+
+* To optimize S3 Access, extra directories should have 'o' character like 'log' and 'lcov'.
+
 # License
 
 Copyright (C) 2011-2012 NARUSE, Yui. All rights reserved.
