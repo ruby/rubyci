@@ -61,7 +61,7 @@ class ServersController < ApplicationController
     @server = Server.find(params[:id])
 
     respond_to do |format|
-      if @server.update_attributes(server_params)
+      if @server.update(server_params)
         format.html { redirect_to @server, notice: 'Server was successfully updated.' }
         format.json { head :ok }
       else
