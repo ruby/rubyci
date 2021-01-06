@@ -18,5 +18,5 @@ Rails.application.routes.draw do
   get "/coverage" => redirect("https://rubyci.s3.amazonaws.com/coverage-latest-html/index.html")
   get "/doxygen" => redirect("https://rubyci.s3.amazonaws.com/doxygen-latest-html/index.html")
 
-  # For details on the DSL available within this file, see https://guides.rubyonrails.org/routing.html
+  resources :logs, only: [:show], constraints: {id: /.*/}
 end
