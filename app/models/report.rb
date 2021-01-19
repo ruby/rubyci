@@ -221,7 +221,7 @@ class Report < ApplicationRecord
     bucket = s3.bucket('rubyci')
     objects = bucket.objects({
       delimiter: 'o',
-      prefix: prefix,
+      prefix: prefix + "/",
     })
     count = 0
     objects.each do |object|
