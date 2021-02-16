@@ -64,7 +64,7 @@ GEM
       airbrake-ruby (~> 5.1)
     airbrake-ruby (5.2.0)
       rbtree3 (~> 0.5)
-    autoprefixer-rails (10.2.0.0)
+    autoprefixer-rails (10.2.4.0)
       execjs
     aws-eventstream (1.1.0)
     aws-partitions (1.427.0)
