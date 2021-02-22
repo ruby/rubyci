@@ -2,7 +2,7 @@ source 'https://rubygems.org'
 
 ruby ENV['CUSTOM_RUBY_VERSION'] || '~> 2.7.1'
 
-gem 'rails', '~> 6.1.2'
+gem 'rails', '~> 6.1.3'
 gem 'puma'
 gem 'bootsnap'
 
