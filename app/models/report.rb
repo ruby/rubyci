@@ -220,8 +220,8 @@ class Report < ApplicationRecord
     return unless %r<https?://rubyci.s3.amazonaws.com/(?<prefix>[^/]+)> =~ server.uri
     bucket = s3.bucket('rubyci')
     objects = bucket.objects({
-      delimiter: 'o',
-      prefix: prefix + "/" + (prefix == "crossruby" ? "cross" : ""),
+      delimiter: 'log',
+      prefix: prefix + "/",
     })
     count = 0
     objects.each do |object|
