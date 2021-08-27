@@ -62,13 +62,13 @@ GEM
       zeitwerk (~> 2.3)
     airbrake (11.0.3)
       airbrake-ruby (~> 5.1)
-    airbrake-ruby (5.2.0)
+    airbrake-ruby (5.2.1)
       rbtree3 (~> 0.5)
-    autoprefixer-rails (10.2.4.0)
-      execjs
+    autoprefixer-rails (10.3.1.0)
+      execjs (~> 2)
     aws-eventstream (1.1.1)
-    aws-partitions (1.488.0)
-    aws-sdk-core (3.119.0)
+    aws-partitions (1.491.0)
+    aws-sdk-core (3.119.1)
       aws-eventstream (~> 1, >= 1.0.2)
       aws-partitions (~> 1, >= 1.239.0)
       aws-sigv4 (~> 1.1)
@@ -82,7 +82,7 @@ GEM
       aws-sigv4 (~> 1.1)
     aws-sigv4 (1.2.4)
       aws-eventstream (~> 1, >= 1.0.2)
-    bootsnap (1.7.7)
+    bootsnap (1.8.1)
       msgpack (~> 1.0)
     bootstrap-sass (3.4.1)
       autoprefixer-rails (>= 5.2.1)
@@ -91,7 +91,7 @@ GEM
     concurrent-ruby (1.1.9)
     crass (1.0.6)
     erubi (1.10.0)
-    execjs (2.7.0)
+    execjs (2.8.1)
     ffi (1.15.3)
     foreman (0.87.2)
     globalid (0.5.2)
@@ -149,7 +149,7 @@ GEM
     rails-dom-testing (2.0.3)
       activesupport (>= 4.2.0)
       nokogiri (>= 1.6)
-    rails-html-sanitizer (1.4.1)
+    rails-html-sanitizer (1.4.2)
       loofah (~> 2.3)
     railties (6.1.4.1)
       actionpack (= 6.1.4.1)
@@ -215,4 +215,4 @@ RUBY VERSION
    ruby 2.7.2p137
 
 BUNDLED WITH
-   2.2.5
+   2.2.26
