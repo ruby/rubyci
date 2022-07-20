@@ -231,13 +231,11 @@ class Report < ApplicationRecord
         puts "key:#{object.key} etag:#{object.etag} recent:#{recent&.etag}"
         if recent
           next if recent.etag == object.etag
-          puts "update etag!"
-          recent.etag = recent.etag
+          recent.etag = object.etag
         else
           recent = Recent.new(server_id: server.id, name: object.key, etag: object.etag)
         end
         self.scan_recent_ltsv(server, depsuffixed_name, object.get.body)
-        puts "save!"
         recent.save!
       end
     end
