@@ -227,15 +227,17 @@ class Report < ApplicationRecord
     objects.each do |object|
       count += 1
       if %r<\A[^/]+/(?<depsuffixed_name>(?:cross)?ruby-[^\/]+)/recent.ltsv\z> =~ object.key
-        puts "#{object.key} #{object.etag}"
         recent = Recent.find_by(server_id: server.id, name: object.key)
+        puts "key:#{object.key} etag:#{object.etag} recent:#{recent&.etag}"
         if recent
           next if recent.etag == object.etag
+          puts "update etag!"
           recent.etag = recent.etag
         else
           recent = Recent.new(server_id: server.id, name: object.key, etag: object.etag)
         end
         self.scan_recent_ltsv(server, depsuffixed_name, object.get.body)
+        puts "save!"
         recent.save!
       end
     end
