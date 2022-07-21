@@ -225,22 +225,23 @@ class Report < ApplicationRecord
       prefix: prefix + "/",
     })
     count = 0
-    objects.each do |object|
-      if %r<\A[^/]+/(?<depsuffixed_name>(?:cross)?ruby-[^\/]+)/recent.ltsv\z> =~ object.key
-        recent = Recent.find_by(server_id: server.id, name: object.key)
-        puts "key:#{object.key} etag:#{object.etag} recent:#{recent&.etag}"
+    objects.each do |object_summary|
+      if %r<\A[^/]+/(?<depsuffixed_name>(?:cross)?ruby-[^\/]+)/recent.ltsv\z> =~ object_summary.key
+        recent = Recent.find_by(server_id: server.id, name: object_summary.key)
+        puts "key:#{object_summary.key} etag:#{object_summary.etag} recent:#{recent&.etag}"
         if recent
-          next if recent.etag == object.etag
-          recent.etag = object.etag
+          next if recent.etag == object_summary.etag
+          recent.etag = object_summary.etag
         else
-          recent = Recent.new(server_id: server.id, name: object.key, etag: object.etag)
+          recent = Recent.new(server_id: server.id, name: object_summary.key, etag: object_summary.etag)
         end
+        object = object_summary.get
         if object.content_encoding == "gzip"
-          Zlib::GzipReader.wrap(object.get.body) do |gz|
+          Zlib::GzipReader.wrap(object.body) do |gz|
             self.scan_recent_ltsv(server, depsuffixed_name, gz)
           end
         else
-          self.scan_recent_ltsv(server, depsuffixed_name, object.get.body)
+          self.scan_recent_ltsv(server, depsuffixed_name, object.body)
         end
         recent.save!
         count += 1
