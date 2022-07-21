@@ -2,6 +2,7 @@ require 'net/http'
 require 'uri'
 require 'open-uri'
 require "tempfile"
+require "zlib"
 
 class Report < ApplicationRecord
   belongs_to :server
@@ -234,7 +235,13 @@ class Report < ApplicationRecord
         else
           recent = Recent.new(server_id: server.id, name: object.key, etag: object.etag)
         end
-        self.scan_recent_ltsv(server, depsuffixed_name, object.get.body)
+        if object.content_encoding == "gzip"
+          Zlib::GzipReader.wrap(object.get.body) do |gz|
+            self.scan_recent_ltsv(server, depsuffixed_name, gz)
+          end
+        else
+          self.scan_recent_ltsv(server, depsuffixed_name, object.get.body)
+        end
         recent.save!
         count += 1
       end
