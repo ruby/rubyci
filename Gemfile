@@ -5,8 +5,6 @@ ruby ENV['CUSTOM_RUBY_VERSION'] || '~> 3.2.0'
 gem 'rails', '~> 7.0'
 gem 'puma'
 gem 'bootsnap'
-
-gem 'bootstrap-sass'
 gem 'propshaft'
 
 gem 'aws-sdk-s3', '~> 1'
