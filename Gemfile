@@ -17,6 +17,9 @@ group :development do
   gem 'foreman'
   gem 'sqlite3'
   gem 'listen'
+  group :assets do
+    gem 'jsbundling-rails'
+  end
 end
 
 group :production do
