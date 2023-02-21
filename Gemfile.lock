@@ -92,6 +92,8 @@ GEM
     builder (3.2.4)
     concurrent-ruby (1.2.0)
     crass (1.0.6)
+    cssbundling-rails (1.1.2)
+      railties (>= 6.0.0)
     date (3.3.3)
     erubi (1.12.0)
     execjs (2.8.1)
@@ -217,6 +219,7 @@ DEPENDENCIES
   aws-sdk-s3 (~> 1)
   bootsnap
   bootstrap-sass
+  cssbundling-rails
   foreman
   jquery-rails
   jsbundling-rails

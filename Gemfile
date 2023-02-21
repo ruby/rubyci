@@ -19,6 +19,7 @@ group :development do
   gem 'listen'
   group :assets do
     gem 'jsbundling-rails'
+    gem 'cssbundling-rails'
   end
 end
 
