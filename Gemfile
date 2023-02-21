@@ -7,7 +7,6 @@ gem 'puma'
 gem 'bootsnap'
 
 gem 'bootstrap-sass'
-gem 'jquery-rails'
 gem 'propshaft'
 
 gem 'aws-sdk-s3', '~> 1'
