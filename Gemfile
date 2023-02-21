@@ -6,10 +6,9 @@ gem 'rails', '~> 7.0'
 gem 'puma'
 gem 'bootsnap'
 
-gem 'sass-rails'
 gem 'bootstrap-sass'
 gem 'jquery-rails'
-gem 'uglifier'
+gem 'propshaft'
 
 gem 'aws-sdk-s3', '~> 1'
 
