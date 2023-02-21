@@ -17,32 +17,41 @@
   </head>
   <body>
 
-    <div class="navbar navbar-default navbar-fixed-top py-1">
+    <div class="navbar navbar-expand-md navbar-light fixed-top bg-light">
       <div class="container-fluid">
-        <div class="navbar-header">
-          <button type="button" class="navbar-toggle collapsed" data-target="#nav-collapse" data-toggle="collapse">
-            <span class="icon-bar"></span>
-            <span class="icon-bar"></span>
-            <span class="icon-bar"></span>
-          </button>
-          <a class="navbar-brand" href="/">Ruby CI</a>
-        </div>
-        <div class="collapse navbar-collapse" id="nav-collapse">
-          <ul class="nav navbar-nav navbar-right">
-            <li><%= link_to "Current Reports", "/reports" %></li>
-            <li><%= link_to "Latest Reports", "/" %></li>
+        <a class="navbar-brand" href="/">Ruby CI</a>
+        <div class="collapse navbar-collapse" id="navbarCollapse">
+          <ul class="navbar-nav ms-auto mb-2 mb-md-0">
+            <li class="nav-item"><%= link_to "Current Reports", "/reports", class: "nav-link" %></li>
+            <li class="nav-item"><%= link_to "Latest Reports", "/", class: "nav-link" %></li>
           </ul>
         </div><!--/.nav-collapse -->
       </div>
     </div>
 
-    <div class="container">
+    <div class="container-fluid">
       <div class="content">
         <div class="row">
           <div class="span12">
+            <!-- app/views/reports/index.html.erb -->
             <%= yield %>
           </div>
         </div><!--/row-->
+
+        <div class="alert alert-info">
+          <div>
+            F: <span class="label label-important">failure</span>
+            E: <span class="label label-important">error</span>
+            S: <span class="label label-info">skip</span>
+            failed: <span class="label label-important">critical failures</span>
+          </div>
+          <div>
+            see also <a href="https://rubyci.org/coverage">Code coverage report</a>,
+            <a href="http://ci.rvm.jp/">ci.rvm.jp</a>,
+            and <a href="http://www.narihiro.info/crubybenci/">CRuby Benchmark CI</a>.
+          </div>
+        </div>
+
       </div><!--/content-->
 
       <footer>
