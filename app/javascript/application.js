@@ -1,7 +1,8 @@
 // Entry point for the build script in your package.json
 import $ from 'jquery'
 import {} from 'jquery-ujs'
-import * as bootstrap from "bootstrap"
+import * as Popper from "@popperjs/core"
+import * as Bootstrap from "bootstrap"
 
 $(function() {
     $("a[rel=popover]").popover();

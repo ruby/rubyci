@@ -6,14 +6,11 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title><%= content_for?(:title) ? yield(:title) : "RubyCI" %></title>
     <%= csrf_meta_tags %>
-
-    <%= stylesheet_link_tag "application", :media => "all" %>
-
     <!-- For all other devices -->
     <!-- Size should be 32 x 32 pixels -->
     <%= favicon_link_tag 'favicon.ico', :rel => 'shortcut icon' %>
-    <%= javascript_include_tag "application", "data-turbo-track": "reload", defer: true %>
-    <%= stylesheet_link_tag "application" %>
+    <%= stylesheet_link_tag "application", :media => "all" %>
+    <%= javascript_importmap_tags %>
   </head>
   <body>
 
@@ -76,11 +73,5 @@
       </footer>
 
     </div> <!-- /container -->
-
-    <!-- Javascripts
-    ================================================== -->
-    <!-- Placed at the end of the document so the pages load faster -->
-    <%= javascript_include_tag "application", defer: true %>
-
   </body>
 </html>

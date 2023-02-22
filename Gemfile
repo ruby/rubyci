@@ -5,18 +5,15 @@ ruby ENV['CUSTOM_RUBY_VERSION'] || '~> 3.2.1'
 gem 'rails', '~> 7.0'
 gem 'puma'
 gem 'bootsnap'
-gem 'propshaft'
-
+gem "importmap-rails"
+gem "propshaft"
+gem "dartsass-rails"
 gem 'aws-sdk-s3', '~> 1'
 
 group :development do
   gem 'foreman'
   gem 'sqlite3'
   gem 'listen'
-  group :assets do
-    gem 'jsbundling-rails'
-    gem 'cssbundling-rails'
-  end
 end
 
 group :production do
