@@ -23,3 +23,5 @@ group :production do
   gem 'pg'
 end
 
+
+gem "dartsass-rails", "~> 0.4.1"
