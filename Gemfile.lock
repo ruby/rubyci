@@ -87,8 +87,6 @@ GEM
     builder (3.2.4)
     concurrent-ruby (1.2.0)
     crass (1.0.6)
-    cssbundling-rails (1.1.2)
-      railties (>= 6.0.0)
     dartsass-rails (0.4.1)
       railties (>= 6.0.0)
     date (3.3.3)
@@ -136,11 +134,6 @@ GEM
     nokogiri (1.14.1-x86_64-darwin)
       racc (~> 1.4)
     pg (1.4.5)
-    propshaft (0.6.4)
-      actionpack (>= 7.0.0)
-      activesupport (>= 7.0.0)
-      rack
-      railties (>= 7.0.0)
     puma (6.1.0)
       nio4r (~> 2.0)
     racc (1.6.2)
@@ -196,13 +189,11 @@ PLATFORMS
 DEPENDENCIES
   aws-sdk-s3 (~> 1)
   bootsnap
-  cssbundling-rails
-  dartsass-rails (~> 0.4.1)
+  dartsass-rails
   foreman
   importmap-rails
   listen
   pg
-  propshaft
   puma
   rails (~> 7.0)
   sqlite3
