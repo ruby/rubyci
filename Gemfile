@@ -22,3 +22,5 @@ end
 group :production do
   gem 'pg'
 end
+
+gem "importmap-rails", "~> 1.1"
