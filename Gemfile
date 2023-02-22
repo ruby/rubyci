@@ -6,6 +6,7 @@ gem 'rails', '~> 7.0'
 gem 'puma'
 gem 'bootsnap'
 gem "importmap-rails"
+gem "propshaft"
 gem "dartsass-rails"
 gem 'aws-sdk-s3', '~> 1'
 
