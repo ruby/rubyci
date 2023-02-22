@@ -1,3 +1,3 @@
 // Entry point for your Sass build
-@use 'bootstrap/scss/bootstrap';
+@use 'bootstrap.min'; // vendor/assets/stylesheets/bootstrap.min.css: v5.2.3
 @use "./bootstrap_and_overrides";
