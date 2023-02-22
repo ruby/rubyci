@@ -1,3 +1,135 @@
 // Entry point for your Sass build
-@use 'bootstrap.min'; // vendor/assets/stylesheets/bootstrap.min.css: v5.2.3
-@use "./bootstrap_and_overrides";
+// vendor/assets/stylesheets/bootstrap.min.css: v5.2.3
+@use 'bootstrap.min'; 
+
+body {
+  padding-top: 50px;
+  font-size: 13px;
+}
+
+.container-fluid {
+  max-width: 1200px;
+}
+
+.navbar-nav > li > a, .navbar-brand {
+  height: 28px;
+}
+
+.table-responsive-border {
+  @media screen and (max-width: 767px) {
+    border: 1px solid #ddd;
+    > .table {
+      margin-bottom: 0;
+    }
+  }
+}
+
+.table-responsive {
+  overflow-x: auto;
+  min-height: 0.01%;
+
+  @media screen and (max-width: 767px) {
+    width: 100%;
+    margin-bottom: 15px;
+    overflow-y: hidden;
+    -ms-overflow-style: -ms-autohiding-scrollbar;
+
+    > .table {
+      > thead,
+      > tbody,
+      > tfoot {
+        > tr {
+          > th,
+          > td {
+            white-space: nowrap;
+          }
+        }
+      }
+    }
+
+    > .table-bordered {
+      border: 0;
+
+      > thead,
+      > tbody,
+      > tfoot {
+        > tr {
+          > th:first-child,
+          > td:first-child {
+            border-left: 0;
+          }
+          > th:last-child,
+          > td:last-child {
+            border-right: 0;
+          }
+        }
+      }
+
+      > tbody,
+      > tfoot {
+        > tr:last-child {
+          > th,
+          > td {
+            border-bottom: 0;
+          }
+        }
+      }
+
+    }
+  }
+}
+
+table.reports {
+    th, td {
+        padding: 1px !important;
+    }
+    tr.branch-separator td {
+        border-top: solid 2px black;
+    }
+    tr {
+        td.server {
+            // width: 150px;
+        }
+        td.datetime {
+            text-align: center;
+        }
+        td.branch {
+            text-align: center;
+        }
+        td.option {
+        }
+        td.revision {
+            font-family: Menlo, monospace;
+            text-align: center;
+        }
+        @for $i from 6 through 9 {
+            td:nth-child(#{$i}) {
+                background-color: #FF9090;
+                // width: 50px;
+            }
+            td:nth-child(#{$i}):empty {
+                background-color: #F0FFF0;
+            }
+        }
+        td.summary {
+            background-color: #F0FFF0;
+            div {
+                overflow: hidden;
+                white-space: nowrap;
+                text-overflow: ellipsis;
+                width: 250px !important;
+            }
+        }
+        td.summary.failure {
+            background-color: #FF9090;
+        }
+        td.diff {
+            div {
+                overflow: hidden;
+                white-space: nowrap;
+                text-overflow: ellipsis;
+                width: 100px !important;
+            }
+        }
+    }
+}
