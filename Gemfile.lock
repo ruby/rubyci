@@ -111,7 +111,7 @@ GEM
     method_source (1.0.0)
     mini_mime (1.1.2)
     mini_portile2 (2.8.1)
-    minitest (5.17.0)
+    minitest (5.18.0)
     msgpack (1.6.0)
     net-imap (0.3.4)
       date
@@ -133,7 +133,7 @@ GEM
     nokogiri (1.14.2-x86_64-linux)
       racc (~> 1.4)
     pg (1.4.6)
-    propshaft (0.6.4)
+    propshaft (0.7.0)
       actionpack (>= 7.0.0)
       activesupport (>= 7.0.0)
       rack
@@ -141,7 +141,7 @@ GEM
     puma (6.1.1)
       nio4r (~> 2.0)
     racc (1.6.2)
-    rack (2.2.6.2)
+    rack (2.2.6.3)
     rack-test (2.0.2)
       rack (>= 1.3)
     rails (7.0.4.2)
