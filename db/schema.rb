@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.0].define(version: 2021_12_20_093812) do
+ActiveRecord::Schema[7.0].define(version: 2023_09_11_072108) do
   create_table "active_storage_attachments", force: :cascade do |t|
     t.string "name", null: false
     t.string "record_type", null: false
@@ -70,7 +70,7 @@ ActiveRecord::Schema[7.0].define(version: 2021_12_20_093812) do
     t.text "ltsv"
     t.index ["branch"], name: "index_reports_on_branch"
     t.index ["datetime"], name: "index_reports_on_datetime"
-    t.index ["server_id", "branch"], name: "index_reports_on_server_id_and_branch"
+    t.index ["server_id", "branch", "option"], name: "index_reports_on_server_id_and_branch_and_option"
   end
 
   create_table "servers", force: :cascade do |t|
