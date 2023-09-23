@@ -42,8 +42,7 @@ class ReportsController < ApplicationController
     if stale?(:last_modified => last_modified, :etag => last_modified.to_s, :public => true)
       @reports = Report.includes(:server).order('reports.branch DESC, servers.ordinal ASC, reports.option ASC').
         references(:server).
-        where("reports.datetime > ?", 14.days.ago).
-        where('reports.id IN (SELECT MAX(R.id) FROM reports R GROUP BY R.server_id, R.branch, R.option)').all
+        where('reports.id IN (SELECT MAX(R.id) FROM reports R WHERE R.datetime > ? GROUP BY R.server_id, R.branch, R.option)', 14.days.ago).all
       @reports = @reports.to_a.delete_if{|report| report.server.nil? }
 
       @reports = filter_deprecated(@reports)
