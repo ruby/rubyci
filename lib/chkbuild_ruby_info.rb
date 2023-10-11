@@ -4,7 +4,7 @@ require 'json'
 require 'time'
 require 'pp'
 
-class ChkBuildRubyInfo
+class ChkbuildRubyInfo
   DefaultOption = {
     :type => nil,
     :enable_sole_record => true,
@@ -1089,7 +1089,7 @@ class ChkBuildRubyInfo
       section.sub!(/\n== \z/, '')
       if first
         if /\A<html>/ =~ section
-          raise RuntimeError, "chkbuild-ruby-info needs text log (not HTML log)."
+          raise RuntimeError, "chkbuild_ruby_info needs text log (not HTML log)."
         end
         if /\A== / !~ section
           raise RuntimeError, "It seems not a chkbuild log. '#{section[0, 100].dump}'"
@@ -1356,7 +1356,7 @@ class ChkBuildRubyInfo
       end
     }.parse!(argv)
     each_argfile(argv) {|f|
-      ChkBuildRubyInfo.new(f, opts).convert_to_json
+      ChkbuildRubyInfo.new(f, opts).convert_to_json
     }
   rescue RuntimeError
     $stderr.puts $!.message

@@ -1,9 +1,9 @@
 require 'test/unit'
 require 'stringio'
 
-require_relative '../../lib/chkbuild-ruby-info'
+require_relative '../../lib/chkbuild_ruby_info'
 
-class TestChkBuildRubyInfo < Test::Unit::TestCase
+class TestChkbuildRubyInfo < Test::Unit::TestCase
   @testnum = 0
 
   def self.defcheck(name, src, expected, type=nil)
@@ -23,7 +23,7 @@ class TestChkBuildRubyInfo < Test::Unit::TestCase
   def check(src, expected, type=nil)
     src = StringIO.new(src)
     out = StringIO.new
-    ChkBuildRubyInfo.new(src).convert_to_json(out)
+    ChkbuildRubyInfo.new(src).convert_to_json(out)
     result = out.string.gsub(/,$/, '').sub(/\A\[\n/, '').sub(/\]\n\z/, '')
     if type
       if type.kind_of?(Array)
@@ -41,7 +41,7 @@ class TestChkBuildRubyInfo < Test::Unit::TestCase
   def check_build(src, expected_hash)
     src = StringIO.new(src)
     build_hash = nil
-    ChkBuildRubyInfo.new(src).extract {|hash|
+    ChkbuildRubyInfo.new(src).extract {|hash|
       if hash['type'] == 'build'
         build_hash = hash
         break
@@ -55,13 +55,13 @@ class TestChkBuildRubyInfo < Test::Unit::TestCase
 
   def test_unexpected_format
     assert_raise(RuntimeError) {
-      ChkBuildRubyInfo.new("foo").convert_to_json
+      ChkbuildRubyInfo.new("foo").convert_to_json
     }
   end
 
   def test_unexpected_format_html
     assert_raise(RuntimeError) {
-      ChkBuildRubyInfo.new("<html>").convert_to_json
+      ChkbuildRubyInfo.new("<html>").convert_to_json
     }
   end
 
