@@ -1,7 +1,7 @@
 require 'test/unit'
 require 'stringio'
 
-require_relative '../../lib/chkbuild-ruby-info'
+require_relative '../../lib/chkbuild_ruby_info'
 
 class TestChkBuildRubyInfo < Test::Unit::TestCase
   @testnum = 0

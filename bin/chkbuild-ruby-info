@@ -1,13 +1,13 @@
 #!/usr/bin/env ruby
 
 # usage:
-#   chkbuild-ruby-info [options] chkbuild-ruby-log-file.txt[.gz]
+#   chkbuild_ruby_info [options] chkbuild-ruby-log-file.txt[.gz]
 #
 # options:
 #   -h : show help message
 #   --type TYPE,... : show only specified types
 
-require_relative '../lib/chkbuild-ruby-info'
+require_relative '../lib/chkbuild_ruby_info'
 
 if $0 == __FILE__
   ChkBuildRubyInfo.main(ARGV)
