@@ -10,5 +10,5 @@
 require_relative '../lib/chkbuild_ruby_info'
 
 if $0 == __FILE__
-  ChkBuildRubyInfo.main(ARGV)
+  ChkbuildRubyInfo.main(ARGV)
 end

@@ -3,10 +3,10 @@ require 'stringio'
 
 require_relative '../../lib/chkbuild_ruby_info'
 
-class TestChkBuildRubyInfoMisc < Test::Unit::TestCase
+class TestChkbuildRubyInfoMisc < Test::Unit::TestCase
   def test_opt_type
     out = StringIO.new
-    cb = ChkBuildRubyInfo.new(<<'End')
+    cb = ChkbuildRubyInfo.new(<<'End')
 == ruby-trunk # 2010-12-02T16:51:01+09:00
 End
     cb.opt_type = %w[target_name]
@@ -20,7 +20,7 @@ End
 
   def test_opt_enable_sole_record
     out = StringIO.new
-    cb = ChkBuildRubyInfo.new(<<'End')
+    cb = ChkbuildRubyInfo.new(<<'End')
 == ruby-trunk # 2010-12-02T16:51:01+09:00
 End
     cb.opt_enable_sole_record = false
@@ -35,7 +35,7 @@ End
 
   def test_expand_field_ruby_branch
     out = StringIO.new
-    cb = ChkBuildRubyInfo.new(<<'End')
+    cb = ChkbuildRubyInfo.new(<<'End')
 == ruby-trunk # 2010-12-02T16:51:01+09:00
 == start # 2014-06-21T06:05:42+09:00
 option :ruby_branch => "trunk"
@@ -60,7 +60,7 @@ End
 
   def test_expand_field_ruby_branch_with_prefix
     out = StringIO.new
-    cb = ChkBuildRubyInfo.new(<<'End')
+    cb = ChkbuildRubyInfo.new(<<'End')
 == ruby-trunk # 2010-12-02T16:51:01+09:00
 == start # 2014-06-21T06:05:42+09:00
 option :ruby_branch => "trunk"
@@ -85,7 +85,7 @@ End
 
   def test_common
     out = StringIO.new
-    cb = ChkBuildRubyInfo.new(<<'End')
+    cb = ChkbuildRubyInfo.new(<<'End')
 == ruby-trunk # 2010-12-02T16:51:01+09:00
 End
     cb.common_hash = {
@@ -108,7 +108,7 @@ End
 
   def test_td
     out = StringIO.new
-    cb = ChkBuildRubyInfo.new(<<'End')
+    cb = ChkbuildRubyInfo.new(<<'End')
 == ruby-trunk # 2010-12-02T16:51:01+09:00
 == start # 2014-06-21T06:05:42+09:00
 option :ruby_branch => "trunk"

@@ -4,7 +4,7 @@ require 'json'
 require 'time'
 require 'pp'
 
-class ChkBuildRubyInfo
+class ChkbuildRubyInfo
   DefaultOption = {
     :type => nil,
     :enable_sole_record => true,
@@ -1356,7 +1356,7 @@ class ChkBuildRubyInfo
       end
     }.parse!(argv)
     each_argfile(argv) {|f|
-      ChkBuildRubyInfo.new(f, opts).convert_to_json
+      ChkbuildRubyInfo.new(f, opts).convert_to_json
     }
   rescue RuntimeError
     $stderr.puts $!.message
