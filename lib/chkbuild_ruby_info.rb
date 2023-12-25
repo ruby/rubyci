@@ -493,27 +493,6 @@ class ChkbuildRubyInfo
     end
   end
 
-  def scan_git(section)
-    #CHECKOUT git git://github.com/nurse/mspec.git mspec
-    #LASTCOMMIT 88ffc944daaa9f1894521f8abaddc88d9a087342
-    url = /^CHECKOUT git (\S+)/.match(section)
-    commit = /^LASTCOMMIT (\S+)$/.match(section)
-    if url && commit
-      h = {
-        "type" => "git",
-        "url" => url[1],
-        "commit" => commit[1]
-      }
-      output_hash h
-      case h["url"]
-      when "git://github.com/nurse/mspec.git", "git://github.com/rubyspec/mspec.git"
-        update_last_hash({ "mspec_commit" => h["commit"] })
-      when "git://github.com/nurse/rubyspec.git", "git://github.com/rubyspec/rubyspec.git"
-        update_last_hash({ "rubyspec_commit" => h["commit"] })
-      end
-    end
-  end
-
   def scan_method_list(section)
     #class ARGF.class [Enumerable, Object, Kernel, BasicObject]
     #ARGF.class#argv 0
@@ -1134,8 +1113,6 @@ class ChkbuildRubyInfo
         scan_svn(section)
       when "svn"
         scan_svn_old_chkbuild(section)
-      when "git/mspec", "git/rubyspec", "git-mspec", "git-rubyspec"
-        scan_git(section)
       when "version.h"
         scan_version_h(section)
       when "configure"
