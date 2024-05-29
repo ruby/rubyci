@@ -10,6 +10,7 @@ class ReportsController < ApplicationController
     'FreeBSD 11.2 zfs x64' => ['master'],
     'Gentoo'               => ['master'],
     'OpenSUSE leap 42.2'   => ['master'],
+    's390x (RHEL 7.1)'     => ['3.3'], # https://twitter.com/k0kubun/status/1795945922309861736
   }
 
   # GET /reports
