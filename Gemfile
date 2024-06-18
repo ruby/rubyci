@@ -1,6 +1,6 @@
 source 'https://rubygems.org'
 
-ruby ENV['CUSTOM_RUBY_VERSION'] || '~> 3.3.1'
+ruby ENV['CUSTOM_RUBY_VERSION'] || '~> 3.3.3'
 
 gem 'rails', '~> 7.1'
 gem 'puma'
