@@ -2,7 +2,7 @@ source 'https://rubygems.org'
 
 ruby ENV['CUSTOM_RUBY_VERSION'] || '~> 3.3.5'
 
-gem 'rails', '~> 7.2'
+gem 'rails', '~> 8.0'
 gem 'puma'
 gem 'bootsnap', require: false
 gem "importmap-rails"
