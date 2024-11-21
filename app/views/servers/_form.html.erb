@@ -16,6 +16,10 @@
     <%= f.text_field :name %>
   </div>
   <div class="field">
+    <%= f.label :eol_date %><br />
+    <%= f.date_select :eol_date, use_month_numbers: true, start_year: Date.today.year, end_year: 10.years.from_now.year, include_blank: true %>
+  </div>
+  <div class="field">
     <%= f.label :uri %><br />
     <%= f.text_field :uri %>
   </div>

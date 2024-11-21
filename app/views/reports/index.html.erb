@@ -12,6 +12,7 @@
         <th>rubyspec</th>
         <th>Summary</th>
         <th>Diff</th>
+        <th>EOL date</th>
       </tr>
     </thead>
 
@@ -62,6 +63,7 @@
             <td class="summary failure"><div><%= link_to report.shortsummary, failuri, title: report.shortsummary %></div></td>
           <% end %>
           <td class="diff"><div><%= link_to report.diffstat, diffuri, title: report.diffstat %></div></td>
+          <td class="eol"><%= report.server.eol_date&.strftime("%Y/%m/%d") %></td>
         </tr>
         <% curbr = report.branch %>
       <% end %>

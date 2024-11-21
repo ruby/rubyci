@@ -4,6 +4,7 @@
   <table class="servers">
     <tr>
       <th>Name</th>
+      <th>EOL</th>
       <th>Uri</th>
       <th></th>
       <th></th>
@@ -14,6 +15,7 @@
   <% @servers.each do |server| %>
     <tr>
       <td><%= server.name %></td>
+      <td><%= server.eol_date %></td>
       <td><%= server.uri %></td>
       <td><%= server.ordinal %></td>
       <td><%= link_to '↑', {controller: 'servers', id: server.id, action: :moveup}, method: :post %></td>
