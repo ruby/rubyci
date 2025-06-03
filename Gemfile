@@ -10,10 +10,14 @@ gem "propshaft"
 gem "dartsass-rails"
 gem 'aws-sdk-s3', '~> 1'
 
-group :development do
+group :development, :test do
   gem 'sqlite3'
 end
 
 group :production do
   gem 'pg'
+end
+
+group :test do
+  gem 'test-unit'
 end
