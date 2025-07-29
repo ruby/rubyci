@@ -298,7 +298,7 @@ GEM
     sqlite3 (2.7.2-x86_64-linux-gnu)
     sqlite3 (2.7.2-x86_64-linux-musl)
     stringio (3.1.7)
-    test-unit (3.6.9)
+    test-unit (3.7.0)
       power_assert
     thor (1.4.0)
     timeout (0.4.3)
