@@ -353,7 +353,7 @@ DEPENDENCIES
   test-unit
 
 RUBY VERSION
-   ruby 3.4.5p52
+   ruby 3.4.6p57
 
 BUNDLED WITH
    2.7.1
