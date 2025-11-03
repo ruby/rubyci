@@ -202,7 +202,7 @@ GEM
     pg (1.6.2-x86_64-darwin)
     pg (1.6.2-x86_64-linux)
     pg (1.6.2-x86_64-linux-musl)
-    power_assert (2.0.5)
+    power_assert (3.0.0)
     pp (0.6.3)
       prettyprint
     prettyprint (0.2.0)
@@ -306,7 +306,7 @@ GEM
     sqlite3 (2.7.4-x86_64-linux-gnu)
     sqlite3 (2.7.4-x86_64-linux-musl)
     stringio (3.1.7)
-    test-unit (3.7.0)
+    test-unit (3.7.1)
       power_assert
     thor (1.4.0)
     timeout (0.4.4)
