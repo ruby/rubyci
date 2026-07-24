@@ -18,13 +18,13 @@
 
     <tbody>
       <% curbr = nil; now = Time.now.to_i %>
-      <% @cross_reports = []%>
-      <% @reports.each do |report| %>
+      <% @cross_reports, reports = @reports.partition {|report| report.depsuffixed_name.start_with?('cross') } %>
+      <% cross_server_ids = @cross_reports.map(&:server_id).uniq %>
+      <% reports.each do |report| %>
         <%
-          if report.depsuffixed_name.start_with?('cross')
-            @cross_reports << report
-            next
-          end
+          # A server reporting crossruby builds sometimes runs normal builds
+          # by mistake; hide its normal reports while crossruby ones exist.
+          next if cross_server_ids.include?(report.server_id)
           d = now - report.datetime.to_i
           style = nil
           if @use_opacity && d > 10000
