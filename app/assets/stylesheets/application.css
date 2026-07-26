@@ -156,41 +156,21 @@ a:hover {
     overflow-y: hidden;
   }
 
-  .table-responsive > .table > thead > tr > th,
-  .table-responsive > .table > thead > tr > td,
-  .table-responsive > .table > tbody > tr > th,
-  .table-responsive > .table > tbody > tr > td,
-  .table-responsive > .table > tfoot > tr > th,
-  .table-responsive > .table > tfoot > tr > td {
+  .table-responsive > .table :is(th, td) {
     white-space: nowrap;
   }
 
+  /* The wrapper draws the outer border, so drop the cells' edge borders. */
   .table-responsive > .table-bordered {
     border: 0;
   }
-
-  .table-responsive > .table-bordered > thead > tr > th:first-child,
-  .table-responsive > .table-bordered > thead > tr > td:first-child,
-  .table-responsive > .table-bordered > tbody > tr > th:first-child,
-  .table-responsive > .table-bordered > tbody > tr > td:first-child,
-  .table-responsive > .table-bordered > tfoot > tr > th:first-child,
-  .table-responsive > .table-bordered > tfoot > tr > td:first-child {
+  .table-responsive > .table-bordered :is(th, td):first-child {
     border-left: 0;
   }
-
-  .table-responsive > .table-bordered > thead > tr > th:last-child,
-  .table-responsive > .table-bordered > thead > tr > td:last-child,
-  .table-responsive > .table-bordered > tbody > tr > th:last-child,
-  .table-responsive > .table-bordered > tbody > tr > td:last-child,
-  .table-responsive > .table-bordered > tfoot > tr > th:last-child,
-  .table-responsive > .table-bordered > tfoot > tr > td:last-child {
+  .table-responsive > .table-bordered :is(th, td):last-child {
     border-right: 0;
   }
-
-  .table-responsive > .table-bordered > tbody > tr:last-child > th,
-  .table-responsive > .table-bordered > tbody > tr:last-child > td,
-  .table-responsive > .table-bordered > tfoot > tr:last-child > th,
-  .table-responsive > .table-bordered > tfoot > tr:last-child > td {
+  .table-responsive > .table-bordered > :is(tbody, tfoot) > tr:last-child :is(th, td) {
     border-bottom: 0;
   }
 }
@@ -205,45 +185,45 @@ table.reports tr.branch-separator td {
   border-top: solid 2px black;
 }
 
-table.reports tr td.datetime {
+table.reports td.datetime {
   text-align: center;
 }
 
-table.reports tr td.branch {
+table.reports td.branch {
   text-align: center;
 }
 
-table.reports tr td.revision {
+table.reports td.revision {
   font-family: Menlo, monospace;
   text-align: center;
 }
 
-/* :where() keeps specificity at 0-1-1 so the later td.summary rules
-   still win for the summary column, which falls in this range. */
-table.reports tr td:nth-child(n+6):where(:nth-child(-n+9)) {
+/* :where() keeps the second :nth-child out of the specificity, so this
+   ties with the td.summary rules below and they win by source order. */
+table.reports td:nth-child(n+6):where(:nth-child(-n+9)) {
   background-color: #FF9090;
 }
 
-table.reports tr td:nth-child(n+6):where(:nth-child(-n+9)):empty {
+table.reports td:nth-child(n+6):where(:nth-child(-n+9)):empty {
   background-color: #F0FFF0;
 }
 
-table.reports tr td.summary {
+table.reports td.summary {
   background-color: #F0FFF0;
 }
 
-table.reports tr td.summary div {
+table.reports td.summary div {
   overflow: hidden;
   white-space: nowrap;
   text-overflow: ellipsis;
   width: 250px;
 }
 
-table.reports tr td.summary.failure {
+table.reports td.summary.failure {
   background-color: #FF9090;
 }
 
-table.reports tr td.diff div {
+table.reports td.diff div {
   overflow: hidden;
   white-space: nowrap;
   text-overflow: ellipsis;
