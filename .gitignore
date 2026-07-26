@@ -2,7 +2,6 @@
 db/*.sqlite3
 log/*.log
 tmp/
-.sass-cache/
 .DS_Store
 .rvmrc
 *~
@@ -11,6 +10,3 @@ tmp/
 *.swp
 *.swo
 public/assets/
-
-/app/assets/builds/*
-!/app/assets/builds/.keep

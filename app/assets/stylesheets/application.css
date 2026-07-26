@@ -1,0 +1,118 @@
+body {
+  padding-top: 50px;
+  font-size: 13px;
+}
+
+.container-fluid {
+  max-width: 1200px;
+}
+
+.navbar-nav > li > a, .navbar-brand {
+  height: 28px;
+}
+
+@media screen and (max-width: 767px) {
+  .table-responsive-border {
+    border: 1px solid #ddd;
+  }
+  .table-responsive-border > .table {
+    margin-bottom: 0;
+  }
+
+  .table-responsive {
+    width: 100%;
+    margin-bottom: 15px;
+    overflow-y: hidden;
+  }
+
+  .table-responsive > .table > thead > tr > th,
+  .table-responsive > .table > thead > tr > td,
+  .table-responsive > .table > tbody > tr > th,
+  .table-responsive > .table > tbody > tr > td,
+  .table-responsive > .table > tfoot > tr > th,
+  .table-responsive > .table > tfoot > tr > td {
+    white-space: nowrap;
+  }
+
+  .table-responsive > .table-bordered {
+    border: 0;
+  }
+
+  .table-responsive > .table-bordered > thead > tr > th:first-child,
+  .table-responsive > .table-bordered > thead > tr > td:first-child,
+  .table-responsive > .table-bordered > tbody > tr > th:first-child,
+  .table-responsive > .table-bordered > tbody > tr > td:first-child,
+  .table-responsive > .table-bordered > tfoot > tr > th:first-child,
+  .table-responsive > .table-bordered > tfoot > tr > td:first-child {
+    border-left: 0;
+  }
+
+  .table-responsive > .table-bordered > thead > tr > th:last-child,
+  .table-responsive > .table-bordered > thead > tr > td:last-child,
+  .table-responsive > .table-bordered > tbody > tr > th:last-child,
+  .table-responsive > .table-bordered > tbody > tr > td:last-child,
+  .table-responsive > .table-bordered > tfoot > tr > th:last-child,
+  .table-responsive > .table-bordered > tfoot > tr > td:last-child {
+    border-right: 0;
+  }
+
+  .table-responsive > .table-bordered > tbody > tr:last-child > th,
+  .table-responsive > .table-bordered > tbody > tr:last-child > td,
+  .table-responsive > .table-bordered > tfoot > tr:last-child > th,
+  .table-responsive > .table-bordered > tfoot > tr:last-child > td {
+    border-bottom: 0;
+  }
+}
+
+table.reports th, table.reports td {
+  padding: 1px !important;
+}
+
+table.reports tr.branch-separator td {
+  border-top: solid 2px black;
+}
+
+table.reports tr td.datetime {
+  text-align: center;
+}
+
+table.reports tr td.branch {
+  text-align: center;
+}
+
+table.reports tr td.revision {
+  font-family: Menlo, monospace;
+  text-align: center;
+}
+
+/* :where() keeps specificity at 0-1-1 so the later td.summary rules
+   still win for the summary column, which falls in this range. */
+table.reports tr td:nth-child(n+6):where(:nth-child(-n+9)) {
+  background-color: #FF9090;
+}
+
+table.reports tr td:nth-child(n+6):where(:nth-child(-n+9)):empty {
+  background-color: #F0FFF0;
+}
+
+table.reports tr td.summary {
+  background-color: #F0FFF0;
+}
+
+table.reports tr td.summary div {
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  width: 250px !important;
+}
+
+table.reports tr td.summary.failure {
+  background-color: #FF9090;
+}
+
+table.reports tr td.diff div {
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  width: 100px !important;
+}
