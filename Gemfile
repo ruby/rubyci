@@ -7,7 +7,6 @@ gem 'puma'
 gem 'bootsnap', require: false
 gem "importmap-rails"
 gem "propshaft"
-gem "dartsass-rails"
 gem 'aws-sdk-s3', '~> 1'
 
 group :development, :test do
