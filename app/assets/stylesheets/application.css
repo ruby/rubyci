@@ -198,7 +198,7 @@ a:hover {
 /* Reports table */
 
 table.reports th, table.reports td {
-  padding: 1px !important;
+  padding: 1px;
 }
 
 table.reports tr.branch-separator td {
@@ -236,7 +236,7 @@ table.reports tr td.summary div {
   overflow: hidden;
   white-space: nowrap;
   text-overflow: ellipsis;
-  width: 250px !important;
+  width: 250px;
 }
 
 table.reports tr td.summary.failure {
@@ -247,5 +247,5 @@ table.reports tr td.diff div {
   overflow: hidden;
   white-space: nowrap;
   text-overflow: ellipsis;
-  width: 100px !important;
+  width: 100px;
 }
