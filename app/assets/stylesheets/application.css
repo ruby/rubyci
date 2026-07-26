@@ -85,17 +85,13 @@ table.reports tr td.revision {
   text-align: center;
 }
 
-table.reports tr td:nth-child(6),
-table.reports tr td:nth-child(7),
-table.reports tr td:nth-child(8),
-table.reports tr td:nth-child(9) {
+/* :where() keeps specificity at 0-1-1 so the later td.summary rules
+   still win for the summary column, which falls in this range. */
+table.reports tr td:nth-child(n+6):where(:nth-child(-n+9)) {
   background-color: #FF9090;
 }
 
-table.reports tr td:nth-child(6):empty,
-table.reports tr td:nth-child(7):empty,
-table.reports tr td:nth-child(8):empty,
-table.reports tr td:nth-child(9):empty {
+table.reports tr td:nth-child(n+6):where(:nth-child(-n+9)):empty {
   background-color: #F0FFF0;
 }
 
