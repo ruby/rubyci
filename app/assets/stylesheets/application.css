@@ -1,13 +1,20 @@
 /* Self-contained styles. The small subset of Bootstrap this site used
    (navbar, container, alert, badge, table) is reimplemented below. */
 
+:root {
+  --navbar-height: 40px;
+  --border-color: #dee2e6;
+  --status-ok: #F0FFF0;
+  --status-fail: #FF9090;
+}
+
 *, *::before, *::after {
   box-sizing: border-box;
 }
 
 body {
   margin: 0;
-  padding-top: 50px;
+  padding-top: calc(var(--navbar-height) + 10px);
   font-family: system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
   font-size: 13px;
   line-height: 1.5;
@@ -40,7 +47,7 @@ a:hover {
   right: 0;
   left: 0;
   z-index: 1030;
-  padding: 0.25rem 0;
+  height: var(--navbar-height);
   background-color: #f8f9fa;
 }
 
@@ -49,6 +56,7 @@ a:hover {
   flex-wrap: wrap;
   align-items: center;
   justify-content: space-between;
+  height: 100%;
 }
 
 .navbar-brand {
@@ -131,7 +139,7 @@ a:hover {
 
 .table-bordered th,
 .table-bordered td {
-  border: 1px solid #dee2e6;
+  border: 1px solid var(--border-color);
 }
 
 .table-striped > tbody > tr:nth-of-type(odd) {
@@ -145,7 +153,7 @@ a:hover {
 
 @media screen and (max-width: 767px) {
   .table-responsive-border {
-    border: 1px solid #ddd;
+    border: 1px solid var(--border-color);
   }
   .table-responsive-border > .table {
     margin-bottom: 0;
@@ -201,15 +209,15 @@ table.reports td.revision {
 /* :where() keeps the second :nth-child out of the specificity, so this
    ties with the td.summary rules below and they win by source order. */
 table.reports td:nth-child(n+6):where(:nth-child(-n+9)) {
-  background-color: #FF9090;
+  background-color: var(--status-fail);
 }
 
 table.reports td:nth-child(n+6):where(:nth-child(-n+9)):empty {
-  background-color: #F0FFF0;
+  background-color: var(--status-ok);
 }
 
 table.reports td.summary {
-  background-color: #F0FFF0;
+  background-color: var(--status-ok);
 }
 
 table.reports td.summary div {
@@ -220,7 +228,7 @@ table.reports td.summary div {
 }
 
 table.reports td.summary.failure {
-  background-color: #FF9090;
+  background-color: var(--status-fail);
 }
 
 table.reports td.diff div {
