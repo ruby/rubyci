@@ -10,26 +10,29 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.0].define(version: 2023_09_11_072108) do
+ActiveRecord::Schema[8.1].define(version: 2024_11_21_042607) do
+  # These are extensions that must be enabled in order to support this database
+  enable_extension "pg_catalog.plpgsql"
+
   create_table "active_storage_attachments", force: :cascade do |t|
-    t.string "name", null: false
-    t.string "record_type", null: false
-    t.bigint "record_id", null: false
     t.bigint "blob_id", null: false
     t.datetime "created_at", null: false
+    t.string "name", null: false
+    t.bigint "record_id", null: false
+    t.string "record_type", null: false
     t.index ["blob_id"], name: "index_active_storage_attachments_on_blob_id"
     t.index ["record_type", "record_id", "name", "blob_id"], name: "index_active_storage_attachments_uniqueness", unique: true
   end
 
   create_table "active_storage_blobs", force: :cascade do |t|
-    t.string "key", null: false
-    t.string "filename", null: false
-    t.string "content_type"
-    t.text "metadata"
-    t.string "service_name", null: false
     t.integer "byte_size", null: false
     t.string "checksum"
+    t.string "content_type"
     t.datetime "created_at", null: false
+    t.string "filename", null: false
+    t.string "key", null: false
+    t.text "metadata"
+    t.string "service_name", null: false
     t.index ["key"], name: "index_active_storage_blobs_on_key", unique: true
   end
 
@@ -40,45 +43,46 @@ ActiveRecord::Schema[7.0].define(version: 2023_09_11_072108) do
   end
 
   create_table "logfiles", force: :cascade do |t|
-    t.integer "report_id"
-    t.string "ext"
-    t.binary "data"
     t.datetime "created_at", precision: nil
+    t.binary "data"
+    t.string "ext"
+    t.integer "report_id"
     t.datetime "updated_at", precision: nil
     t.index ["report_id", "ext"], name: "index_logfiles_on_report_id_and_ext", unique: true
     t.index ["report_id"], name: "index_logfiles_on_report_id"
   end
 
   create_table "recents", force: :cascade do |t|
+    t.datetime "created_at", null: false
+    t.string "etag", null: false
     t.string "name", null: false
     t.integer "server_id", null: false
-    t.string "etag", null: false
-    t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.index ["server_id"], name: "index_recents_on_server_id"
   end
 
   create_table "reports", force: :cascade do |t|
-    t.integer "server_id"
-    t.datetime "datetime", precision: nil
     t.string "branch"
-    t.integer "revision"
-    t.text "summary"
     t.datetime "created_at", precision: nil
-    t.datetime "updated_at", precision: nil
-    t.string "option"
+    t.datetime "datetime", precision: nil
     t.text "ltsv"
+    t.string "option"
+    t.integer "revision"
+    t.integer "server_id"
+    t.text "summary"
+    t.datetime "updated_at", precision: nil
     t.index ["branch"], name: "index_reports_on_branch"
     t.index ["datetime"], name: "index_reports_on_datetime"
     t.index ["server_id", "branch", "option"], name: "index_reports_on_server_id_and_branch_and_option"
   end
 
   create_table "servers", force: :cascade do |t|
-    t.string "name"
-    t.string "uri"
     t.datetime "created_at", precision: nil
-    t.datetime "updated_at", precision: nil
+    t.date "eol_date"
+    t.string "name"
     t.float "ordinal"
+    t.datetime "updated_at", precision: nil
+    t.string "uri"
     t.index ["name"], name: "index_servers_on_name"
   end
 
