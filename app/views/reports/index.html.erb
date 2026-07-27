@@ -34,7 +34,7 @@
 
           diffuri = report.diffuri
 
-          if report.revision
+          if report.revision&.match?(/\A\d+\z/)
             revision = "r#{report.revision}"
           elsif report.sha1
             revision = report.sha1[0, 11]
@@ -108,7 +108,7 @@
           <td class="datetime"><%= link_to report.sjstdt, report.loguri, title: report.jstdt %></td>
           <td class="branch"><%= link_to report.branch, report.recenturi %></td>
           <td class="option"><%= report.option %></td>
-          <td class="revision"><%= report.patchlevel + " " if report.patchlevel %><%= report.revision %></td>
+          <td class="revision"><%= report.patchlevel + " " if report.patchlevel %><%= report.revision&.match?(/\A\d+\z/) ? report.revision : report.revision.to_s[0, 11] %></td>
           <% if report.build %>
             <td  class="build" colspan="3"><%= report.build %></td>
           <% else %>
