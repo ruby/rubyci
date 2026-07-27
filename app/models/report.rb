@@ -7,19 +7,29 @@ require "zlib"
 class Report < ApplicationRecord
   belongs_to :server
   validates :server_id, :presence => true
-  validates :revision, :numericality => { :only_integer => true }, allow_nil: true
+  # SVN revision number or full 40-hex git commit SHA
+  validates :revision, :format => { :with => /\A(?:\d+|\h{40})\z/ }, allow_nil: true
   validates :datetime, :uniqueness => { :scope => [:server_id, :branch] }
   validates :branch, :presence => true
   validates :summary, :presence => true
 
+  def self.extract_full_sha(ltsv)
+    return nil unless ltsv
+    ltsv[%r<"https\\x3A//github.com/ruby/ruby":(\h{40})>, 1] ||
+      ltsv[%r<https://github.com/ruby/ruby:(\h{40})>, 1]
+  end
+
   def sha1
-    !ltsv ? nil : \
-    ltsv[%r<"https\\x3A//github.com/ruby/ruby":([^\t]+)>, 1] ||
-      ltsv[%r<https://github.com/ruby/ruby:([^\t]+)>, 1]
+    if revision&.match?(/\A\h{40}\z/)
+      revision
+    elsif ltsv
+      ltsv[%r<"https\\x3A//github.com/ruby/ruby":([^\t]+)>, 1] ||
+        ltsv[%r<https://github.com/ruby/ruby:([^\t]+)>, 1]
+    end
   end
 
   def revisionuri
-    if revision
+    if revision&.match?(/\A\d+\z/)
       "https://svn.ruby-lang.org/cgi-bin/viewvc.cgi?view=revision&revision=#{revision}"
     elsif sha1
       "https://github.com/ruby/ruby/commit/#{sha1}"
@@ -156,8 +166,9 @@ class Report < ApplicationRecord
     end
     ary.reverse_each do |line, h, dt, datetime|
       puts "reporting #{server.name} #{depsuffixed_name} #{dt} ..."
-      # subversion revision of ruby is less than 99999
-      revision = h["ruby_rev"] && h["ruby_rev"].size <= 6 ? h["ruby_rev"][1, 5].to_i : nil
+      # git commit SHA if present, otherwise subversion revision (less than 99999)
+      revision = extract_full_sha(line) ||
+        (h["ruby_rev"] && h["ruby_rev"].size <= 6 ? h["ruby_rev"][1, 5] : nil)
       summary = h["title"]
       summary << ' success' if h["result"] == 'success'
       diff = h["different_sections"]

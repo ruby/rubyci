@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2024_11_21_042607) do
+ActiveRecord::Schema[8.1].define(version: 2026_07_27_051843) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -67,12 +67,13 @@ ActiveRecord::Schema[8.1].define(version: 2024_11_21_042607) do
     t.datetime "datetime", precision: nil
     t.text "ltsv"
     t.string "option"
-    t.integer "revision"
+    t.string "revision"
     t.integer "server_id"
     t.text "summary"
     t.datetime "updated_at", precision: nil
     t.index ["branch"], name: "index_reports_on_branch"
     t.index ["datetime"], name: "index_reports_on_datetime"
+    t.index ["revision"], name: "index_reports_on_revision", opclass: :varchar_pattern_ops
     t.index ["server_id", "branch", "option"], name: "index_reports_on_server_id_and_branch_and_option"
   end
 
