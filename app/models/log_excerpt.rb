@@ -25,7 +25,14 @@ class LogExcerpt < ApplicationRecord
       body = fetch_text(uri)
       body unless body.nil? || body.empty?
     end
-    truncate_bytes(sections.join("\n"), MAX_CONTENT_BYTES)
+    return "" if sections.empty?
+    # Budget each section separately, otherwise a fail.txt over the limit
+    # crowds the diff out entirely. A section under budget donates its
+    # remainder to the other one. The separators come out of the budget so
+    # the joined result still fits in MAX_CONTENT_BYTES.
+    budget = (MAX_CONTENT_BYTES - (sections.size - 1)) / sections.size
+    slack = sections.sum { |s| [budget - s.bytesize, 0].max }
+    sections.map { |s| truncate_bytes(s, budget + slack) }.join("\n")
   end
 
   # GET a gzipped text file. Returns nil on 404. S3 serves these either with

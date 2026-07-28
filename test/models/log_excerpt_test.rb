@@ -55,7 +55,32 @@ class LogExcerptTest < ActiveSupport::TestCase
     stub_fetch_text(->(uri) { "x" * 200_000 }) do
       LogExcerpt.capture(report)
     end
-    assert_equal LogExcerpt::MAX_CONTENT_BYTES, report.reload.log_excerpt.content.bytesize
+    assert_operator report.reload.log_excerpt.content.bytesize, :<=, LogExcerpt::MAX_CONTENT_BYTES
+  end
+
+  test "capture keeps the diff section when fail is over budget" do
+    server = create_server("cap-budget")
+    report = create_report(server)
+    fetch = ->(uri) { uri.include?(".fail.") ? "F" * 200_000 : "D" * 1_000 }
+    stub_fetch_text(fetch) do
+      LogExcerpt.capture(report)
+    end
+    content = report.reload.log_excerpt.content
+    assert_operator content.bytesize, :<=, LogExcerpt::MAX_CONTENT_BYTES
+    assert_equal 1_000, content.count("D")
+    assert_operator content.count("F"), :>, 90_000
+  end
+
+  test "capture lets one section use the other's unused budget" do
+    server = create_server("cap-slack")
+    report = create_report(server)
+    fetch = ->(uri) { uri.include?(".fail.") ? "F" * 90_000 : "D" * 1_000 }
+    stub_fetch_text(fetch) do
+      LogExcerpt.capture(report)
+    end
+    content = report.reload.log_excerpt.content
+    assert_equal 90_000, content.count("F")
+    assert_equal 1_000, content.count("D")
   end
 
   test "capture saves empty row when nothing is available" do
