@@ -1,0 +1,74 @@
+<% content_for(:title) { "Search failures - RubyCI" } %>
+
+<h3>Search failure logs</h3>
+
+<%= form_with url: search_path, method: :get, local: true do %>
+  <p>
+    <label>Text: <%= text_field_tag :q, @q, size: 40, placeholder: "test name, exception class, error message ..." %></label>
+    <label>Revision: <%= text_field_tag :revision, @revision, size: 14, placeholder: "prefix match" %></label>
+  </p>
+  <p>
+    <label>Server: <%= select_tag :server, options_for_select(@servers.map {|s| [s.name, s.id] }, @server_id), include_blank: "(all)" %></label>
+    <label>Branch: <%= text_field_tag :branch, @branch, size: 10, placeholder: "master" %></label>
+    <label>From: <%= date_field_tag :from, params[:from] %></label>
+    <label>To: <%= date_field_tag :to, params[:to] %></label>
+    <%= submit_tag "Search" %>
+  </p>
+<% end %>
+
+<% if @searched %>
+  <% if @reports.empty? %>
+    <p>No matching failure logs found<%= " on page #{@page}" if @page > 1 %>.</p>
+  <% else %>
+    <div class="table-responsive table-responsive-border">
+      <table class="reports table table-striped table-bordered">
+        <thead>
+          <tr>
+            <th>Server</th>
+            <th>Datetime</th>
+            <th>Branch</th>
+            <th>Option</th>
+            <th>Revision</th>
+            <th>Summary</th>
+            <th>Match</th>
+            <th>Diff</th>
+          </tr>
+        </thead>
+        <tbody>
+          <% @reports.each do |report| %>
+            <%
+              failuri = report.failuri || report.loguri
+              if report.revision&.match?(/\A\d+\z/)
+                revision = "r#{report.revision}"
+              elsif report.sha1
+                revision = report.sha1[0, 11]
+              end
+              revision_link = link_to revision, report.revisionuri if revision
+              snippet = report.log_excerpt&.matching_line(@q)
+            %>
+            <tr>
+              <td class="server"><%= report.server.name %></td>
+              <td class="datetime"><%= link_to report.sjstdt, report.loguri, title: report.jstdt %></td>
+              <td class="branch"><%= report.branch %></td>
+              <td class="option"><%= report.option %></td>
+              <td class="revision"><%= revision_link %></td>
+              <td class="summary failure"><div><%= link_to report.shortsummary, failuri, title: report.shortsummary %></div></td>
+              <td class="match"><code><%= snippet %></code></td>
+              <td class="diff"><div><%= link_to report.diffstat, report.diffuri, title: report.diffstat %></div></td>
+            </tr>
+          <% end %>
+        </tbody>
+      </table>
+    </div>
+    <p>
+      <% if @page > 1 %>
+        <%= link_to "Prev", search_path(request.query_parameters.merge("page" => @page - 1)) %>
+      <% end %>
+      <% if @has_next %>
+        <%= link_to "Next", search_path(request.query_parameters.merge("page" => @page + 1)) %>
+      <% end %>
+    </p>
+  <% end %>
+<% else %>
+  <p>Search the excerpted fail/diff logs of failed builds. Datetimes are UTC.</p>
+<% end %>
