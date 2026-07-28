@@ -23,7 +23,7 @@
     <p>No matching failure logs found<%= " on page #{@page}" if @page > 1 %>.</p>
   <% else %>
     <div class="table-responsive table-responsive-border">
-      <table class="reports table table-striped table-bordered">
+      <table class="reports search-results table table-striped table-bordered">
         <thead>
           <tr>
             <th>Server</th>
@@ -55,7 +55,7 @@
               <td class="option"><%= report.option %></td>
               <td class="revision"><%= revision_link %></td>
               <td class="summary failure"><div><%= link_to report.shortsummary, failuri, title: report.shortsummary %></div></td>
-              <td class="match"><code><%= snippet %></code></td>
+              <td class="match"><code title="<%= snippet %>"><%= snippet %></code></td>
               <td class="diff"><div><%= link_to report.diffstat, report.diffuri, title: report.diffstat %></div></td>
             </tr>
           <% end %>

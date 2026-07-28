@@ -268,3 +268,18 @@ form.search-form .search-text-row input[type="text"] {
 form.search-form .search-filter-row {
   justify-content: space-between;
 }
+
+/* Search results reuse table.reports, but their columns are in a different
+   order, so the reports failure-column rule lands on Match and Diff. */
+table.search-results td.match,
+table.search-results td.diff {
+  background-color: transparent;
+}
+
+table.search-results td.match code {
+  display: block;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  width: 320px;
+}
