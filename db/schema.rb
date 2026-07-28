@@ -10,9 +10,10 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_07_27_095902) do
+ActiveRecord::Schema[8.1].define(version: 2026_07_28_023000) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
+  enable_extension "pg_trgm"
 
   create_table "active_storage_attachments", force: :cascade do |t|
     t.bigint "blob_id", null: false
@@ -42,6 +43,15 @@ ActiveRecord::Schema[8.1].define(version: 2026_07_27_095902) do
     t.index ["blob_id", "variation_digest"], name: "index_active_storage_variant_records_uniqueness", unique: true
   end
 
+  create_table "log_excerpts", force: :cascade do |t|
+    t.text "content", null: false
+    t.datetime "created_at", null: false
+    t.integer "report_id", null: false
+    t.datetime "updated_at", null: false
+    t.index ["content"], name: "index_log_excerpts_on_content_trgm", opclass: :gin_trgm_ops, using: :gin
+    t.index ["report_id"], name: "index_log_excerpts_on_report_id", unique: true
+  end
+
   create_table "recents", force: :cascade do |t|
     t.datetime "created_at", null: false
     t.string "etag", null: false
@@ -63,7 +73,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_07_27_095902) do
     t.datetime "updated_at", precision: nil
     t.index ["branch"], name: "index_reports_on_branch"
     t.index ["datetime"], name: "index_reports_on_datetime"
-    t.index ["revision"], name: "index_reports_on_revision", opclass: :varchar_pattern_ops
+    t.index ["revision"], name: "index_reports_on_revision"
     t.index ["server_id", "branch", "option"], name: "index_reports_on_server_id_and_branch_and_option"
   end
 
@@ -79,5 +89,6 @@ ActiveRecord::Schema[8.1].define(version: 2026_07_27_095902) do
 
   add_foreign_key "active_storage_attachments", "active_storage_blobs", column: "blob_id"
   add_foreign_key "active_storage_variant_records", "active_storage_blobs", column: "blob_id"
+  add_foreign_key "log_excerpts", "reports"
   add_foreign_key "recents", "servers"
 end
