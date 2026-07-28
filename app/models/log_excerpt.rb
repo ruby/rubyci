@@ -12,7 +12,7 @@ class LogExcerpt < ApplicationRecord
   # (missing or empty objects) so that backfill can resume by max report_id.
   # Network errors are raised to the caller.
   def self.capture(report)
-    return nil unless %r{\Ahttps?://rubyci\.s3\.amazonaws\.com/}.match?(report.server&.uri.to_s)
+    return nil unless report.server&.rubyci_s3?
     content = fetch_content(report)
     excerpt = find_or_initialize_by(report_id: report.id)
     excerpt.content = content
@@ -35,14 +35,19 @@ class LogExcerpt < ApplicationRecord
     sections.map { |s| truncate_bytes(s, budget + slack) }.join("\n")
   end
 
-  # GET a gzipped text file. Returns nil on 404. S3 serves these either with
-  # Content-Encoding: gzip (Net::HTTP inflates the body) or as raw gzip bytes.
+  # GET a gzipped text file. Returns nil when the object cannot be read, which
+  # covers a plain 404 and an object Intelligent-Tiering has moved to an
+  # archive tier. Neither is retryable, so both become an empty excerpt rather
+  # than an error. S3 serves these either with Content-Encoding: gzip
+  # (Net::HTTP inflates the body) or as raw gzip bytes.
   def self.fetch_text(uri)
-    uri = URI(uri)
-    res = Net::HTTP.start(uri.host, uri.port, open_timeout: 10, read_timeout: 30, use_ssl: uri.scheme == "https") do |h|
+    # Servers are registered under both http:// and https://; always use TLS.
+    uri = URI(uri.to_s.sub(%r{\Ahttp://}, "https://"))
+    res = Net::HTTP.start(uri.host, uri.port, open_timeout: 10, read_timeout: 30, use_ssl: true) do |h|
       h.get(uri.path)
     end
     return nil if res.code == "404"
+    return nil if res.code == "403" && res.body.to_s.include?("InvalidObjectState")
     res.value
     body = res.body
     begin

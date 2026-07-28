@@ -289,7 +289,7 @@ class Report < ApplicationRecord
     ary = []
     Server.order(:id).all.each do |server|
       puts server.uri
-      if %r<\Ahttps?://rubyci.s3.amazonaws.com/>.match?(server.uri)
+      if server.rubyci_s3?
         t = Time.now
         n = self.get_reports_rubyci_s3(s3, server)
         ary << [server.uri, Time.now-t, n]

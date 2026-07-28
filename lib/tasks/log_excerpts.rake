@@ -26,6 +26,7 @@ end
 namespace :log_excerpts do
   desc "Backfill log excerpts from S3. FROM/TO (UTC date, default last 1 year), START_ID to force resume point, SLEEP seconds between reports (default 0.1), FORCE=1 to refetch reports that already have an excerpt"
   task :backfill => :environment do
+    $stdout.sync = true # detached dynos block-buffer, hiding progress until exit
     from = LogExcerptTaskEnv.time("FROM", 1.year.ago)
     to = LogExcerptTaskEnv.time("TO", Time.now)
     interval = LogExcerptTaskEnv.float("SLEEP", 0.1)
@@ -35,7 +36,7 @@ namespace :log_excerpts do
       where(datetime: from..to).
       where.not(ltsv: nil).
       where("ltsv NOT LIKE '%result:success%'").
-      where("servers.uri LIKE 'https://rubyci.s3.amazonaws.com/%'")
+      merge(Server.rubyci_s3)
 
     # Resume by skipping reports that already have an excerpt. Using the max
     # captured report_id instead would skip everything, because scan_recent_ltsv
@@ -72,6 +73,7 @@ namespace :log_excerpts do
 
   desc "Delete log excerpts whose report datetime is older than KEEP_DAYS (default 366) days. DRY_RUN=1 to only count."
   task :prune => :environment do
+    $stdout.sync = true
     keep_days = LogExcerptTaskEnv.integer("KEEP_DAYS", 366)
     abort "KEEP_DAYS must be at least 1, got #{keep_days}" if keep_days < 1
     cutoff = keep_days.days.ago
