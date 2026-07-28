@@ -35,7 +35,7 @@ namespace :log_excerpts do
       where(datetime: from..to).
       where.not(ltsv: nil).
       where("ltsv NOT LIKE '%result:success%'").
-      where("servers.uri LIKE 'https://rubyci.s3.amazonaws.com/%'")
+      merge(Server.rubyci_s3)
 
     # Resume by skipping reports that already have an excerpt. Using the max
     # captured report_id instead would skip everything, because scan_recent_ltsv

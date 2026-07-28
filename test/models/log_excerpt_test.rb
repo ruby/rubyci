@@ -101,6 +101,15 @@ class LogExcerptTest < ActiveSupport::TestCase
     assert_nil report.reload.log_excerpt
   end
 
+  test "capture handles servers registered under http" do
+    server = create_server("cap-http", uri: "http://rubyci.s3.amazonaws.com/cap-http/")
+    report = create_report(server)
+    stub_fetch_text(->(uri) { "body" }) do
+      LogExcerpt.capture(report)
+    end
+    assert_equal "body\nbody", report.reload.log_excerpt.content
+  end
+
   test "capture is idempotent per report" do
     server = create_server("cap-idem")
     report = create_report(server)

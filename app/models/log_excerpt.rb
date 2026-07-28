@@ -12,7 +12,7 @@ class LogExcerpt < ApplicationRecord
   # (missing or empty objects) so that backfill can resume by max report_id.
   # Network errors are raised to the caller.
   def self.capture(report)
-    return nil unless %r{\Ahttps?://rubyci\.s3\.amazonaws\.com/}.match?(report.server&.uri.to_s)
+    return nil unless report.server&.rubyci_s3?
     content = fetch_content(report)
     excerpt = find_or_initialize_by(report_id: report.id)
     excerpt.content = content
