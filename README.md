@@ -10,6 +10,18 @@ To run this on local machine, following command can run development server:
 % env DATABASE_URL=`heroku config:get -a rubyci DATABASE_URL` rails s
 ```
 
+# MCP endpoint
+
+`POST /mcp` serves the Model Context Protocol over Streamable HTTP (stateless, read-only, no authentication).
+
+```
+claude mcp add --transport http rubyci https://rubyci.org/mcp
+```
+
+Tools: `list_servers`, `current_status`, `report_history`, `search_failures`, `find_failure_origin`, `failing_servers`, `get_log_excerpt`.
+
+Typical triage flow: `current_status` shows what is failing now, `failing_servers` shows how widespread a specific failure is, and `find_failure_origin` returns the first bad build with a github.com/ruby/ruby compare URL for the suspect commit range. Combine with a GitHub MCP server to enumerate commits in that range and a bugs.ruby-lang.org MCP server to search or file issues.
+
 # Storage note
 
 * To optimize S3 Access, extra directories should have 'o' character like 'log' and 'lcov'.
