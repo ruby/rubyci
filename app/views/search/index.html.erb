@@ -2,19 +2,19 @@
 
 <h3>Search failure logs</h3>
 
-<%= form_with url: search_path, method: :get, local: true do %>
-  <p>
-    <label>Text: <%= text_field_tag :q, @q, size: 80, placeholder: "test name, exception class, error message ..." %></label>
+<%= form_with url: search_path, method: :get, local: true, html: { class: "search-form" } do %>
+  <p class="search-row search-text-row">
+    <label>Text: <%= text_field_tag :q, @q, placeholder: "test name, exception class, error message ..." %></label>
     <%# The revision query parameter is kept for machine clients (planned MCP
         server) but intentionally has no visible form field. %>
     <%= hidden_field_tag :revision, @revision if @revision.present? %>
+    <%= submit_tag "Search" %>
   </p>
-  <p>
+  <p class="search-row search-filter-row">
     <label>Server: <%= select_tag :server, options_for_select(@servers.map {|s| [s.name, s.id] }, @server_id), include_blank: "(all)" %></label>
     <label>Branch: <%= text_field_tag :branch, @branch, size: 10, placeholder: "master" %></label>
     <label>From: <%= date_field_tag :from, params[:from] %></label>
     <label>To: <%= date_field_tag :to, params[:to] %></label>
-    <%= submit_tag "Search" %>
   </p>
 <% end %>
 
