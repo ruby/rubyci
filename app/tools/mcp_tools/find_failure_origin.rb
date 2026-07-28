@@ -128,6 +128,12 @@ module McpTools
     end
 
     def self.config_entry(first_bad, last_good, boundary)
+      same_commit = last_good&.git_sha && last_good.git_sha == first_bad.git_sha
+      note = if same_commit
+        "last_good and first_bad ran the same commit; the failure is likely flaky or environment-dependent rather than caused by a code change."
+      elsif last_good.nil?
+        "No earlier report within the window (window exhausted or scan capped at #{MAX_REPORTS_PER_CONFIG} reports); the failure may have started earlier."
+      end
       {
         server: first_bad.server.name,
         server_id: first_bad.server_id,
@@ -136,9 +142,8 @@ module McpTools
         occurrences: boundary[:occurrences],
         first_bad: first_bad.as_mcp_json,
         last_good: last_good&.as_mcp_json,
-        compare_url: compare_url(last_good, first_bad),
-        note: last_good ? nil :
-          "No earlier report within the window (window exhausted or scan capped at #{MAX_REPORTS_PER_CONFIG} reports); the failure may have started earlier.",
+        compare_url: (compare_url(last_good, first_bad) unless same_commit),
+        note: note,
       }.compact
     end
   end

@@ -104,6 +104,22 @@ class McpControllerTest < ActionDispatch::IntegrationTest
     assert_equal "mcp-srv", result.dig("earliest", "server")
   end
 
+  test "find_failure_origin flags same-commit boundary as flaky" do
+    base = Time.now.utc.change(usec: 0)
+    good = create_report(@server, base - 10.hours, SHA_HEAD, success: true)
+    good.update!(branch: "4.0")
+    bad = create_report(@server, base - 5.hours, SHA_HEAD, success: false)
+    bad.update!(branch: "4.0")
+    LogExcerpt.create!(report: bad, content: "TestFlaky#test_same_commit failed")
+
+    result = call_tool("find_failure_origin", { branch: "4.0", query: "test_same_commit" })
+    config = result["configs"].first
+    assert_equal bad.id, config.dig("first_bad", "id")
+    assert_equal good.id, config.dig("last_good", "id")
+    assert_nil config["compare_url"]
+    assert_match "flaky", config["note"]
+  end
+
   test "find_failure_origin with unmatched query" do
     result = call_tool("find_failure_origin", { branch: "master", query: "no_such_failure" })
     assert_match "No failure log", result["message"]
