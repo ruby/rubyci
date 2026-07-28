@@ -37,17 +37,23 @@ module McpTools
       end
       match_ids = matches.map(&:id).to_set
 
+      # Latest report id per configuration in one grouped query. A per-config
+      # ORDER BY datetime DESC LIMIT 1 loads wide rows without a usable index
+      # and takes seconds each on production.
+      latest_ids = Report.where(server_id: matches.map(&:server_id).uniq, branch: matches.map(&:branch).uniq).
+        where("datetime >= ?", from_t).
+        group(:server_id, :branch, :option).maximum(:id)
+
       configs = matches.group_by { |r| [r.server_id, r.branch, r.option] }.map do |(server_id, br, opt), reports|
         first = reports.first
         last = reports.last
-        latest = Report.where(server_id: server_id, branch: br, option: opt).order(datetime: :desc).first
         {
           server: first.server.name,
           server_id: server_id,
           branch: br,
           option: opt,
           occurrences: reports.size,
-          still_failing: match_ids.include?(latest.id),
+          still_failing: match_ids.include?(latest_ids[[server_id, br, opt]]),
           first_seen: first.as_mcp_json,
           last_seen: last.as_mcp_json.merge(matching_line: last.log_excerpt&.matching_line(query)).compact,
         }
