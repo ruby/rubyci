@@ -3,6 +3,8 @@ Rails.application.routes.draw do
 
   get "search" => "search#index"
 
+  match "mcp" => "mcp#handle", via: [:post, :get, :delete]
+
   resources :reports, only: [:show, :index] do
     collection do
       get "current"

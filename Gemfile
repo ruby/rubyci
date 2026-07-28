@@ -7,6 +7,7 @@ gem 'puma'
 gem 'bootsnap', require: false
 gem "propshaft"
 gem 'aws-sdk-s3', '~> 1'
+gem 'mcp'
 
 group :development, :test do
   gem 'sqlite3'

@@ -7,6 +7,11 @@ require "zlib"
 class Report < ApplicationRecord
   belongs_to :server
   has_one :log_excerpt, dependent: :delete
+  # Latest report for each (server, branch, option) configuration since the
+  # given time. Shared by ReportsController#current and the MCP endpoint.
+  scope :latest_per_config, ->(since) {
+    where('reports.id IN (SELECT MAX(R.id) FROM reports R WHERE R.datetime > ? GROUP BY R.server_id, R.branch, R.option)', since)
+  }
   validates :server_id, :presence => true
   # SVN revision number or full 40-hex git commit SHA
   validates :revision, :format => { :with => /\A(?:\d+|\h{40})\z/ }, allow_nil: true
@@ -100,6 +105,40 @@ class Report < ApplicationRecord
 
   def diffstat
     summary[/((?:no )?diff[^)>]*)/, 1]
+  end
+
+  def success?
+    if (result = meta&.[]("result"))
+      result == "success"
+    else
+      # scan_recent_ltsv appends " success" to summary for successful builds
+      summary.include?(" success")
+    end
+  end
+
+  def git_sha
+    sha1 if sha1&.match?(/\A\h{40}\z/)
+  end
+
+  # Compact serialization for the MCP endpoint. Excludes the raw ltsv/summary
+  # blobs; hands back external URLs instead of log contents.
+  def as_mcp_json
+    {
+      id: id,
+      server: server&.name,
+      server_id: server_id,
+      branch: branch,
+      option: option,
+      datetime: datetime.utc.iso8601,
+      revision: revision,
+      commit_sha: git_sha,
+      result: success? ? "success" : "failure",
+      summary: shortsummary || summary,
+      failures: { build: build, test: test, testall: testall, rubyspec: rubyspec }.compact,
+      log_url: (loguri if server),
+      fail_html_url: (failuri if server),
+      commit_url: revisionuri,
+    }.compact
   end
 
   def depsuffixed_name
