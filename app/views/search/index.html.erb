@@ -5,7 +5,9 @@
 <%= form_with url: search_path, method: :get, local: true do %>
   <p>
     <label>Text: <%= text_field_tag :q, @q, size: 40, placeholder: "test name, exception class, error message ..." %></label>
-    <label>Revision: <%= text_field_tag :revision, @revision, size: 14, placeholder: "prefix match" %></label>
+    <%# The revision query parameter is kept for machine clients (planned MCP
+        server) but intentionally has no visible form field. %>
+    <%= hidden_field_tag :revision, @revision if @revision.present? %>
   </p>
   <p>
     <label>Server: <%= select_tag :server, options_for_select(@servers.map {|s| [s.name, s.id] }, @server_id), include_blank: "(all)" %></label>
