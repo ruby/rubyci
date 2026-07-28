@@ -53,6 +53,17 @@ class SearchControllerTest < ActionDispatch::IntegrationTest
     assert_match "No matching failure logs", response.body
   end
 
+  test "array page param does not raise" do
+    get search_url, params: { q: "test_hit", page: ["1"] }
+    assert_response :success
+  end
+
+  test "out of range page is clamped" do
+    get search_url, params: { q: "test_hit", page: "99999999999999999999" }
+    assert_response :success
+    assert_match "No matching failure logs", response.body
+  end
+
   test "search escapes LIKE wildcards" do
     get search_url, params: { q: "%" }
     assert_response :success

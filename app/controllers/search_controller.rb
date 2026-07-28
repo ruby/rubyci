@@ -1,5 +1,6 @@
 class SearchController < ApplicationController
   PER_PAGE = 50
+  MAX_PAGE = 200
 
   # GET /search
   # Searches log excerpts of failed builds. Reports are narrowed by the
@@ -12,7 +13,9 @@ class SearchController < ApplicationController
     @revision = params[:revision].to_s.strip
     @from = parse_time(params[:from])
     @to = parse_time(params[:to], end_of_day: true)
-    @page = [params[:page].to_i, 1].max
+    # to_s first: params[:page] is an Array for ?page[]=1, which has no to_i.
+    # Clamping also keeps OFFSET within range for absurd page numbers.
+    @page = params[:page].to_s.to_i.clamp(1, MAX_PAGE)
     @servers = Server.order(:ordinal).to_a
 
     @searched = @q.present? || @revision.present? || @branch.present? ||
