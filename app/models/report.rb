@@ -6,6 +6,7 @@ require "zlib"
 
 class Report < ApplicationRecord
   belongs_to :server
+  has_one :log_excerpt, dependent: :delete
   validates :server_id, :presence => true
   # SVN revision number or full 40-hex git commit SHA
   validates :revision, :format => { :with => /\A(?:\d+|\h{40})\z/ }, allow_nil: true
@@ -130,6 +131,21 @@ class Report < ApplicationRecord
     server.recent_uri(branch_opts)
   end
 
+  def failtxt_uri
+    s3txt_uri('compressed_failhtml_relpath', 'fail')
+  end
+
+  def difftxt_uri
+    s3txt_uri('compressed_diffhtml_relpath', 'diff')
+  end
+
+  def s3txt_uri(key, kind)
+    relpath = meta&.[](key)&.sub('.html.gz', '.txt.gz') ||
+      datetime.strftime("log/%Y%m%dT%H%M%SZ.#{kind}.txt.gz")
+    "#{server.uri.chomp('/')}/#{depsuffixed_name}/#{relpath}"
+  end
+  private :s3txt_uri
+
   def meta
     if defined?(@meta)
       @meta
@@ -174,7 +190,7 @@ class Report < ApplicationRecord
       diff = h["different_sections"]
       summary << (diff ? " (diff:#{diff})" : " (no diff)")
 
-      Report.create!(
+      report = Report.create!(
         server_id: server.id,
         datetime: datetime,
         branch: branch,
@@ -183,6 +199,13 @@ class Report < ApplicationRecord
         ltsv: line,
         summary: summary.gsub(/<[^>]*>/, ''),
       )
+      if h["result"] != "success"
+        begin
+          LogExcerpt.capture(report)
+        rescue => e
+          warn [e, server.uri, "failed to capture log excerpt", report.id].inspect
+        end
+      end
     end
   rescue RuntimeError => e # It seems not a chkbuild log
     warn [e, server.uri, path, "failed to scan_reports"].inspect

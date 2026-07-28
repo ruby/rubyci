@@ -1,6 +1,8 @@
 Rails.application.routes.draw do
   root :to => 'reports#current'
 
+  get "search" => "search#index"
+
   resources :reports, only: [:show, :index] do
     collection do
       get "current"
