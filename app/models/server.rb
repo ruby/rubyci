@@ -5,6 +5,9 @@ class Server < ApplicationRecord
 
   RUBYCI_S3_HOST = 'rubyci.s3.amazonaws.com'
   RUBYCI_S3_URI = %r{\Ahttps?://#{Regexp.escape(RUBYCI_S3_HOST)}/}
+  # Fastly in front of the same bucket. Object keys are unchanged, so only the
+  # host is swapped.
+  RUBYCI_LOGS_URL = 'https://logs.rubyci.org'
 
   # Most rows still carry the http:// form these URIs were first registered
   # with, so both schemes have to match. Keep the Ruby and SQL forms together
@@ -18,7 +21,13 @@ class Server < ApplicationRecord
     RUBYCI_S3_URI.match?(uri.to_s)
   end
 
+  # Base for the log links shown to users. Bucket-backed servers go through the
+  # CDN; every other server keeps the URI it was registered with.
+  def log_base_uri
+    uri.sub(RUBYCI_S3_URI, "#{RUBYCI_LOGS_URL}/").chomp('/')
+  end
+
   def recent_uri(branch)
-    "#{uri.chomp('/')}/ruby-#{branch}/recent.html"
+    "#{log_base_uri}/ruby-#{branch}/recent.html"
   end
 end

@@ -18,6 +18,20 @@ class ServerTest < ActiveSupport::TestCase
     assert_not create_server("http://ci.rvm.jp/chkbuild/logs/").rubyci_s3?
   end
 
+  test "log_base_uri points bucket-backed servers at the CDN" do
+    assert_equal "https://logs.rubyci.org/ubuntu", create_server("https://rubyci.s3.amazonaws.com/ubuntu/").log_base_uri
+    assert_equal "https://logs.rubyci.org/rhel9", create_server("http://rubyci.s3.amazonaws.com/rhel9").log_base_uri
+  end
+
+  test "log_base_uri keeps other servers as registered" do
+    assert_equal "http://ci.rvm.jp/chkbuild/logs", create_server("http://ci.rvm.jp/chkbuild/logs/").log_base_uri
+  end
+
+  test "recent_uri uses the CDN host" do
+    server = create_server("https://rubyci.s3.amazonaws.com/debian/")
+    assert_equal "https://logs.rubyci.org/debian/ruby-master/recent.html", server.recent_uri("master")
+  end
+
   test "rubyci_s3 scope selects the same servers as rubyci_s3?" do
     servers = [
       create_server("https://rubyci.s3.amazonaws.com/scope-https/"),
