@@ -155,15 +155,15 @@ class Report < ApplicationRecord
   end
 
   def loguri
-    server.uri.chomp('/') + datetime.strftime("/#{depsuffixed_name}/log/%Y%m%dT%H%M%SZ.log.html.gz")
+    server.log_base_uri + datetime.strftime("/#{depsuffixed_name}/log/%Y%m%dT%H%M%SZ.log.html.gz")
   end
 
   def diffuri
-    server.uri.chomp('/') + datetime.strftime("/#{depsuffixed_name}/log/%Y%m%dT%H%M%SZ.diff.html.gz")
+    server.log_base_uri + datetime.strftime("/#{depsuffixed_name}/log/%Y%m%dT%H%M%SZ.diff.html.gz")
   end
 
   def failuri
-    meta&.[]('compressed_failhtml_relpath') ? "#{server.uri.chomp('/')}/#{depsuffixed_name}/#{meta['compressed_failhtml_relpath']}" : nil
+    meta&.[]('compressed_failhtml_relpath') ? "#{server.log_base_uri}/#{depsuffixed_name}/#{meta['compressed_failhtml_relpath']}" : nil
   end
 
   def recenturi

@@ -63,6 +63,18 @@ class ReportTest < ActiveSupport::TestCase
     assert_equal SHA, report.sha1
   end
 
+  test "log links go through the CDN" do
+    report = build_report(
+      server: create_server("cdn-links"),
+      datetime: Time.utc(2026, 1, 21, 18, 30, 3),
+      ltsv: "depsuffixed_name:ruby-master\tcompressed_failhtml_relpath:log/20260121T183003Z.fail.html.gz",
+    )
+    assert_equal "https://logs.rubyci.org/cdn-links/ruby-master/log/20260121T183003Z.log.html.gz", report.loguri
+    assert_equal "https://logs.rubyci.org/cdn-links/ruby-master/log/20260121T183003Z.diff.html.gz", report.diffuri
+    assert_equal "https://logs.rubyci.org/cdn-links/ruby-master/log/20260121T183003Z.fail.html.gz", report.failuri
+    assert_equal "https://logs.rubyci.org/cdn-links/ruby-master/recent.html", report.recenturi
+  end
+
   test "extract_full_sha" do
     assert_equal SHA, Report.extract_full_sha("https://github.com/ruby/ruby:#{SHA}")
     assert_equal SHA, Report.extract_full_sha(%["https\\x3A//github.com/ruby/ruby":#{SHA}])
