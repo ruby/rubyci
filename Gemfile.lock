@@ -309,7 +309,7 @@ DEPENDENCIES
   test-unit
 
 RUBY VERSION
-  ruby 3.4.8
+  ruby 4.0.9
 
 BUNDLED WITH
-  4.0.5
+  4.0.23
